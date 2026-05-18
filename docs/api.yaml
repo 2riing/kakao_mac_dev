@@ -1,0 +1,515 @@
+openapi: 3.1.0
+
+info:
+  title: KT myspeed 카카오 웹뷰 API
+  version: 0.1.0
+  description: |
+    카카오 알림톡 진입 → OTP 인증 → 예약 조회/변경/확정.
+    응답은 envelope 패턴 `{resultCode, resultMessage, data}` + camelCase.
+    정상은 `resultCode = "0000"`, 그 외는 에러.
+
+servers:
+  - url: https://api-dev.example.com/v1
+    description: 개발
+  - url: https://api.example.com/v1
+    description: 운영
+
+tags:
+  - name: order
+    description: 오더 (인증 전 진입 정보)
+  - name: auth
+    description: OTP 발송·검증
+  - name: reservation
+    description: 예약 조회·변경·확정·가용수
+  - name: worker
+    description: 작업자 정보 (당일 방문)
+
+paths:
+  /orders/{wrkRcpNo}/status:
+    get:
+      tags: [order]
+      summary: 오더 상태 조회
+      description: 카톡 진입 직후 인증 전 호출. 동시 오더 묶음 정보 반환.
+      parameters:
+        - $ref: '#/components/parameters/WrkRcpNoPath'
+      responses:
+        '200':
+          description: 정상
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvelopeOrderStatus'
+        '400':
+          $ref: '#/components/responses/ErrorEnvelope'
+
+  /orders/{wrkRcpNo}/custphone:
+    get:
+      tags: [order]
+      summary: 마스킹된 고객 연락처 조회
+      description: 마스킹은 백엔드에서 처리.
+      parameters:
+        - $ref: '#/components/parameters/WrkRcpNoPath'
+      responses:
+        '200':
+          description: 정상
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvelopeCustPhoneMask'
+
+  /auth/otp/request:
+    post:
+      tags: [auth]
+      summary: 인증번호 발송
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OtpRequestPayload'
+      responses:
+        '200':
+          description: 정상
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvelopeNull'
+
+  /auth/otp/verify:
+    post:
+      tags: [auth]
+      summary: 인증번호 검증 (토큰 발급)
+      description: |
+        성공 시 응답 헤더로 토큰 전달.
+        - `Set-Cookie: token=...; HttpOnly; Secure; SameSite=Strict`
+        - 또는 `Authorization: Bearer <jwt>`
+
+        TODO(backend): wrkRcpNo 함께 보낼지 확정 필요 (현재 otpNo only).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OtpVerifyPayload'
+      responses:
+        '200':
+          description: 성공 (토큰 발급)
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: 'token=...; HttpOnly; Secure; SameSite=Strict'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvelopeNull'
+        '400':
+          description: 인증번호 불일치
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvelopeError'
+
+  /reservations/{wrkRcpNo}:
+    get:
+      tags: [reservation]
+      summary: 예약 정보 조회
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/WrkRcpNoPath'
+      responses:
+        '200':
+          description: 정상
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvelopeReservation'
+        '400':
+          $ref: '#/components/responses/ErrorEnvelope'
+
+  /reservations/{wrkRcpNo}/wroker:
+    get:
+      tags: [worker]
+      summary: 작업자 정보 조회
+      description: |
+        조건: `wrkFlowSttusCd = '4'` (당일 방문) 일 때만 조회 가능.
+
+        TODO(backend): 엔드포인트 typo `/wroker` → `/worker` 확정 필요.
+        TODO(backend): `spotWrkUserPic` 형식 협의 (URL? base64?).
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/WrkRcpNoPath'
+      responses:
+        '200':
+          description: 정상
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvelopeTechnician'
+        '404':
+          $ref: '#/components/responses/ErrorEnvelope'
+
+  /reservations/{wrkRcpNo}/availability:
+    get:
+      tags: [reservation]
+      summary: 가용 슬롯 조회
+      description: |
+        주단위 또는 일단위 (`from == to` 일 때).
+
+        TODO(backend): 응답 형식 임의 작성, 협의 필요.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/WrkRcpNoPath'
+        - name: from
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          example: '2026-05-08'
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          example: '2026-05-14'
+      responses:
+        '200':
+          description: 정상
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvelopeAvailabilityResponse'
+
+  /reservations:
+    patch:
+      tags: [reservation]
+      summary: 예약 변경 (다건 일괄)
+      description: 단일 일정으로 여러 `wrkRcpNo` 일괄 변경.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReservationPatchPayload'
+      responses:
+        '200':
+          description: 정상
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvelopeReservationPatchResult'
+
+  /reservations/{wrkRcpNo}/confirm:
+    post:
+      tags: [reservation]
+      summary: 예약 확정
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/WrkRcpNoPath'
+      responses:
+        '200':
+          description: 정상
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvelopeReservationConfirmResult'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        Set-Cookie 방식과 병행. 백엔드 확정 필요.
+        Cookie 방식이면 axios `withCredentials: true`로 자동 첨부.
+
+  parameters:
+    WrkRcpNoPath:
+      name: wrkRcpNo
+      in: path
+      required: true
+      description: 작업접수번호 (예 1O2026050712345)
+      schema:
+        type: string
+      example: '1O2026050712345'
+
+  responses:
+    ErrorEnvelope:
+      description: 에러 (resultCode != '0000')
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EnvelopeError'
+
+  schemas:
+    Envelope:
+      type: object
+      required: [resultCode, resultMessage, data]
+      properties:
+        resultCode:
+          type: string
+          description: 정상은 '0000'. 그 외는 에러.
+          example: '0000'
+        resultMessage:
+          type: string
+          example: '정상'
+        data:
+          nullable: true
+
+    EnvelopeNull:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          properties:
+            data:
+              type: 'null'
+
+    EnvelopeError:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          properties:
+            resultCode:
+              example: '9999'
+            resultMessage:
+              example: '오더 정보를 찾을 수 없습니다.'
+            data:
+              type: 'null'
+
+    OrderStatus:
+      type: object
+      required: [smtCnt, orders, progressCd]
+      properties:
+        smtCnt:
+          type: integer
+          description: 동시건수
+          example: 2
+        orders:
+          type: array
+          description: 묶음 오더의 작업접수번호 목록
+          items:
+            type: string
+          example: ['1O2026050712345', '1O2026050712346']
+        progressCd:
+          type: string
+          description: 진행상태 코드 (원스톱·진행상태 등 판단)
+
+    EnvelopeOrderStatus:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/OrderStatus'
+
+    CustPhoneMask:
+      type: object
+      required: [custPhoneMask]
+      properties:
+        custPhoneMask:
+          type: string
+          description: 마스킹된 고객 휴대폰
+          example: '010-****-5678'
+
+    EnvelopeCustPhoneMask:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/CustPhoneMask'
+
+    OtpRequestPayload:
+      type: object
+      required: [wrkRcpNo]
+      properties:
+        wrkRcpNo:
+          type: string
+          example: '1O2026050712345'
+
+    OtpVerifyPayload:
+      type: object
+      required: [otpNo]
+      properties:
+        otpNo:
+          type: string
+          description: 인증번호
+          example: '123456'
+
+    ReservationOrder:
+      type: object
+      required: [wrkRcpNo, prodDescNm]
+      properties:
+        wrkRcpNo:
+          type: string
+        prodDescNm:
+          type: string
+          description: 상품 설명명 (수리는 빈 문자열 가능)
+          example: 'KT 인터넷 에센스'
+
+    Reservation:
+      type: object
+      required: [custNm, rsrvDate, rsrvTod, spotWrkTypeCd, smtCnt, orders]
+      properties:
+        custNm:
+          type: string
+          description: 고객명
+          example: '김민준'
+        rsrvDate:
+          type: string
+          format: date
+          description: 예약일
+          example: '2026-04-28'
+        rsrvTod:
+          type: string
+          description: 예약시간
+          example: '14:00'
+        spotWrkTypeCd:
+          type: string
+          description: 현장작업 종류 코드
+          example: '1'
+        smtCnt:
+          type: integer
+          description: 동시건수
+          example: 2
+        orders:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReservationOrder'
+
+    EnvelopeReservation:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/Reservation'
+
+    Technician:
+      type: object
+      required: [spotWrkUserId, spotWrkUserNm, spotWrkUserHpNo, spotWrkUserPic]
+      properties:
+        spotWrkUserId:
+          type: string
+          example: '82273967'
+        spotWrkUserNm:
+          type: string
+          example: '염수홍'
+        spotWrkUserHpNo:
+          type: string
+          example: '01000000000'
+        spotWrkUserPic:
+          type: string
+          description: 'TODO(backend): 형식 협의 (URL? base64?)'
+
+    EnvelopeTechnician:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/Technician'
+
+    AvailabilityTimeSlot:
+      type: object
+      required: [rsrvTod, available]
+      properties:
+        rsrvTod:
+          type: string
+          example: '09:00'
+        available:
+          type: boolean
+
+    AvailabilityDay:
+      type: object
+      required: [rsrvDate, slots]
+      properties:
+        rsrvDate:
+          type: string
+          format: date
+          example: '2026-05-08'
+        slots:
+          type: array
+          items:
+            $ref: '#/components/schemas/AvailabilityTimeSlot'
+
+    AvailabilityResponse:
+      type: object
+      required: [from, to, availability]
+      properties:
+        from:
+          type: string
+          format: date
+        to:
+          type: string
+          format: date
+        availability:
+          type: array
+          items:
+            $ref: '#/components/schemas/AvailabilityDay'
+
+    EnvelopeAvailabilityResponse:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/AvailabilityResponse'
+
+    ReservationPatchPayload:
+      type: object
+      required: [wrkRcpNoList, rsrvDate, rsrvTod]
+      properties:
+        wrkRcpNoList:
+          type: array
+          items:
+            type: string
+          example: ['1O2026050712345', '1O2026050712346']
+        rsrvDate:
+          type: string
+          format: date
+          example: '2026-04-30'
+        rsrvTod:
+          type: string
+          example: '10:00'
+
+    ReservationPatchResult:
+      type: object
+      required: [ok, updatedCnt]
+      properties:
+        ok:
+          type: boolean
+        updatedCnt:
+          type: integer
+
+    EnvelopeReservationPatchResult:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/ReservationPatchResult'
+
+    ReservationConfirmResult:
+      type: object
+      required: [ok]
+      properties:
+        ok:
+          type: boolean
+
+    EnvelopeReservationConfirmResult:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/ReservationConfirmResult'

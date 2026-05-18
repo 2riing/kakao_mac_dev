@@ -1,0 +1,33 @@
+{
+  "from": "2026-05-19",
+  "to": "2026-05-25",
+  "availability": [
+    {
+      "rsrvDate": "2026-05-19",
+      "slots": [
+        { "rsrvTod": "09:00", "available": true },
+        { "rsrvTod": "11:00", "available": false },
+        { "rsrvTod": "14:00", "available": true },
+        { "rsrvTod": "16:00", "available": true }
+      ]
+    },
+    {
+      "rsrvDate": "2026-05-20",
+      "slots": [
+        { "rsrvTod": "09:00", "available": false },
+        { "rsrvTod": "11:00", "available": true },
+        { "rsrvTod": "14:00", "available": true },
+        { "rsrvTod": "16:00", "available": false }
+      ]
+    },
+    {
+      "rsrvDate": "2026-05-21",
+      "slots": [
+        { "rsrvTod": "09:00", "available": true },
+        { "rsrvTod": "11:00", "available": true },
+        { "rsrvTod": "14:00", "available": true },
+        { "rsrvTod": "16:00", "available": true }
+      ]
+    }
+  ]
+}

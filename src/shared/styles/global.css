@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+@theme {
+  /* KT 브랜드 */
+  --color-kt-red: #E60012;
+  --color-kt-red-dark: #C0000F;
+  --color-kt-red-light: #FFF0F0;
+  --color-kt-red-border: #FFD0D0;
+
+  /* 텍스트 / 회색 톤 (mockup 정의 그대로) */
+  --color-kt-ink: #1A1A1A;
+  --color-kt-gray-700: #444444;
+  --color-kt-gray-500: #888888;
+  --color-kt-gray-400: #AAAAAA;
+  --color-kt-gray-300: #CCCCCC;
+  --color-kt-gray-200: #E5E5E5;
+  --color-kt-gray-100: #F5F5F5;
+  --color-kt-border: #E0E0E0;
+
+  /* 상태 */
+  --color-kt-success: #00A651;
+  --color-kt-warn: #FFFBF0;
+  --color-kt-warn-border: #FFE0A0;
+  --color-kt-warn-urgent: #FF4400;
+
+  /* 카카오 */
+  --color-kakao-yellow: #FEE500;
+
+  /* 폰트 / breakpoint */
+  --font-sans: "Noto Sans KR", system-ui, sans-serif;
+  --breakpoint-xs: 375px;
+
+  /* 애니메이션 */
+  --animate-fade-in: fadeIn 0.3s ease-out;
+  --animate-slide-up: slideUp 0.3s ease-out;
+  --animate-slide-in: slideIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to   { transform: none; }
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: none; }
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  font-family: var(--font-sans);
+}

@@ -1,0 +1,13 @@
+{
+  "custNm": "홍길동",
+  "rsrvDate": "2026-05-25",
+  "rsrvTod": "14:00",
+  "spotWrkTypeCd": "INSTALL",
+  "smtCnt": 1,
+  "orders": [
+    {
+      "wrkRcpNo": "20260518001",
+      "prodDescNm": "기가 인터넷 500M"
+    }
+  ]
+}

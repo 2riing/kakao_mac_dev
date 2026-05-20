@@ -1,16 +1,35 @@
-import { Link } from "react-router";
+import { useLocation } from "react-router";
+import ScreenContainer from "@shared/ui/ScreenContainer";
+import AlertIcon from "@shared/ui/AlertIcon";
+import CSNote from "@shared/ui/CSNote";
+import { getErrorPageMessage } from "@shared/config/messages";
+
+interface ErrorLocationState {
+  code?: string;
+}
 
 function ErrorPage() {
+  const location = useLocation();
+  const state = location.state as ErrorLocationState | null;
+  const { title, desc } = getErrorPageMessage(state?.code ?? null);
+
   return (
-    <main className="min-h-screen flex items-center justify-center p-4">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold mb-4">오류가 발생했습니다</h1>
-        <p className="text-gray-600 mb-6">잠시 후 다시 시도해 주세요.</p>
-        <Link to="/login" className="text-kt-red underline">
-          로그인으로 돌아가기
-        </Link>
+    <ScreenContainer>
+      <div className="h-[52px] bg-white flex items-center justify-center border-b border-kt-border shrink-0 relative">
+        <span className="text-[16px] font-bold text-kt-ink">안내</span>
       </div>
-    </main>
+
+      <div className="flex-1 flex flex-col items-center justify-center px-7">
+        <AlertIcon />
+        <div className="mt-[18px] mb-2.5 text-[17px] font-bold text-kt-ink text-center leading-[1.5] whitespace-pre-line">
+          {title}
+        </div>
+        <div className="text-[13px] text-kt-gray-500 text-center leading-[1.75] whitespace-pre-line">
+          {desc}
+        </div>
+        <CSNote />
+      </div>
+    </ScreenContainer>
   );
 }
 

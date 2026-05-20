@@ -1,54 +1,78 @@
 {
   "candidates": [
     {
-      "custNm": "홍길동",
       "rsrvDate": "2026-05-25",
       "rsrvTod": "14:00",
-      "spotWrkTypeCd": "INSTALL",
       "smtCnt": 1,
       "orders": [
-        { "wrkRcpNo": "20260518001", "prodDescNm": "기가 인터넷 500M" }
+        {
+          "wrkRcpNo": "1O2026051812345",
+          "spotWrkTypeCd": "INSTALL",
+          "prodDescNm": "기가 인터넷 500M"
+        }
       ]
     },
     {
-      "custNm": "김철수",
       "rsrvDate": "2026-05-28",
       "rsrvTod": "10:00",
-      "spotWrkTypeCd": "INSTALL",
       "smtCnt": 2,
       "orders": [
-        { "wrkRcpNo": "20260520002", "prodDescNm": "기가 인터넷 1G" },
-        { "wrkRcpNo": "20260520003", "prodDescNm": "IPTV 베이직" }
+        {
+          "wrkRcpNo": "1O20260520ABCDE",
+          "spotWrkTypeCd": "INSTALL",
+          "prodDescNm": "인터넷 베이직"
+        },
+        {
+          "wrkRcpNo": "1O20260520ABCDF",
+          "spotWrkTypeCd": "TV_INSTALL",
+          "prodDescNm": "지니 TV 베이직"
+        }
       ]
     },
     {
-      "custNm": "이영희",
       "rsrvDate": "2026-06-02",
       "rsrvTod": "16:30",
-      "spotWrkTypeCd": "AS",
       "smtCnt": 1,
       "orders": [
-        { "wrkRcpNo": "20260530004", "prodDescNm": "와이파이 공유기 교체" }
+        {
+          "wrkRcpNo": "1O2026053000F01",
+          "spotWrkTypeCd": "AS",
+          "prodDescNm": "와이파이 공유기 교체"
+        }
       ]
     },
     {
-      "custNm": "박민수",
       "rsrvDate": "2026-06-05",
       "rsrvTod": "09:00",
-      "spotWrkTypeCd": "INSTALL",
-      "smtCnt": 1,
+      "smtCnt": 3,
       "orders": [
-        { "wrkRcpNo": "20260601005", "prodDescNm": "기가 인터넷 500M + IPTV" }
+        {
+          "wrkRcpNo": "1O2026060100A05",
+          "spotWrkTypeCd": "INSTALL",
+          "prodDescNm": "기가 인터넷 1G"
+        },
+        {
+          "wrkRcpNo": "1O2026060100A06",
+          "spotWrkTypeCd": "TV_INSTALL",
+          "prodDescNm": "지니 TV 프리미엄"
+        },
+        {
+          "wrkRcpNo": "1O2026060100A07",
+          "spotWrkTypeCd": "PHONE_INSTALL",
+          "prodDescNm": "집전화 베이직"
+        }
       ]
     },
     {
-      "custNm": "최지은",
       "rsrvDate": "2026-06-10",
       "rsrvTod": "13:00",
-      "spotWrkTypeCd": "MOVE",
       "smtCnt": 1,
       "orders": [
-        { "wrkRcpNo": "20260605006", "prodDescNm": "이전설치 - 기가 인터넷" }
+        {
+          "wrkRcpNo": "1O20260605DEAD0",
+          "spotWrkTypeCd": "MOVE",
+          "prodDescNm": "이전설치 - 기가 인터넷"
+        }
       ]
     }
   ]

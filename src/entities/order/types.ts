@@ -23,15 +23,14 @@ export interface Technician {
 /* 예약에 포함된 오더 정보 */
 export interface ReservationOrder {
   wrkRcpNo: string;
+  spotWrkTypeCd: string; // 현장작업 종류 코드 (오더 단위 — INSTALL/AS/MOVE 등)
   prodDescNm: string;    // 상품 설명명 (수리는 빈 문자열 가능)
 }
 
 /* 예약 정보 — GET /api/reservations/{wrkRcpNo} */
 export interface Reservation {
-  custNm: string;          // 고객명
   rsrvDate: string;        // 예약일 YYYY-MM-DD
   rsrvTod: string;         // 예약시간 (예: "14:00")
-  spotWrkTypeCd: string;   // 현장작업 종류 코드
   smtCnt: number;          // 동시건수
   orders: ReservationOrder[];
 }

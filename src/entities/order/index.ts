@@ -6,6 +6,7 @@ export {
   useReservation,
   useWorker,
 } from "./hooks";
+export { getSpotWrkTypeLabel } from "./labels";
 export type {
   AvailabilityDay,
   AvailabilityResponse,

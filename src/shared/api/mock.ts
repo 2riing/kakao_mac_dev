@@ -16,12 +16,12 @@ const mockRules: MockRule[] = [
   // auth
   { method: "POST", pattern: /\/auth\/otp\/request$/,                 data: null },
   { method: "POST", pattern: /\/auth\/otp\/verify$/,                  data: null },
+  { method: "GET",  pattern: /\/auth\/phonenum\/[^/]+$/,              data: custphoneMock },
   // order
-  { method: "GET",  pattern: /\/orders\/[^/]+\/custphone$/,           data: custphoneMock },
-  { method: "GET",  pattern: /\/orders\/[^/]+\/status$/,              data: orderMock },
+  { method: "GET",  pattern: /\/order\/status\/[^/]+/,                data: orderMock },
+  { method: "GET",  pattern: /\/order\/worker\/[^/]+$/,               data: workerMock },
   // reservation
   { method: "GET",  pattern: /\/reservations\/[^/]+\/availability/,   data: availabilityMock },
-  { method: "GET",  pattern: /\/reservations\/[^/]+\/wroker$/,        data: workerMock },
   { method: "GET",  pattern: /\/reservations\/[^/]+$/,                data: reservationMock },
   { method: "PATCH", pattern: /\/reservations$/,                      data: { ok: true, updatedCnt: 1 } },
   { method: "POST", pattern: /\/reservations\/[^/]+\/confirm$/,       data: { ok: true } },

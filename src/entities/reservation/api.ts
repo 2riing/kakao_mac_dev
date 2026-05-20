@@ -30,12 +30,13 @@ export async function getAvailability(
   return unwrap(data);
 }
 
-// 단일 일정으로 여러 wrkRcpNo 일괄 변경 (정본 15번 v0.1).
-export async function patchReservations(
+// 단일 wrkRcpNo로 변경 요청 → 백엔드가 동시건 묶음을 자동 일괄 처리.
+export async function patchReservation(
+  wrkRcpNo: string,
   payload: ReservationPatchPayload,
 ): Promise<ReservationPatchResult> {
   const { data } = await apiClient.patch<Envelope<ReservationPatchResult>>(
-    "/reservations",
+    `/reservations/${wrkRcpNo}`,
     payload,
   );
   return unwrap(data);

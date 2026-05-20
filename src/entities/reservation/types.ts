@@ -8,7 +8,7 @@ export interface ReservationOrder {
   prodDescNm: string;    // 상품 설명명 (수리는 빈 문자열 가능)
 }
 
-/* 예약 정보 — GET /v1/reservations/{wrkRcpNo} */
+/* 예약 정보 — GET /api/reservations/{wrkRcpNo} */
 export interface Reservation {
   custNm: string;          // 고객명
   rsrvDate: string;        // 예약일 YYYY-MM-DD
@@ -18,7 +18,7 @@ export interface Reservation {
   orders: ReservationOrder[];
 }
 
-/* 가용수 조회 — GET /v1/reservations/{wrkRcpNo}/availability */
+/* 가용수 조회 — GET /api/reservations/{wrkRcpNo}/availability */
 export interface AvailabilityTimeSlot {
   rsrvTod: string;       // "09:00"
   available: boolean;
@@ -35,9 +35,10 @@ export interface AvailabilityResponse {
   availability: AvailabilityDay[];
 }
 
-/* 예약 변경 — PATCH /v1/reservations (단일 일정 다건 일괄) */
+/* 예약 변경 — PATCH /api/reservations/{wrkRcpNo}
+ * wrkRcpNo 단일로 보내면 백엔드가 동시건 묶음을 자동 일괄 처리.
+ */
 export interface ReservationPatchPayload {
-  wrkRcpNoList: string[];
   rsrvDate: string;
   rsrvTod: string;
 }
@@ -47,7 +48,7 @@ export interface ReservationPatchResult {
   updatedCnt: number;
 }
 
-/* 예약 확정 — POST /v1/reservations/{wrkRcpNo}/confirm */
+/* 예약 확정 — POST /api/reservations/{wrkRcpNo}/confirm */
 export interface ReservationConfirmResult {
   ok: boolean;
 }

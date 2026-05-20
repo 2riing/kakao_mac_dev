@@ -4,7 +4,7 @@ import { getMockResponse } from "./mock";
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === "true";
 
 export const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: import.meta.env.VITE_BASE_URL,
   withCredentials: true,
   timeout: 15_000,
 });
@@ -20,31 +20,13 @@ if (USE_MOCK) {
   });
 }
 
-let isRefreshing = false;
-
+// 401 시 로그인 페이지로 리다이렉트 (refresh 미사용 — 액세스 토큰 10분 정책)
 apiClient.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    const status = error.response?.status;
-    const original = error.config;
-
-    if (status === 401 && !original._retry) {
-      if (isRefreshing) {
-        return Promise.reject(error);
-      }
-      original._retry = true;
-      isRefreshing = true;
-      try {
-        await apiClient.post("/auth/refresh");
-        return apiClient(original);
-      } catch (refreshError) {
-        window.location.href = "/login";
-        return Promise.reject(refreshError);
-      } finally {
-        isRefreshing = false;
-      }
+  (error) => {
+    if (error.response?.status === 401) {
+      window.location.href = "/login";
     }
-
     return Promise.reject(error);
   },
 );

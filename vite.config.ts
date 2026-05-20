@@ -22,9 +22,6 @@ export default defineConfig({
       "@shared": fileURLToPath(new URL("./src/shared", import.meta.url)),
     },
   },
-  esbuild: {
-    drop: ["console", "debugger"],
-  },
   build: {
     sourcemap: false,
   },

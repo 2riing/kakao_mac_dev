@@ -3,7 +3,7 @@ import {
   confirmReservation,
   getAvailability,
   getReservationByWrkRcpNo,
-  patchReservations,
+  patchReservation,
 } from "./api";
 import type { ReservationPatchPayload } from "./types";
 
@@ -30,7 +30,13 @@ export function useAvailability(
 export function useChangeReservation() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (payload: ReservationPatchPayload) => patchReservations(payload),
+    mutationFn: ({
+      wrkRcpNo,
+      payload,
+    }: {
+      wrkRcpNo: string;
+      payload: ReservationPatchPayload;
+    }) => patchReservation(wrkRcpNo, payload),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["reservation"] });
     },

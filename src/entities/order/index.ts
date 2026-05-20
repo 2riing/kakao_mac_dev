@@ -1,2 +1,2 @@
-export { useOrderStatus } from "./hooks";
-export type { OrderStatus } from "./types";
+export { useOrderStatus, useWorker } from "./hooks";
+export type { OrderStatus, Technician } from "./types";

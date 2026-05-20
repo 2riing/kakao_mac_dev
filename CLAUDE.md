@@ -6,7 +6,8 @@ Stack: Vite 6 + React 19 + TS 5.6 + Tailwind 4 + React Router 7 + TanStack Query
 
 ## claude.md rules
 
-- this CLAUDE.md 수정 전 사용자 확인 필수.
+- **config 파일(vite.config.ts, tsconfig.*.json, package.json, eslint.config.js, .env.*) 수정 전 사용자 허락 필수**. 자동 수정 금지
+- this CLAUDE.md 수정 전 사용자 확인 필수
 - this CLAUDE.md 간결하게 유지. 설명·예시는 정본 문서로 위임
 - 마크다운은 plain text editor 가독성 우선. 표·이모지 지양
 
@@ -23,9 +24,8 @@ Stack: Vite 6 + React 19 + TS 5.6 + Tailwind 4 + React Router 7 + TanStack Query
 ## domain
 
 - `auth` — OTP 발송·검증·재발송, 세션, 마스킹 연락처
-- `order` — 오더기본, 청약상세, 오더상태
+- `order` — 오더기본, 청약상세, 오더상태, 작업자 정보
 - `reservation` — 예약 조회·변경·확정·가용수
-- `worker` — 작업자 정보
 
 ## folder structure
 
@@ -33,7 +33,7 @@ Stack: Vite 6 + React 19 + TS 5.6 + Tailwind 4 + React Router 7 + TanStack Query
 src/
 ├── app/          main.tsx, App.tsx, providers.tsx, router.tsx
 ├── pages/        화면 (components 조립)
-├── components/   도메인별 UI (auth, order, reservation, worker)
+├── components/   도메인별 UI (auth, order, reservation)
 ├── entities/     도메인별 데이터 (api, store, hooks, types)
 └── shared/       공통 (api, ui, lib, hooks, config, model, styles, assets)
 ```
@@ -49,4 +49,7 @@ src/
 백엔드 미정합 동안 `src/__mocks__/*.json` + axios adapter 분기. `VITE_USE_MOCK=true`일 때만 동작. 백엔드 답 오면 mocks 폴더 + 분기 코드 삭제로 정리.
 
 ## environment
+
+env 변수는 Vite 기본 `VITE_` prefix 사용 (`VITE_BASE_URL`, `VITE_USE_MOCK`).
+
 외부 개발 완료 후 사내망 수동 이관 예정 

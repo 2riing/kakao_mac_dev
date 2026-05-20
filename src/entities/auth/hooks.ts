@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { requestOtp, verifyOtp } from "./api";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { requestOtp, verifyOtp, getMaskedCustPhone } from "./api";
 import { useAuthStore } from "./store";
 import type { OtpRequestPayload, OtpVerifyPayload } from "./types";
 
@@ -11,6 +11,15 @@ export function useIsAuthenticated(): boolean {
 
 export function useWrkRcpNo(): string | null {
   return useAuthStore((state) => state.wrkRcpNo);
+}
+
+/* 마스킹 연락처 조회 */
+export function useMaskedCustPhone(wrkRcpNo: string | null) {
+  return useQuery({
+    queryKey: ["auth", "custphone", wrkRcpNo],
+    queryFn: () => getMaskedCustPhone(wrkRcpNo as string),
+    enabled: !!wrkRcpNo,
+  });
 }
 
 /* OTP mutation */

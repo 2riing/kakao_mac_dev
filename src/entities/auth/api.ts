@@ -21,7 +21,7 @@ export async function verifyOtp(payload: OtpVerifyPayload): Promise<void> {
 
 export async function getMaskedCustPhone(wrkRcpNo: string): Promise<string> {
   const { data } = await apiClient.get<Envelope<CustPhoneMask>>(
-    `/orders/${wrkRcpNo}/custphone`,
+    `/auth/phonenum/${wrkRcpNo}`,
   );
   return unwrap(data).custPhoneMask;
 }

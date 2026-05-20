@@ -1,13 +1,55 @@
 {
-  "custNm": "홍길동",
-  "rsrvDate": "2026-05-25",
-  "rsrvTod": "14:00",
-  "spotWrkTypeCd": "INSTALL",
-  "smtCnt": 1,
-  "orders": [
+  "candidates": [
     {
-      "wrkRcpNo": "20260518001",
-      "prodDescNm": "기가 인터넷 500M"
+      "custNm": "홍길동",
+      "rsrvDate": "2026-05-25",
+      "rsrvTod": "14:00",
+      "spotWrkTypeCd": "INSTALL",
+      "smtCnt": 1,
+      "orders": [
+        { "wrkRcpNo": "20260518001", "prodDescNm": "기가 인터넷 500M" }
+      ]
+    },
+    {
+      "custNm": "김철수",
+      "rsrvDate": "2026-05-28",
+      "rsrvTod": "10:00",
+      "spotWrkTypeCd": "INSTALL",
+      "smtCnt": 2,
+      "orders": [
+        { "wrkRcpNo": "20260520002", "prodDescNm": "기가 인터넷 1G" },
+        { "wrkRcpNo": "20260520003", "prodDescNm": "IPTV 베이직" }
+      ]
+    },
+    {
+      "custNm": "이영희",
+      "rsrvDate": "2026-06-02",
+      "rsrvTod": "16:30",
+      "spotWrkTypeCd": "AS",
+      "smtCnt": 1,
+      "orders": [
+        { "wrkRcpNo": "20260530004", "prodDescNm": "와이파이 공유기 교체" }
+      ]
+    },
+    {
+      "custNm": "박민수",
+      "rsrvDate": "2026-06-05",
+      "rsrvTod": "09:00",
+      "spotWrkTypeCd": "INSTALL",
+      "smtCnt": 1,
+      "orders": [
+        { "wrkRcpNo": "20260601005", "prodDescNm": "기가 인터넷 500M + IPTV" }
+      ]
+    },
+    {
+      "custNm": "최지은",
+      "rsrvDate": "2026-06-10",
+      "rsrvTod": "13:00",
+      "spotWrkTypeCd": "MOVE",
+      "smtCnt": 1,
+      "orders": [
+        { "wrkRcpNo": "20260605006", "prodDescNm": "이전설치 - 기가 인터넷" }
+      ]
     }
   ]
 }

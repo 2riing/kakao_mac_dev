@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useKakaoEntryParams } from "@shared/hooks/useKakaoEntryParams";
-import { useAuthStore, useOtpTimer } from "@entities/auth";
+import { useAuthStore, useOtpTimer, useMaskedCustPhone } from "@entities/auth";
 import KTLogo from "@shared/ui/KTLogo";
 import Spinner from "@shared/ui/Spinner";
 import CSNote from "@shared/ui/CSNote";
@@ -15,7 +15,7 @@ function LoginOtpPage() {
   const { wrkRcpNo } = useKakaoEntryParams();
   const setAuthenticated = useAuthStore((s) => s.setAuthenticated);
 
-  const maskedPhone = "010-****-1234";
+  const { data: maskedPhone = "" } = useMaskedCustPhone(wrkRcpNo ?? null);
 
   const [sent, setSent] = useState(false);
   const [otp, setOtp] = useState("");

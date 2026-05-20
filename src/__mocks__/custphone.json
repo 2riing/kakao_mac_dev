@@ -1,3 +1,9 @@
 {
-  "custPhoneMask": "010-****-1234"
+  "candidates": [
+    { "custPhoneMask": "010-****-1234" },
+    { "custPhoneMask": "010-****-5678" },
+    { "custPhoneMask": "010-****-9012" },
+    { "custPhoneMask": "010-****-3456" },
+    { "custPhoneMask": "010-****-7890" }
+  ]
 }

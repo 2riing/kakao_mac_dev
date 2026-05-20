@@ -1,26 +1,26 @@
 import { Routes, Route, Navigate } from "react-router";
 import { AuthGuard } from "@components/auth";
 import LoginOtpPage from "@pages/LoginOtpPage";
-import ReservationViewPage from "@pages/ReservationViewPage";
+import ReservationConfirmPage from "@pages/ReservationConfirmPage";
 import ReservationChangePage from "@pages/ReservationChangePage";
-import ConfirmPage from "@pages/ConfirmPage";
+import OrderDetailViewPage from "@pages/OrderDetailViewPage";
 import TodayVisitPage from "@pages/TodayVisitPage";
-import NotFoundPage from "@pages/NotFoundPage";
 import ErrorPage from "@pages/ErrorPage";
+import HelpPage from "@pages/HelpPage";
 
 function AppRouter() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/" element={<Navigate to="/error" replace />} />
       <Route path="/login" element={<LoginOtpPage />} />
+      <Route path="/help" element={<HelpPage/>} />
+      <Route path="/order/confirm/:wrkRcpNo/:reservationDate" element={<ReservationConfirmPage />} />
       <Route element={<AuthGuard />}>
-        <Route path="/reservation" element={<ReservationViewPage />} />
         <Route path="/reservation/change" element={<ReservationChangePage />} />
-        <Route path="/reservation/confirm" element={<ConfirmPage />} />
+         <Route path="/reservation" element={<OrderDetailViewPage />} />
         <Route path="/visit/today" element={<TodayVisitPage />} />
       </Route>
       <Route path="/error" element={<ErrorPage />} />
-      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }

@@ -1,0 +1,10 @@
+function OrderDetailViewPage() {
+  return (
+    <main className="min-h-screen p-4">
+      <h1 className="text-xl font-bold mb-4">예약 확인</h1>
+      <p className="text-gray-600">OrderDetailViewPage placeholder</p>
+    </main>
+  );
+}
+
+export default OrderDetailViewPage;

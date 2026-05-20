@@ -37,7 +37,7 @@ TanStack Query 전역 QueryClient. `app/providers.tsx`에서 한 번만 주입.
 백엔드 미정합 동안 가짜 응답 분기.
 
 - `getMockResponse(config)` — 요청의 method+url을 매핑 규칙에 맞춰 envelope 감싼 응답 반환
-- 매핑 규칙은 9건 (auth, order, reservation) — worker는 order 도메인에 통합
+- 매핑 규칙은 9건 (auth, order)
 - 백엔드 답 오면 이 파일 + `src/__mocks__/` + client.ts의 USE_MOCK 분기 삭제로 정리
 
 ## 신규 파일 추가 기준

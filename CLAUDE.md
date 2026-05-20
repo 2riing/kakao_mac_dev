@@ -13,6 +13,7 @@ Stack: Vite 6 + React 19 + TS 5.6 + Tailwind 4 + React Router 7 + TanStack Query
 
 ## code rules
 
+- 개발 스펙은 `docs/` 문서를 정본으로 따름. 스펙 변경 시 `docs/` 먼저 수정 후 코드 반영
 - 임의 약어 도입 금지. naming-dictionary 준수
 - 명시적 분리 우선 — providers/router/AuthGuard 등 책임 단위로 파일 분리 (한 파일에 인라인 지양)
 - import 방향: app → pages → components → entities → shared (역방향 금지)
@@ -24,8 +25,7 @@ Stack: Vite 6 + React 19 + TS 5.6 + Tailwind 4 + React Router 7 + TanStack Query
 ## domain
 
 - `auth` — OTP 발송·검증·재발송, 세션, 마스킹 연락처
-- `order` — 오더기본, 청약상세, 오더상태, 작업자 정보
-- `reservation` — 예약 조회·변경·확정·가용수
+- `order` — 오더기본, 청약상세, 오더상태, 작업자 정보, 예약 정보
 
 ## folder structure
 
@@ -33,7 +33,7 @@ Stack: Vite 6 + React 19 + TS 5.6 + Tailwind 4 + React Router 7 + TanStack Query
 src/
 ├── app/          main.tsx, App.tsx, providers.tsx, router.tsx
 ├── pages/        화면 (components 조립)
-├── components/   도메인별 UI (auth, order, reservation)
+├── components/   도메인별 UI (auth, order)
 ├── entities/     도메인별 데이터 (api, store, hooks, types)
 └── shared/       공통 (api, ui, lib, hooks, config, model, styles, assets)
 ```

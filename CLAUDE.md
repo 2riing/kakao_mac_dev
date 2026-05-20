@@ -21,6 +21,7 @@ Stack: Vite 6 + React 19 + TS 5.6 + Tailwind 4 + React Router 7 + TanStack Query
 - 여러 도메인 합치기는 `pages`에서만
 - 도메인은 폴더 경로로만 import. `@entities/auth` OK, `@entities/auth/api` 금지
 - 새 라이브러리(npm 패키지) 추가 금지. 진짜 필요 시 사용자 확인 필수
+- UI는 카카오톡 인앱브라우저(iOS·Android) 둘 다 동작 기준. 한쪽만 되는 CSS·동작 금지
 
 ## domain
 

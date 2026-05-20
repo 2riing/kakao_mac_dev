@@ -27,7 +27,7 @@ function OtpField({ value, onChange, timer }: OtpFieldProps) {
           onChange={handleChange}
           inputMode="numeric"
           maxLength={6}
-          placeholder="인증번호 입력 (4~6자리)"
+          placeholder="인증번호 입력 (6자리)"
           className="w-full pr-[68px]"
         />
         <span

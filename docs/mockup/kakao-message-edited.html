@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KT 고객방문 예약변경 시스템</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #f0eee9; min-height: 100vh; font-family: 'Noto Sans KR', sans-serif; }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 4px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: none; } }
+@keyframes slideIn { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+
+
+const { useState, useEffect, useRef, useCallback } = React;
+
+/* ─── Brand tokens ─────────────────────────────────────── */
+const C = {
+  red: '#E60012', redD: '#c0000f', redL: '#fff0f0', redBorder: '#ffd0d0',
+  black: '#1a1a1a', g700: '#444', g500: '#888', g400: '#aaa',
+  g300: '#ccc', g200: '#e5e5e5', g100: '#f5f5f5', white: '#fff',
+  success: '#00a651', border: '#e0e0e0', warn: '#fffbf0', warnBorder: '#ffe0a0'
+};
+
+/* ─── Shared micro-components ──────────────────────────── */
+function KTLogo() {
+  return (
+    <svg width="44" height="22" viewBox="0 0 44 22">
+      <text x="1" y="19" fontFamily="'Noto Sans KR', Arial Black, sans-serif"
+      fontWeight="800" fontSize="20" fill={C.red} letterSpacing="-1">KT</text>
+    </svg>);
+
+}
+
+function BackArrow({ color = C.black }) {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <path d="M15 19l-7-7 7-7" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>);
+
+}
+
+function CheckIcon({ color = C.success }) {
+  return (
+    <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
+      <circle cx="36" cy="36" r="36" fill={color} fillOpacity="0.1" />
+      <circle cx="36" cy="36" r="26" fill={color} fillOpacity="0.18" />
+      <circle cx="36" cy="36" r="18" fill={color} />
+      <path d="M25 36l8 8 14-16" stroke="white" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>);
+
+}
+
+function AlertIcon() {
+  return (
+    <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
+      <circle cx="36" cy="36" r="36" fill={C.g200} />
+      <circle cx="36" cy="36" r="22" fill={C.g300} />
+      <rect x="33.5" y="22" width="5" height="18" rx="2.5" fill="white" />
+      <circle cx="36" cy="47" r="3" fill="white" />
+    </svg>);
+
+}
+
+function Spinner({ color = 'white', size = 20 }) {
+  return (
+    <span style={{
+      display: 'inline-block', width: size, height: size,
+      border: `2.5px solid ${color === 'white' ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.15)'}`,
+      borderTopColor: color,
+      borderRadius: '50%', animation: 'spin 0.7s linear infinite', verticalAlign: 'middle'
+    }} />);
+
+}
+
+function CSNote() {
+  return (
+    <div style={{ textAlign: 'center', padding: '10px 0 2px', fontSize: 12, color: C.g400 }}>
+      문의: KT 고객센터 <strong style={{ color: C.g500 }}>100</strong>
+    </div>);
+
+}
+
+function InfoRow({ label, value }) {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 11 }}>
+      <span style={{ fontSize: 13, color: C.g500, minWidth: 76, flexShrink: 0 }}>{label}</span>
+      <span style={{ fontSize: 14, color: C.black, fontWeight: 500, textAlign: 'right', lineHeight: 1.4 }}>{value}</span>
+    </div>);
+
+}
+
+function StepBar({ current, total }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 18 }}>
+      {Array.from({ length: total }).map((_, i) =>
+      <div key={i} style={{
+        height: 5, borderRadius: 3,
+        width: i < current ? 28 : 18,
+        backgroundColor: i < current ? C.red : C.g200,
+        transition: 'all 0.3s'
+      }} />
+      )}
+      <span style={{ marginLeft: 4, fontSize: 12, color: C.g500, fontWeight: 500 }}>{current}/{total} 단계</span>
+    </div>);
+
+}
+
+/* ─── Layout constants ─────────────────────────────────── */
+const screenStyle = {
+  width: '100%', height: '100%', display: 'flex', flexDirection: 'column',
+  backgroundColor: C.g100, fontFamily: "'Noto Sans KR', sans-serif",
+  overflow: 'hidden', position: 'relative'
+};
+const topBarStyle = {
+  height: 52, backgroundColor: C.white, display: 'flex',
+  alignItems: 'center', padding: '0 14px',
+  borderBottom: `1px solid ${C.border}`, flexShrink: 0, position: 'relative'
+};
+const scrollBodyStyle = {
+  flex: 1, overflowY: 'auto', padding: '18px 16px 96px', overflowX: 'hidden'
+};
+const cardStyle = {
+  backgroundColor: C.white, borderRadius: 12, padding: '16px',
+  marginBottom: 12, boxShadow: '0 2px 10px rgba(0,0,0,0.06)',
+  border: `1px solid ${C.border}`
+};
+const bottomFixedStyle = {
+  position: 'absolute', bottom: 0, left: 0, right: 0,
+  backgroundColor: C.white, padding: '10px 16px 16px',
+  borderTop: `1px solid ${C.border}`
+};
+const btnPrimary = {
+  height: 50, width: '100%', backgroundColor: C.red, color: C.white,
+  border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 700,
+  cursor: 'pointer', fontFamily: "'Noto Sans KR', sans-serif",
+  letterSpacing: '-0.3px', transition: 'opacity 0.15s'
+};
+const btnSecondary = {
+  height: 50, width: '100%', backgroundColor: C.white, color: C.red,
+  border: `1.5px solid ${C.red}`, borderRadius: 10, fontSize: 15, fontWeight: 700,
+  cursor: 'pointer', fontFamily: "'Noto Sans KR', sans-serif", letterSpacing: '-0.3px'
+};
+const btnDisabled = {
+  height: 50, width: '100%', backgroundColor: C.g300, color: C.white,
+  border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 600,
+  cursor: 'not-allowed', fontFamily: "'Noto Sans KR', sans-serif"
+};
+const inputStyle = {
+  width: '100%', height: 46, border: `1.5px solid ${C.border}`, borderRadius: 10,
+  padding: '0 14px', fontSize: 14, fontFamily: "'Noto Sans KR', sans-serif",
+  color: C.black, outline: 'none', backgroundColor: C.white
+};
+const inputReadonlyStyle = { ...inputStyle, backgroundColor: C.g100, color: C.g500 };
+
+/* ─── Screen 1: OTP ─────────────────────────────────────── */
+function Screen1({ onNext }) {
+  const [sent, setSent] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [timer, setTimer] = useState(180);
+  const [sendLoading, setSendLoading] = useState(false);
+  const [verifyLoading, setVerifyLoading] = useState(false);
+  const timerRef = useRef(null);
+
+  useEffect(() => {
+    if (sent && timer > 0) {
+      timerRef.current = setTimeout(() => setTimer((t) => t - 1), 1000);
+      return () => clearTimeout(timerRef.current);
+    }
+  }, [sent, timer]);
+
+  const mm = String(Math.floor(timer / 60)).padStart(2, '0');
+  const ss = String(timer % 60).padStart(2, '0');
+
+  const canVerify = sent && otp.length >= 4;
+
+  return (
+    <div style={screenStyle}>
+      {/* header */}
+      <div style={{ ...topBarStyle, justifyContent: 'center', flexDirection: 'column', height: 72, gap: 2 }}>
+        <KTLogo />
+      </div>
+
+      <div style={scrollBodyStyle}>
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ fontSize: 21, fontWeight: 700, color: C.black, marginBottom: 6 }}>본인인증</div>
+          <div style={{ fontSize: 14, color: C.g500, lineHeight: 1.65 }}>
+            예약 확인을 위해 본인인증이 필요합니다.
+          </div>
+        </div>
+
+        {/* 휴대폰 */}
+        <div style={{ marginBottom: 14 }}>
+          <div style={{ fontSize: 12, color: C.g500, marginBottom: 5, fontWeight: 500 }}>휴대폰 번호</div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <input style={{ ...inputReadonlyStyle, flex: 1 }} value="010-****-1234" readOnly />
+            <button
+              onClick={() => {setSendLoading(true);setTimeout(() => {setSendLoading(false);setSent(true);setTimer(180);setOtp('');}, 1200);}}
+              style={{ ...btnPrimary, width: 110, padding: 0, fontSize: 13, flexShrink: 0, opacity: sendLoading ? 0.7 : 1 }}>
+              
+              {sendLoading ? <Spinner /> : sent ? '재발송' : '인증번호 받기'}
+            </button>
+          </div>
+        </div>
+
+        {/* OTP field */}
+        {sent &&
+        <div style={{ marginBottom: 14, animation: 'fadeIn 0.3s' }}>
+            <div style={{ fontSize: 12, color: C.g500, marginBottom: 5, fontWeight: 500 }}>인증번호</div>
+            <div style={{ position: 'relative' }}>
+              <input
+              style={{ ...inputStyle, paddingRight: 68 }}
+              placeholder="인증번호 입력 (4~6자리)"
+              maxLength={6}
+              value={otp}
+              onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))} />
+            
+              <span style={{
+              position: 'absolute', right: 13, top: '50%', transform: 'translateY(-50%)',
+              fontSize: 14, fontWeight: 700, color: timer > 30 ? C.red : '#ff4400'
+            }}>{mm}:{ss}</span>
+            </div>
+            <div style={{ fontSize: 12, color: C.g400, marginTop: 5, lineHeight: 1.5 }}>
+              인증번호가 오지 않으면 재발송 버튼을 눌러주세요.
+            </div>
+          </div>
+        }
+
+        <CSNote />
+      </div>
+
+      <div style={bottomFixedStyle}>
+        <button
+          onClick={() => {if (!canVerify) return;setVerifyLoading(true);setTimeout(() => {setVerifyLoading(false);onNext();}, 1200);}}
+          style={canVerify ? { ...btnPrimary, opacity: verifyLoading ? 0.7 : 1 } : btnDisabled}>
+          
+          {verifyLoading ? <Spinner /> : '확인'}
+        </button>
+      </div>
+    </div>);
+
+}
+
+/* ─── Screen 2: 예약 확인 ───────────────────────────────── */
+function Screen2({ onConfirm, onChange }) {
+  const [loadC, setLoadC] = useState(false);
+  const [loadCh, setLoadCh] = useState(false);
+  return (
+    <div style={screenStyle}>
+      <div style={topBarStyle}>
+        <div style={{ width: 36 }} />
+        <span style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', fontSize: 16, fontWeight: 700, color: C.black }}>방문 예약 안내</span>
+      </div>
+
+      <div style={scrollBodyStyle}>
+        <div style={{ backgroundColor: C.redL, border: `1px solid ${C.redBorder}`, borderRadius: 12, padding: '14px 16px', marginBottom: 16 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: C.black, marginBottom: 4 }}>김민준 고객님, 안녕하세요.</div>
+          <div style={{ fontSize: 13, color: C.g700, lineHeight: 1.65 }}>내일 방문 예정인 작업을 확인해 주세요.</div>
+        </div>
+
+        <div style={cardStyle}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: C.black, marginBottom: 13, paddingBottom: 11, borderBottom: `1px solid ${C.g200}` }}>
+            방문 예약 정보
+          </div>
+          <InfoRow label="작업 종류" value="인터넷 개통" />
+          <InfoRow label="방문 예정일" value="2026년 4월 28일 (화)" />
+          <InfoRow label="방문 시간대" value="14:00 ~ 15:00" />
+          <InfoRow label="설치 주소" value="인천광역시 연수구 송도동 12-34, 101호" />
+          <InfoRow label="상품" value="KT 인터넷 에센스" />
+        </div>
+
+        <div style={{ fontSize: 12, color: C.g500, textAlign: 'center', marginBottom: 4 }}>
+          ⚠ 방문 1일 전까지 변경 가능합니다.
+        </div>
+        <CSNote />
+      </div>
+
+      <div style={{ ...bottomFixedStyle, display: 'flex', gap: 9 }}>
+        <button
+          onClick={() => {setLoadCh(true);setTimeout(() => {setLoadCh(false);onChange();}, 700);}}
+          style={{ ...btnSecondary, opacity: loadCh ? 0.7 : 1 }}>
+          
+          {loadCh ? <Spinner color={C.red} /> : '예약 변경'}
+        </button>
+        <button
+          onClick={() => {setLoadC(true);setTimeout(() => {setLoadC(false);onConfirm();}, 1000);}}
+          style={{ ...btnPrimary, opacity: loadC ? 0.7 : 1 }}>
+          
+          {loadC ? <Spinner /> : '예약 확정'}
+        </button>
+      </div>
+    </div>);
+
+}
+
+/* ─── Screen 3: 예약 확정 완료 ──────────────────────────── */
+function Screen3({ onClose }) {
+  return (
+    <div style={screenStyle}>
+      <div style={topBarStyle}>
+        <span style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', fontSize: 16, fontWeight: 700 }}>예약 확정</span>
+      </div>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 24px' }}>
+        <CheckIcon color={C.success} />
+        <div style={{ fontSize: 20, fontWeight: 700, color: C.black, marginTop: 18, marginBottom: 8 }}>예약이 확정되었습니다</div>
+        <div style={{ fontSize: 13, color: C.g500, textAlign: 'center', lineHeight: 1.7, marginBottom: 24 }}>
+          방문 당일 작업자 정보를<br />별도로 안내드립니다.
+        </div>
+        <div style={{ ...cardStyle, width: '100%', backgroundColor: C.g100, boxShadow: 'none' }}>
+          <InfoRow label="방문 예정일" value="2026년 4월 28일 (화)" />
+          <InfoRow label="방문 시간대" value="14:00 ~ 15:00" />
+          <InfoRow label="설치 주소" value="인천광역시 연수구 송도동 12-34" />
+        </div>
+      </div>
+      <div style={bottomFixedStyle}>
+        <button onClick={onClose} style={btnPrimary}>확인</button>
+      </div>
+    </div>);
+
+}
+
+/* ─── Screen 4: 날짜 선택 ───────────────────────────────── */
+const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토'];
+const UNAVAIL_DATES = [26, 27]; // April unavailable
+
+function Screen4({ onNext, onBack }) {
+  const [sel, setSel] = useState(null);
+  const [cm, setCm] = useState({ y: 2026, m: 4 });
+  const today = { y: 2026, m: 4, d: 24 };
+
+  const daysInMonth = new Date(cm.y, cm.m, 0).getDate();
+  const firstDay = new Date(cm.y, cm.m - 1, 1).getDay();
+
+  function isDisabled(d) {
+    if (cm.y < today.y || cm.y === today.y && cm.m < today.m) return true;
+    if (cm.y === today.y && cm.m === today.m && d <= today.d) return true;
+    if (cm.y > 2026 || cm.y === 2026 && cm.m > 5) return true;
+    if (cm.m === 4 && UNAVAIL_DATES.includes(d)) return true;
+    return false;
+  }
+
+  const isSel = (d) => sel && sel.d === d && sel.m === cm.m && sel.y === cm.y;
+
+  function prevMonth() {
+    setCm((m) => m.month === 1 ? { y: m.y - 1, m: 12 } : { ...m, m: m.m - 1 });
+  }
+  function nextMonth() {
+    setCm((m) => m.month === 12 ? { y: m.y + 1, m: 1 } : { ...m, m: m.m + 1 });
+  }
+
+  return (
+    <div style={screenStyle}>
+      <div style={topBarStyle}>
+        <div style={{ cursor: 'pointer', padding: 6 }} onClick={onBack}><BackArrow /></div>
+        <span style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', fontSize: 16, fontWeight: 700 }}>예약 변경</span>
+      </div>
+
+      <div style={scrollBodyStyle}>
+        <StepBar current={1} total={2} />
+        <div style={{ fontSize: 15, fontWeight: 600, color: C.black, marginBottom: 16 }}>변경하실 날짜를 선택해 주세요.</div>
+
+        <div style={cardStyle}>
+          {/* Month nav */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+            <button onClick={prevMonth} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px 10px', borderRadius: 8, color: C.black }}>
+              <BackArrow />
+            </button>
+            <span style={{ fontSize: 16, fontWeight: 700 }}>{cm.y}년 {cm.m}월</span>
+            <button onClick={nextMonth} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px 10px', borderRadius: 8, transform: 'scaleX(-1)' }}>
+              <BackArrow />
+            </button>
+          </div>
+
+          {/* Day headers */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', marginBottom: 6 }}>
+            {DAY_NAMES.map((d, i) =>
+            <div key={d} style={{ textAlign: 'center', fontSize: 12, fontWeight: 600, padding: '4px 0',
+              color: i === 0 ? C.red : i === 6 ? '#2060cc' : C.g500 }}>{d}</div>
+            )}
+          </div>
+
+          {/* Cells */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)' }}>
+            {Array.from({ length: firstDay }).map((_, i) => <div key={'e' + i} style={{ height: 38 }} />)}
+            {Array.from({ length: daysInMonth }).map((_, i) => {
+              const d = i + 1;
+              const dis = isDisabled(d);
+              const selected = isSel(d);
+              const col = (firstDay + i) % 7;
+              const textColor = selected ? C.white : dis ? C.g300 : col === 0 ? C.red : col === 6 ? '#2060cc' : C.black;
+              return (
+                <div key={d} onClick={() => !dis && setSel({ y: cm.y, m: cm.m, d })}
+                style={{
+                  height: 38, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  borderRadius: '50%', fontSize: 14,
+                  backgroundColor: selected ? C.red : 'transparent',
+                  color: textColor, fontWeight: selected ? 700 : 400,
+                  cursor: dis ? 'not-allowed' : 'pointer',
+                  transition: 'background 0.15s'
+                }}>
+                  {d}
+                </div>);
+
+            })}
+          </div>
+        </div>
+
+        {sel &&
+        <div style={{ fontSize: 13, color: C.g700, textAlign: 'center', marginTop: 4, fontWeight: 500 }}>
+            선택: <span style={{ color: C.red, fontWeight: 700 }}>{sel.y}년 {sel.m}월 {sel.d}일 ({DAY_NAMES[new Date(sel.y, sel.m - 1, sel.d).getDay()]})</span>
+          </div>
+        }
+      </div>
+
+      <div style={bottomFixedStyle}>
+        <button onClick={() => sel && onNext(sel)} style={sel ? btnPrimary : btnDisabled} disabled={!sel}>
+          다음
+        </button>
+      </div>
+    </div>);
+
+}
+
+/* ─── Screen 5: 시간대 선택 ─────────────────────────────── */
+const TIME_SLOTS = [
+{ label: '09:00 ~ 10:00', avail: true },
+{ label: '10:00 ~ 11:00', avail: true },
+{ label: '11:00 ~ 12:00', avail: false },
+{ label: '12:00 ~ 13:00', avail: true },
+{ label: '13:00 ~ 14:00', avail: false },
+{ label: '14:00 ~ 15:00', avail: true },
+{ label: '15:00 ~ 16:00', avail: true },
+{ label: '16:00 ~ 17:00', avail: false }];
+
+
+function Screen5({ selDate, onNext, onBack }) {
+  const [selTime, setSelTime] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const dow = selDate ? DAY_NAMES[new Date(selDate.y, selDate.m - 1, selDate.d).getDay()] : '';
+
+  return (
+    <div style={screenStyle}>
+      <div style={topBarStyle}>
+        <div style={{ cursor: 'pointer', padding: 6 }} onClick={onBack}><BackArrow /></div>
+        <span style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', fontSize: 16, fontWeight: 700 }}>예약 변경</span>
+      </div>
+
+      <div style={scrollBodyStyle}>
+        <StepBar current={2} total={2} />
+
+        {selDate &&
+        <div style={{ backgroundColor: C.redL, border: `1px solid ${C.redBorder}`, borderRadius: 10, padding: '10px 14px', marginBottom: 14, fontSize: 14, fontWeight: 600, color: C.black }}>
+            {selDate.y}년 {selDate.m}월 {selDate.d}일 ({dow})
+          </div>
+        }
+
+        <div style={{ fontSize: 15, fontWeight: 600, color: C.black, marginBottom: 14 }}>원하시는 시간대를 선택해 주세요.</div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 9, marginBottom: 12 }}>
+          {TIME_SLOTS.map((slot) => {
+            const sel = selTime === slot.label;
+            return (
+              <button key={slot.label} onClick={() => slot.avail && setSelTime(slot.label)}
+              style={{
+                height: 56, borderRadius: 10, fontSize: 13, fontWeight: sel ? 700 : 500,
+                border: sel ? 'none' : `1.5px solid ${slot.avail ? C.border : C.g200}`,
+                backgroundColor: sel ? C.red : slot.avail ? C.white : C.g100,
+                color: sel ? C.white : slot.avail ? C.black : C.g400,
+                cursor: slot.avail ? 'pointer' : 'not-allowed',
+                fontFamily: "'Noto Sans KR', sans-serif",
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3,
+                transition: 'all 0.15s'
+              }}>
+                <span>{slot.label}</span>
+                {!slot.avail && <span style={{ fontSize: 11, color: C.g400 }}>마감</span>}
+              </button>);
+
+          })}
+        </div>
+        <CSNote />
+      </div>
+
+      <div style={bottomFixedStyle}>
+        <button
+          onClick={() => {if (!selTime) return;setLoading(true);setTimeout(() => {setLoading(false);onNext(selTime);}, 1000);}}
+          style={selTime ? { ...btnPrimary, opacity: loading ? 0.7 : 1 } : btnDisabled}
+          disabled={!selTime}>
+          
+          {loading ? <Spinner /> : '예약 변경하기'}
+        </button>
+      </div>
+    </div>);
+
+}
+
+/* ─── Screen 6: 변경 완료 ───────────────────────────────── */
+function Screen6({ selDate, selTime, onClose }) {
+  const dow = selDate ? DAY_NAMES[new Date(selDate.y, selDate.m - 1, selDate.d).getDay()] : '';
+  return (
+    <div style={screenStyle}>
+      <div style={topBarStyle}>
+        <span style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', fontSize: 16, fontWeight: 700 }}>예약 변경 완료</span>
+      </div>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 24px' }}>
+        <CheckIcon color={C.red} />
+        <div style={{ fontSize: 20, fontWeight: 700, color: C.black, marginTop: 18, marginBottom: 20 }}>예약이 변경되었습니다</div>
+
+        <div style={{ ...cardStyle, width: '100%' }}>
+          <div style={{ marginBottom: 12 }}>
+            <div style={{ fontSize: 11, color: C.g400, marginBottom: 5, fontWeight: 600, letterSpacing: '0.5px' }}>변경 전</div>
+            <div style={{ fontSize: 14, color: C.g400, textDecoration: 'line-through' }}>4월 28일 (화) &nbsp; 14:00 ~ 15:00</div>
+          </div>
+          <div style={{ height: 1, backgroundColor: C.g200, margin: '0 0 12px' }} />
+          <div>
+            <div style={{ fontSize: 11, color: C.red, marginBottom: 5, fontWeight: 700, letterSpacing: '0.5px' }}>변경 후</div>
+            <div style={{ fontSize: 15, color: C.black, fontWeight: 700 }}>
+              {selDate ? `${selDate.m}월 ${selDate.d}일 (${dow})` : '4월 30일 (목)'} &nbsp; {selTime || '10:00 ~ 11:00'}
+            </div>
+          </div>
+        </div>
+
+        <div style={{ fontSize: 13, color: C.g500, textAlign: 'center', lineHeight: 1.7, marginTop: 4 }}>
+          변경된 예약 내용은<br />카카오톡으로 다시 안내드립니다.
+        </div>
+        <CSNote />
+      </div>
+      <div style={bottomFixedStyle}>
+        <button onClick={onClose} style={btnPrimary}>확인</button>
+      </div>
+    </div>);
+
+}
+
+/* ─── Screen 7: 당일 방문 안내 ──────────────────────────── */
+function WorkerPhotoPlaceholder({ variant }) {
+  // variant: 'id' (vertical 3:4 증명사진) or 'card' (horizontal 명함 5:3)
+  const isId = variant === 'id';
+  const w = isId ? 96 : 168;
+  const h = isId ? 124 : 100;
+  return (
+    <div style={{
+      width: w, height: h, flexShrink: 0,
+      borderRadius: isId ? 8 : 10,
+      background: `repeating-linear-gradient(135deg, ${C.g100}, ${C.g100} 8px, ${C.white} 8px, ${C.white} 16px)`,
+      border: `1px solid ${C.g200}`,
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      gap: 6, position: 'relative', overflow: 'hidden'
+    }}>
+      <svg width={isId ? 36 : 32} height={isId ? 36 : 32} viewBox="0 0 36 36" fill="none">
+        <circle cx="18" cy="13" r="6.5" fill={C.g300} />
+        <path d="M4 33c0-7.732 6.268-14 14-14s14 6.268 14 14" stroke={C.g300} strokeWidth="2.4" fill="none" strokeLinecap="round" />
+      </svg>
+      <span style={{ fontFamily: 'ui-monospace, Menlo, monospace', fontSize: 9, color: C.g400, letterSpacing: '0.3px' }}>
+        {isId ? 'ID PHOTO' : 'BUSINESS CARD'}
+      </span>
+      <span style={{ fontFamily: 'ui-monospace, Menlo, monospace', fontSize: 8.5, color: C.g400 }}>
+        {isId ? '3:4' : '5:3'}
+      </span>
+    </div>);
+
+}
+
+function Screen7({ photoVariant = 'id' }) {
+  const isId = photoVariant === 'id';
+  return (
+    <div style={screenStyle}>
+      <div style={{ ...topBarStyle, justifyContent: 'center' }}>
+        <span style={{ fontSize: 16, fontWeight: 700, color: C.black }}>오늘의 방문 안내</span>
+      </div>
+      <div style={scrollBodyStyle}>
+        <div style={{ backgroundColor: C.redL, border: `1px solid ${C.redBorder}`, borderRadius: 12, padding: '14px 16px', marginBottom: 14 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: C.black }}>김민준 고객님, 엔지니어가 오늘 방문 예정입니다.</div>
+        </div>
+
+        <div style={cardStyle}>
+          <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12, paddingBottom: 10, borderBottom: `1px solid ${C.g200}` }}>방문 작업자 정보</div>
+
+          {isId ?
+          // 증명사진형: 세로 사진 + 옆에 정보
+          <div style={{ display: 'flex', gap: 14 }}>
+              <WorkerPhotoPlaceholder variant="id" />
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', minWidth: 0 }}>
+                <div style={{ fontSize: 11, color: 'rgb(160, 160, 160)', fontWeight: 600, letterSpacing: '0.5px', marginBottom: 4 }}>방문 직원</div>
+                <div style={{ fontSize: 18, fontWeight: 700, color: C.black, marginBottom: 6 }}>박한별</div>
+                <div style={{ fontSize: 13, color: C.g700, fontWeight: 500 }}>010-2212-4097</div>
+              </div>
+            </div> :
+
+          // 명함형: 가로 사진(상단) + 정보(하단)
+          <div style={{
+            padding: '14px',
+            backgroundColor: C.g100, borderRadius: 12,
+            border: `1px solid ${C.g200}`,
+            display: 'flex', flexDirection: 'column', gap: 12
+          }}>
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <WorkerPhotoPlaceholder variant="card" />
+              </div>
+              <div style={{ paddingTop: 10, borderTop: `1px solid ${C.g200}` }}>
+                <div style={{ fontSize: 11, color: 'rgb(160, 160, 160)', fontWeight: 700, letterSpacing: '0.5px', marginBottom: 4 }}>방문 직원</div>
+                <div style={{ fontSize: 17, fontWeight: 700, color: C.black, marginBottom: 4 }}>박한별</div>
+                <div style={{ fontSize: 13, color: C.g700, fontWeight: 500 }}>010-2212-4097</div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <div style={cardStyle}>
+          <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12, paddingBottom: 10, borderBottom: `1px solid ${C.g200}` }}>방문 예약 정보</div>
+          <InfoRow label="작업 종류" value="인터넷 개통" />
+          <InfoRow label="방문 예정일" value="2026년 4월 28일 (화)" />
+          <InfoRow label="방문 시간대" value="14:00 ~ 15:00" />
+          <InfoRow label="설치 주소" value="인천광역시 연수구 송도동 12-34, 101호" />
+          <InfoRow label="상품" value="KT 인터넷 에센스" />
+        </div>
+
+        <div style={{ fontSize: 13, color: C.g700, backgroundColor: C.warn, border: `1px solid ${C.warnBorder}`, borderRadius: 8, padding: '10px 12px', lineHeight: 1.6, marginBottom: 4 }}>
+          ⚠ 당일 방문 건은 예약 변경이 불가합니다.
+        </div>
+        <CSNote />
+      </div>
+    </div>);
+
+}
+
+function Screen7Wrap({ initial = 'id' }) {
+  return <Screen7 photoVariant={initial} />;
+}
+
+/* ─── Error Screens ─────────────────────────────────────── */
+function ErrScreen({ title, desc, extra, onBack }) {
+  return (
+    <div style={screenStyle}>
+      <div style={topBarStyle}>
+        {onBack && <div style={{ cursor: 'pointer', padding: 6 }} onClick={onBack}><BackArrow /></div>}
+        <span style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', fontSize: 16, fontWeight: 700 }}>안내</span>
+      </div>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 28px' }}>
+        <AlertIcon />
+        <div style={{ fontSize: 17, fontWeight: 700, color: C.black, marginTop: 18, marginBottom: 10, textAlign: 'center', lineHeight: 1.5 }}>{title}</div>
+        <div style={{ fontSize: 13, color: C.g500, textAlign: 'center', lineHeight: 1.75 }}>{desc}</div>
+        {extra && <div style={{ fontSize: 12, color: C.g400, textAlign: 'center', lineHeight: 1.75, marginTop: 8 }}>{extra}</div>}
+        <CSNote />
+      </div>
+      {onBack &&
+      <div style={bottomFixedStyle}>
+          <button onClick={onBack} style={btnPrimary}>돌아가기</button>
+        </div>
+      }
+    </div>);
+
+}
+
+/* ─── KAKAO_REPLACED ───────────────────────────────────── */
+function KakaoScreen_UNUSED({ onConfirm, onChange, onDetail }) {
+  const [tapped, setTapped] = useState(null);
+
+  function handleBtn(type) {
+    setTapped(type);
+    setTimeout(() => {
+      if (type === 'confirm') onConfirm();else
+      if (type === 'change') onChange();else
+      onDetail();
+    }, 300);
+  }
+
+  return (
+    <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', backgroundColor: '#b2c7d9', fontFamily: "'Noto Sans KR', sans-serif", overflow: 'hidden' }}>
+      {/* KakaoTalk top bar */}
+      <div style={{ backgroundColor: '#b2c7d9', padding: '10px 16px 8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M13 10l-5-4v8l5-4z" fill="#1a1a1a" opacity="0.6" />
+          </svg>
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: '#1a1a1a', display: 'flex', alignItems: 'center', gap: 4 }}>
+              KT 고객서비스
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="7" fill="#3A8EE6" /><path d="M4 7l2 2 4-4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </div>
+            <div style={{ fontSize: 11, color: 'rgba(0,0,0,0.5)' }}>100</div>
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: 16 }}>
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="10" cy="10" r="7" stroke="#1a1a1a" strokeWidth="1.8" opacity="0.6" /><path d="M15.5 15.5l3 3" stroke="#1a1a1a" strokeWidth="1.8" strokeLinecap="round" opacity="0.6" /></svg>
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 6h14M4 11h14M4 16h14" stroke="#1a1a1a" strokeWidth="1.8" strokeLinecap="round" opacity="0.6" /></svg>
+        </div>
+      </div>
+
+      {/* Channel add bar */}
+      <div style={{ backgroundColor: 'rgba(255,255,255,0.3)', display: 'flex', padding: '7px 16px', gap: 0, flexShrink: 0 }}>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontSize: 13, color: 'rgba(0,0,0,0.55)', fontWeight: 500 }}>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="rgba(0,0,0,0.4)" strokeWidth="1.3" /><path d="M8 5v6M5 8h6" stroke="rgba(0,0,0,0.4)" strokeWidth="1.3" strokeLinecap="round" /></svg>
+          채널 추가
+        </div>
+        <div style={{ width: 1, backgroundColor: 'rgba(0,0,0,0.15)' }} />
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontSize: 13, color: 'rgba(0,0,0,0.55)', fontWeight: 500 }}>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="rgba(0,0,0,0.4)" strokeWidth="1.3" /><path d="M6 8h4M8 6l2 2-2 2" stroke="rgba(0,0,0,0.4)" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          알림톡 차단
+        </div>
+      </div>
+
+      {/* Chat body */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '12px 14px 16px' }}>
+        {/* Timestamp */}
+        <div style={{ textAlign: 'center', marginBottom: 10 }}>
+          <span style={{ fontSize: 11, color: 'rgba(0,0,0,0.4)', backgroundColor: 'rgba(0,0,0,0.08)', borderRadius: 10, padding: '3px 10px' }}>오전 9:06</span>
+        </div>
+
+        {/* Bot avatar + bubble */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+          {/* Avatar */}
+          <div style={{ width: 36, height: 36, borderRadius: '50%', backgroundColor: C.red, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 2 }}>
+            <span style={{ fontSize: 12, fontWeight: 800, color: 'white' }}>KT</span>
+          </div>
+
+          <div style={{ maxWidth: 'calc(100% - 52px)' }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: 'rgba(0,0,0,0.7)', marginBottom: 4 }}>KT 고객서비스</div>
+
+            {/* Message bubble */}
+            <div style={{ backgroundColor: '#FEE500', borderRadius: '0 12px 12px 12px', overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.12)' }}>
+              {/* 알림톡 badge */}
+              <div style={{ backgroundColor: '#F5D800', padding: '6px 14px', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="7" fill="rgba(0,0,0,0.15)" /><path d="M4 7l2 2 4-4" stroke="rgba(0,0,0,0.5)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                <span style={{ fontSize: 12, fontWeight: 700, color: 'rgba(0,0,0,0.55)' }}>알림톡 도착</span>
+              </div>
+
+              {/* Message body */}
+              <div style={{ padding: '12px 14px 14px', fontSize: 13, color: '#1a1a1a', lineHeight: 1.7 }}>
+                <div style={{ marginBottom: 10 }}>
+                  [KT 방문 예약 안내]
+                </div>
+                <div style={{ marginBottom: 10 }}>
+                  김민준 고객님 안녕하십니까?<br />
+                  고객님의 <strong>인터넷 개통</strong> 방문 예약이<br />
+                  <strong>4월 28일(화)</strong>로 접수되었습니다.
+                </div>
+                <div style={{ marginBottom: 10, fontSize: 12.5 }}>
+                  ▶작업 종류 : 인터넷 개통<br />
+                  ▶작업접수번호 : WO-2026-04-001234<br />
+                  ▶방문 주소 : 인천광역시 연수구 송도동
+                </div>
+                <div style={{ fontSize: 12, color: 'rgba(0,0,0,0.6)', lineHeight: 1.65 }}>
+                  방문일 변경을 희망하시면 아래 링크를 통해 변경 부탁드립니다.<br />
+                  ※ 방문 1일 전까지 변경 가능합니다.
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div style={{ height: 1, backgroundColor: 'rgba(0,0,0,0.1)', margin: '0 14px' }} />
+
+              {/* Buttons */}
+              {[
+              { label: '예 (방문일 확정)', type: 'confirm' },
+              { label: '아니요 (방문일 변경)', type: 'change' },
+              { label: '방문 예약 상세', type: 'detail' }].
+              map((btn, i, arr) =>
+              <div key={btn.type}>
+                  <button
+                  onClick={() => handleBtn(btn.type)}
+                  style={{
+                    width: '100%', height: 44, border: 'none',
+                    backgroundColor: tapped === btn.type ? 'rgba(0,0,0,0.1)' : 'transparent',
+                    fontSize: 13.5, fontWeight: 600, color: '#3a1c00',
+                    cursor: 'pointer', fontFamily: "'Noto Sans KR', sans-serif",
+                    transition: 'background 0.15s'
+                  }}>
+                  {btn.label}</button>
+                  {i < arr.length - 1 && <div style={{ height: 1, backgroundColor: 'rgba(0,0,0,0.1)', margin: '0 14px' }} />}
+                </div>
+              )}
+            </div>
+
+            <div style={{ fontSize: 11, color: 'rgba(0,0,0,0.4)', marginTop: 4, paddingLeft: 2 }}>오전 9:06</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom input bar */}
+      <div style={{ backgroundColor: '#b2c7d9', padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 10, borderTop: '1px solid rgba(0,0,0,0.1)', flexShrink: 0 }}>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="rgba(0,0,0,0.5)" strokeWidth="2" strokeLinecap="round" /></svg>
+        <div style={{ flex: 1, height: 36, backgroundColor: 'white', borderRadius: 18, padding: '0 14px', display: 'flex', alignItems: 'center' }}>
+          <span style={{ fontSize: 13, color: 'rgba(0,0,0,0.3)' }}>메시지를 입력하세요</span>
+        </div>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="rgba(0,0,0,0.2)" /><path d="M8 12l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+      </div>
+      <div style={{ height: 20, backgroundColor: '#b2c7d9' }} />
+    </div>);
+
+}
+
+/* ─── KakaoTalk Shell (공통 래퍼) ───────────────────────── */
+function KakaoShell({ time = '오전 9:06', msgBody, buttons }) {
+  const [tapped, setTapped] = useState(null);
+  function handleBtn(key, cb) {setTapped(key);setTimeout(() => {setTapped(null);cb && cb();}, 280);}
+  return (
+    <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', backgroundColor: '#b2c7d9', fontFamily: "'Noto Sans KR', sans-serif", overflow: 'hidden' }}>
+      <div style={{ backgroundColor: '#b2c7d9', padding: '10px 16px 8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M13 10l-5-4v8l5-4z" fill="#1a1a1a" opacity="0.6" /></svg>
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: '#1a1a1a', display: 'flex', alignItems: 'center', gap: 4 }}>
+              KT 고객서비스
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="7" fill="#3A8EE6" /><path d="M4 7l2 2 4-4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </div>
+            <div style={{ fontSize: 11, color: 'rgba(0,0,0,0.5)' }}>100</div>
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: 16 }}>
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="10" cy="10" r="7" stroke="#1a1a1a" strokeWidth="1.8" opacity="0.6" /><path d="M15.5 15.5l3 3" stroke="#1a1a1a" strokeWidth="1.8" strokeLinecap="round" opacity="0.6" /></svg>
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 6h14M4 11h14M4 16h14" stroke="#1a1a1a" strokeWidth="1.8" strokeLinecap="round" opacity="0.6" /></svg>
+        </div>
+      </div>
+      <div style={{ backgroundColor: 'rgba(255,255,255,0.3)', display: 'flex', padding: '7px 16px', flexShrink: 0 }}>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontSize: 12, color: 'rgba(0,0,0,0.55)', fontWeight: 500 }}>
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="rgba(0,0,0,0.4)" strokeWidth="1.3" /><path d="M8 5v6M5 8h6" stroke="rgba(0,0,0,0.4)" strokeWidth="1.3" strokeLinecap="round" /></svg>채널 추가
+        </div>
+        <div style={{ width: 1, backgroundColor: 'rgba(0,0,0,0.15)' }} />
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontSize: 12, color: 'rgba(0,0,0,0.55)', fontWeight: 500 }}>
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="rgba(0,0,0,0.4)" strokeWidth="1.3" /><path d="M6 8h4M8 6l2 2-2 2" stroke="rgba(0,0,0,0.4)" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>알림톡 차단
+        </div>
+      </div>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '12px 12px 14px' }}>
+        <div style={{ textAlign: 'center', marginBottom: 10 }}>
+          <span style={{ fontSize: 11, color: 'rgba(0,0,0,0.4)', backgroundColor: 'rgba(0,0,0,0.08)', borderRadius: 10, padding: '3px 9px' }}>{time}</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+          <div style={{ width: 36, height: 36, borderRadius: '50%', backgroundColor: C.red, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 2 }}>
+            <span style={{ fontSize: 12, fontWeight: 800, color: 'white' }}>KT</span>
+          </div>
+          <div style={{ maxWidth: 'calc(100% - 50px)' }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: 'rgba(0,0,0,0.65)', marginBottom: 4 }}>KT 고객서비스</div>
+            <div style={{ backgroundColor: '#FEE500', borderRadius: '0 12px 12px 12px', overflow: 'hidden', boxShadow: '0 1px 5px rgba(0,0,0,0.13)' }}>
+              <div style={{ backgroundColor: '#F5D800', padding: '5px 13px', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="7" fill="rgba(0,0,0,0.15)" /><path d="M4 7l2 2 4-4" stroke="rgba(0,0,0,0.5)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(0,0,0,0.5)' }}>알림톡 도착</span>
+              </div>
+              <div style={{ padding: '12px 13px', fontSize: 12.5, color: '#1a1a1a', lineHeight: 1.75 }}>{msgBody}</div>
+            </div>
+            {buttons.length > 0 &&
+            <div style={{ marginTop: 6, backgroundColor: '#ffffff', borderRadius: 10, overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.08)', border: '1px solid rgba(0,0,0,0.06)' }}>
+                {buttons.map((btn, i) =>
+              <div key={btn.key}>
+                    <button onClick={() => handleBtn(btn.key, btn.cb)}
+                style={{ width: '100%', height: 42, border: 'none', backgroundColor: tapped === btn.key ? '#f0f0f0' : '#ffffff', fontSize: 13, fontWeight: 500, color: '#444', cursor: 'pointer', fontFamily: "'Noto Sans KR', sans-serif", transition: 'background 0.15s', letterSpacing: '-0.2px' }}>
+                      {btn.label}
+                    </button>
+                    {i < buttons.length - 1 && <div style={{ height: 1, backgroundColor: 'rgba(0,0,0,0.06)', margin: '0 14px' }} />}
+                  </div>
+              )}
+              </div>
+            }
+            <div style={{ fontSize: 11, color: 'rgba(0,0,0,0.38)', marginTop: 4, paddingLeft: 2 }}>{time}</div>
+          </div>
+        </div>
+      </div>
+      <div style={{ backgroundColor: '#b2c7d9', padding: '7px 11px', display: 'flex', alignItems: 'center', gap: 9, borderTop: '1px solid rgba(0,0,0,0.1)', flexShrink: 0 }}>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="rgba(0,0,0,0.45)" strokeWidth="2" strokeLinecap="round" /></svg>
+        <div style={{ flex: 1, height: 34, backgroundColor: 'white', borderRadius: 17, padding: '0 13px', display: 'flex', alignItems: 'center' }}>
+          <span style={{ fontSize: 13, color: 'rgba(0,0,0,0.28)' }}>메시지를 입력하세요</span>
+        </div>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="rgba(0,0,0,0.18)" /><path d="M8 12l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+      </div>
+      <div style={{ height: 16, backgroundColor: '#b2c7d9' }} />
+    </div>);
+
+}
+
+/* ─── 사전 알림톡 (정보 추가) ─────────────────────── */
+function KakaoPreB({ onConfirm, onChange, onDetail }) {
+  return <KakaoShell msgBody={
+  <React.Fragment>
+      <div style={{ fontWeight: 700, marginBottom: 8 }}>[KT안내] 개통 방문 사전 안내</div>
+      <div style={{ marginBottom: 9 }}>안녕하세요. 고객님, KT입니다.<br />내일 KT와의 약속 잊지 않으셨죠?</div>
+      <div style={{ marginBottom: 9 }}>KT 인터넷 에센스를 선택해 주셔서 감사드리며,<br />서비스 개통을 위해 내일 엔지니어가 방문할 예정입니다.</div>
+      <div style={{ marginBottom: 4 }}>■ 방문일시: 4월 28일 14:00~15:00</div>
+      <div style={{ marginBottom: 4 }}>■ 설치주소: 인천 연수구 송도동 12-34</div>
+      <div style={{ marginBottom: 9 }}>■ 접수번호: WO-2026-04-001234</div>
+      <div style={{ fontSize: 12, color: 'rgba(0,0,0,0.6)', lineHeight: 1.65, marginBottom: 6 }}>
+        엔지니어 방문 예약을 확정하시겠습니까?
+      </div>
+      <div style={{ fontSize: 11.5, color: 'rgba(0,0,0,0.45)' }}>[KT 고객센터] : 100</div>
+    </React.Fragment>
+  } buttons={[
+  { key: 'confirm', label: '예 (예약 확정)', cb: onConfirm },
+  { key: 'change', label: '아니오 (예약 변경)', cb: onChange }]
+  } />;
+}
+
+/* ─── 화면 B: 당일 방문 알림톡 ─────────────────────────── */
+function KakaoToday({ onCall, onDetail }) {
+  const subColor = 'rgba(0,0,0,0.6)';
+  const dividerStyle = { height: 1, backgroundColor: 'rgba(0,0,0,0.1)', margin: '10px 0' };
+  return <KakaoShell time="오전 8:30" msgBody={
+  <React.Fragment>
+      <div style={{ fontWeight: 700, marginBottom: 6 }}>[KT서비스] 개통 방문 안내</div>
+      <div style={{ fontSize: 11, color: 'rgba(0,0,0,0.45)', marginBottom: 8 }}>[Web발신]</div>
+
+      <div style={{ marginBottom: 9 }}>안녕하세요. 고객님.</div>
+      <div style={{ marginBottom: 9, lineHeight: 1.7 }}>
+        KT서비스를 선택해 주셔서 감사드리며,<br />
+        고객님과의 소중한 첫 만남을 위해<br />금일 찾아뵐 예정입니다.
+      </div>
+
+      <div style={{ fontWeight: 700, fontSize: 12, marginBottom: 5 }}>[고객님의 개통 방문직원]</div>
+      <div style={{ marginBottom: 3 }}>■ 방문일시 : 11월 18일 17:00~18:00</div>
+      <div style={{ marginBottom: 3 }}>■ 방문직원 : 박한별</div>
+      <div style={{ marginBottom: 3 }}>■ 연락처 : 010-2212-4097</div>
+      <div style={{ marginBottom: 3 }}>■ 작업 소요시간 : 약 40분</div>
+      <div style={{ fontSize: 11, color: subColor, marginLeft: 11, marginBottom: 4 }}>(상품 및 댁내 환경에 따라 달라질 수 있습니다.)</div>
+
+      <div style={dividerStyle} />
+
+      <div style={{ fontWeight: 700, fontSize: 12, marginBottom: 6 }}>[인터넷 장애 시 해결 방안]</div>
+      <div style={{ marginBottom: 6, lineHeight: 1.65 }}>
+        ■ 인터넷이 안돼요.<br />
+        <span style={{ color: subColor, fontSize: 11.5 }}>&nbsp;&nbsp;- 인터넷 랜케이블이 연결되어 있는지 확인해 주세요.</span>
+      </div>
+      <div style={{ marginBottom: 6, lineHeight: 1.65 }}>
+        ■ 인터넷이 자주 끊겨요.<br />
+        <span style={{ color: subColor, fontSize: 11.5 }}>&nbsp;&nbsp;- 모뎀/공유기 뒷면에서 전원버튼을 껐다 켜주세요.</span>
+      </div>
+      <div style={{ marginBottom: 6, lineHeight: 1.65 }}>
+        ■ 인터넷 속도가 갑자기 느려졌어요.<br />
+        <span style={{ color: subColor, fontSize: 11.5 }}>&nbsp;&nbsp;- 인터넷 속도를 측정해보세요. 결과가 정상으로 나올 경우 컴퓨터 바이러스가 원인일 수 있습니다. PC를 점검해주세요.</span>
+      </div>
+      <div style={{ fontSize: 11.5, color: subColor, marginBottom: 4, lineHeight: 1.65 }}>
+        ▶ 인터넷 속도측정 방법<br />
+        <span style={{ color: 'rgba(0,0,0,0.5)' }}>&nbsp;&nbsp;케이티닷컴 접속 &gt; 고객지원 &gt; 서비스 이용안내 &gt; 인터넷 속도측정</span>
+      </div>
+      <div style={{ fontSize: 11.5, color: subColor, marginBottom: 4, lineHeight: 1.65 }}>
+        ▶ KT 인터넷 Q&amp;A 궁금타파 동영상<br />
+        <span style={{ color: '#1565C0' }}>&nbsp;&nbsp;https://kt.com/xe0t</span>
+      </div>
+
+      <div style={dividerStyle} />
+
+      <div style={{ fontWeight: 700, fontSize: 12, marginBottom: 6 }}>[TV 장애시 해결방법]</div>
+      <div style={{ marginBottom: 4, lineHeight: 1.65 }}>■ 셋톱박스 전원을 껐다 켜주세요.</div>
+      <div style={{ marginBottom: 4, lineHeight: 1.65 }}>■ 셋톱박스에 연결된 랜케이블을 확인해주세요.</div>
+      <div style={{ marginBottom: 4, lineHeight: 1.65 }}>
+        ■ 리모컨 작동이 안될 경우,<br />
+        <span style={{ color: subColor, fontSize: 11.5 }}>&nbsp;&nbsp;리모컨 'TV 전원' 버튼과 '확인' 버튼을 약 3초간 동시에 눌러 주세요.</span>
+      </div>
+
+      <div style={dividerStyle} />
+
+      <div style={{ marginBottom: 6 }}>감사합니다.</div>
+      <div style={{ marginBottom: 8, fontWeight: 600 }}>- 박한별 드림 -</div>
+      <div style={{ fontSize: 11.5, color: subColor }}>☎ 문의전화 : 고객센터 100</div>
+      <div style={{ fontSize: 11, color: 'rgba(0,0,0,0.45)', marginTop: 6 }}>[KT, 당신과_미래 사이에]</div>
+    </React.Fragment>
+  } buttons={[
+  { key: 'call', label: '엔지니어 상세정보', cb: onCall }]
+  } />;
+}
+
+/* ─── App Flow ──────────────────────────────────────────── */
+function KTApp({ initScreen = 'kakao' }) {
+  const [screen, setScreen] = useState(initScreen);
+  const [selDate, setSelDate] = useState(null);
+  const [selTime, setSelTime] = useState(null);
+
+  const go = (s) => setScreen(s);
+
+  const screens = {
+    kakaoB: <KakaoPreB onConfirm={() => go('confirmed')} onChange={() => go('otp_change')} onDetail={() => go('confirmed')} />,
+    kakaoToday: <KakaoToday onCall={() => go('today')} onDetail={() => go('today')} />,
+    kakao: <KakaoPreB onConfirm={() => go('confirmed')} onChange={() => go('otp_change')} onDetail={() => go('confirmed')} />,
+    otp_confirm: <Screen1 onNext={() => go('confirmed')} />,
+    otp_change: <Screen1 onNext={() => go('datepick')} />,
+    otp: <Screen1 onNext={() => go('confirm')} />,
+    confirm: <Screen2 onConfirm={() => go('confirmed')} onChange={() => go('datepick')} />,
+    confirmed: <Screen3 onClose={() => go('confirm')} />,
+    datepick: <Screen4 onNext={(d) => {setSelDate(d);go('timepick');}} onBack={() => go('confirm')} />,
+    timepick: <Screen5 selDate={selDate} onNext={(t) => {setSelTime(t);go('changedone');}} onBack={() => go('datepick')} />,
+    changedone: <Screen6 selDate={selDate} selTime={selTime} onClose={() => go('confirm')} />,
+    today: <Screen7Wrap initial="id" />,
+    today_card: <Screen7Wrap initial="card" />,
+    err1: <ErrScreen title="예약 정보를 확인할 수 없습니다" desc={'현재 예약 정보를 확인할 수 없습니다.\n자세한 사항은 고객센터로 문의해 주세요.'} />,
+    err2: <ErrScreen title="선택하신 시간대가 마감되었습니다" desc="현재 예약 정보를 확인할 수 없습니다. 자세한 사항은 고객센터로 문의해 주세요." onBack={() => go('timepick')} />,
+    err3: <ErrScreen title="온라인 예약 변경 불가" desc="원스톱 서비스는 웹에서 예약 변경이 불가합니다." extra="고객센터로 문의해 주세요." />,
+    err4: <ErrScreen title="당일 예약 변경 불가" desc="방문 당일에는 예약 변경이 불가합니다." extra="고객센터로 문의해 주세요." onBack={() => go('confirm')} />
+  };
+
+  return (
+    <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}>
+      <div key={screen} style={{ width: '100%', height: '100%', animation: 'slideIn 0.2s ease' }}>
+        {screens[screen]}
+      </div>
+    </div>);
+
+}
+
+/* ─── Phone Frame ───────────────────────────────────────── */
+function PhoneFrame({ children, label }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+      {/* Frame */}
+      <div style={{
+        width: 375, height: 780, borderRadius: 44,
+        background: '#1a1a1a',
+        boxShadow: '0 30px 70px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.06) inset',
+        padding: 8, position: 'relative', flexShrink: 0
+      }}>
+        {/* Screen */}
+        <div style={{
+          width: '100%', height: '100%', borderRadius: 36,
+          overflow: 'hidden', backgroundColor: C.g100, position: 'relative'
+        }}>
+          {/* Status bar */}
+          <div style={{
+            position: 'absolute', top: 0, left: 0, right: 0, zIndex: 100,
+            height: 44, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '0 20px 0 24px'
+          }}>
+            <span style={{ fontSize: 14, fontWeight: 700, color: C.black, fontFamily: 'system-ui' }}>9:41</span>
+            <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+              <svg width="17" height="11" viewBox="0 0 17 11" fill="none">
+                {[0, 1, 2, 3].map((i) =>
+                <rect key={i} x={i * 4.5} y={10 - (i + 1) * 2.5} width="3.5" height={(i + 1) * 2.5} rx="0.8" fill="#1a1a1a" />
+                )}
+              </svg>
+              <svg width="16" height="11" viewBox="0 0 16 11" fill="none">
+                <path d="M8 2.5C10 2.5 11.8 3.3 13.1 4.6L14 3.7C12.4 2.1 10.3 1 8 1S3.6 2.1 2 3.7l.9.9C4.2 3.3 6 2.5 8 2.5z" fill="#1a1a1a" />
+                <path d="M8 5.5C9.2 5.5 10.3 6 11.1 6.8L12 5.9C10.9 4.8 9.5 4.2 8 4.2S5.1 4.8 4 5.9l.9.9C5.7 6 6.8 5.5 8 5.5z" fill="#1a1a1a" />
+                <circle cx="8" cy="9.5" r="1.5" fill="#1a1a1a" />
+              </svg>
+              <svg width="26" height="13" viewBox="0 0 26 13" fill="none">
+                <rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="#1a1a1a" strokeOpacity="0.3" fill="none" />
+                <rect x="2" y="2" width="18" height="9" rx="2" fill="#1a1a1a" />
+                <path d="M24 4.5V8.5C24.8 8.2 25.5 7.2 25.5 6.5C25.5 5.8 24.8 4.8 24 4.5Z" fill="#1a1a1a" fillOpacity="0.35" />
+              </svg>
+            </div>
+          </div>
+          {/* Dynamic island */}
+          <div style={{
+            position: 'absolute', top: 10, left: '50%', transform: 'translateX(-50%)',
+            width: 120, height: 34, borderRadius: 20,
+            background: '#000', zIndex: 110
+          }} />
+          {/* Content (offset for status bar) */}
+          <div style={{ paddingTop: 44, height: '100%' }}>
+            {children}
+          </div>
+          {/* Home indicator */}
+          <div style={{
+            position: 'absolute', bottom: 8, left: '50%', transform: 'translateX(-50%)',
+            width: 130, height: 5, borderRadius: 3, background: 'rgba(0,0,0,0.22)', zIndex: 200
+          }} />
+        </div>
+      </div>
+    </div>);
+
+}
+
+/* ─── Design Canvas Layout ─────────────────────────────── */
+const SCREENS = [
+{ id: 'kakaoB', label: '00  알림톡 사전 방문 안내' },
+{ id: 'otp', label: '01  OTP 인증' },
+{ id: 'confirm', label: '02  예약 확인' },
+{ id: 'confirmed', label: '03  예약 확정 완료' },
+{ id: 'datepick', label: '04  날짜 선택' },
+{ id: 'timepick', label: '05  시간대 선택' },
+{ id: 'changedone', label: '06  변경 완료' },
+{ id: 'kakaoToday', label: '00C  알림톡 당일 방문' },
+{ id: 'today', label: '07A  당일 방문 안내 (증명사진형)' },
+{ id: 'today_card', label: '07B  당일 방문 안내 (명함형)' }];
+
+const ERR_SCREENS = [
+{ id: 'err1', label: '에러 1  진입 불가' },
+{ id: 'err2', label: '에러 2  예약 가용 없음' },
+{ id: 'err3', label: '에러 3  원스톱 불가' },
+{ id: 'err4', label: '에러 4  당일 변경 불가' }];
+
+
+const dcStyles = {
+  canvas: {
+    minHeight: '100vh', backgroundColor: '#f0eee9',
+    backgroundImage: 'radial-gradient(circle, rgba(0,0,0,0.06) 1px, transparent 1px)',
+    backgroundSize: '24px 24px',
+    padding: '48px 48px 80px',
+    overflowX: 'auto'
+  },
+  sectionTitle: {
+    fontSize: 13, fontWeight: 600, color: 'rgba(60,50,40,0.55)',
+    textTransform: 'uppercase', letterSpacing: '1.5px',
+    marginBottom: 20, marginLeft: 2
+  },
+  phoneLabel: {
+    fontSize: 12, fontWeight: 600, color: 'rgba(60,50,40,0.6)',
+    textAlign: 'center', letterSpacing: '0.5px'
+  },
+  row: {
+    display: 'flex', gap: 32, marginBottom: 60, flexWrap: 'wrap'
+  }
+};
+
+function App() {
+  const allScreens = [...SCREENS, ...ERR_SCREENS];
+  const [exportIdx, setExportIdx] = useState(-1);
+
+  // Expose global nav for PPTX capture
+  useEffect(() => {
+    window._ktExportSlide = (n) => setExportIdx(n);
+    window._ktExportReset = () => setExportIdx(-1);
+  }, []);
+
+  if (exportIdx >= 0 && exportIdx < allScreens.length) {
+    const s = allScreens[exportIdx];
+    return (
+      <div id="export-slide" style={{
+        width: 1920, height: 1080, backgroundColor: '#f0eee9',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        backgroundImage: 'radial-gradient(circle, rgba(0,0,0,0.06) 1px, transparent 1px)',
+        backgroundSize: '24px 24px', position: 'relative'
+      }}>
+        <div style={{ position: 'absolute', top: 40, left: 60, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <KTLogo />
+          <span style={{ fontSize: 16, fontWeight: 700, color: '#2a1a0a', opacity: 0.6 }}>고객방문 예약변경 시스템</span>
+        </div>
+        <div style={{ position: 'absolute', bottom: 40, left: 60, fontSize: 14, fontWeight: 600, color: 'rgba(60,50,40,0.5)', letterSpacing: '1px' }}>
+          {s.label}
+        </div>
+        <PhoneFrame>
+          <KTApp initScreen={s.id} />
+        </PhoneFrame>
+      </div>);
+
+  }
+
+  return (
+    <div style={dcStyles.canvas}>
+      <div style={{ marginBottom: 32, display: 'flex', alignItems: 'center', gap: 14 }}>
+        <KTLogo />
+        <div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: '#2a1a0a' }}>고객방문 예약변경 시스템</div>
+          <div style={{ fontSize: 12, color: 'rgba(60,50,40,0.5)', marginTop: 2 }}>Mobile Webview · 375px · KT Brand</div>
+        </div>
+      </div>
+
+      {/* Main screens */}
+      <div style={{ marginBottom: 8 }}>
+        <div style={dcStyles.sectionTitle}>메인 화면 흐름</div>
+        <div style={dcStyles.row}>
+          {SCREENS.map((s) =>
+          <div key={s.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+              <PhoneFrame>
+                <KTApp initScreen={s.id} />
+              </PhoneFrame>
+              <div style={dcStyles.phoneLabel}>{s.label}</div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Error screens */}
+      <div>
+        <div style={dcStyles.sectionTitle}>에러 / 예외 화면</div>
+        <div style={dcStyles.row}>
+          {ERR_SCREENS.map((s) =>
+          <div key={s.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+              <PhoneFrame>
+                <KTApp initScreen={s.id} />
+              </PhoneFrame>
+              <div style={dcStyles.phoneLabel}>{s.label}</div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>);
+
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script>
+</body>
+</html>

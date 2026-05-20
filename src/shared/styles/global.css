@@ -54,3 +54,34 @@ html, body, #root {
   margin: 0;
   font-family: var(--font-sans);
 }
+
+/* 데스크탑에서 480px 모바일 프레임이 가운데 떠 보이도록 외곽 톤 */
+body {
+  background-color: var(--color-kt-gray-200);
+}
+
+/* 모바일 웹뷰 안정화 — 페이지 흔들림 방지 */
+html {
+  /* iOS 가로 회전 시 자동 텍스트 확대 차단 */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* 모달 open/close 시 스크롤바 여닫혀도 가로폭 고정 */
+  scrollbar-gutter: stable;
+  /* iOS 바운스 + pull-to-refresh 차단 */
+  overscroll-behavior: none;
+}
+
+body {
+  overscroll-behavior: none;
+  /* 탭 시 회색 박스 깜빡임 제거 */
+  -webkit-tap-highlight-color: transparent;
+  /* 길게 누름 시 콜아웃(복사·공유 메뉴) 차단 */
+  -webkit-touch-callout: none;
+  /* 더블탭 줌 차단 → 탭 응답 지연 0 */
+  touch-action: manipulation;
+}
+
+button, a, [role="button"] {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}

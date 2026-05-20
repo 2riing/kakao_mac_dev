@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
+import type { Location } from "react-router";
 import { useKakaoEntryParams } from "@shared/hooks/useKakaoEntryParams";
 import { useAuthStore, useOtpTimer, useMaskedCustPhone } from "@entities/auth";
 import KTLogo from "@shared/ui/KTLogo";
@@ -12,6 +13,7 @@ import { PhoneRequestRow, OtpField } from "@components/auth";
 
 function LoginOtpPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { wrkRcpNo } = useKakaoEntryParams();
   const setAuthenticated = useAuthStore((s) => s.setAuthenticated);
 
@@ -40,8 +42,22 @@ function LoginOtpPage() {
     setVerifyLoading(true);
     setTimeout(() => {
       setVerifyLoading(false);
-      setAuthenticated(wrkRcpNo ?? "MOCK-WRK-RCP-NO");
-      navigate("/reservation");
+
+      const from = (location.state as { from?: Location } | null)?.from;
+
+      // mock 인증 — from URL path에서 wrkRcpNo 추출해 store에 저장
+      // 진짜 백엔드 정합 시점에 verifyOtp 응답으로 교체 예정
+      const fromMatch = from?.pathname.match(
+        /^\/order\/(?:reservation|today)\/([^/]+)/,
+      );
+      const wrkForAuth = fromMatch?.[1] ?? wrkRcpNo ?? "1O2026050712345";
+      setAuthenticated(wrkForAuth);
+
+      if (from) {
+        navigate(from.pathname + from.search, { replace: true });
+      } else {
+        navigate("/error", { replace: true });
+      }
     }, 1200);
   }
 

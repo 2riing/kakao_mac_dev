@@ -31,6 +31,10 @@ export const ERROR_PAGE_MESSAGES: Record<
     title: "오류가 발생했습니다",
     desc: "잠시 후 다시 시도해 주세요.",
   },
+  INVALID_ENTRY: {
+    title: "비정상적인 접근입니다",
+    desc: "잘못된 경로로 진입했습니다.\n카카오톡 알림에서 다시 시도해 주세요.",
+  },
 } as const;
 
 export type ErrorCode = keyof typeof ERROR_PAGE_MESSAGES;

@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router";
+import { Navigate, useNavigate, useLocation } from "react-router";
 import type { Location } from "react-router";
-import { useKakaoEntryParams } from "@shared/hooks/useKakaoEntryParams";
 import { useAuthStore, useOtpTimer, useMaskedCustPhone } from "@entities/auth";
 import KTLogo from "@shared/ui/KTLogo";
 import Spinner from "@shared/ui/Spinner";
@@ -11,19 +10,34 @@ import BottomFixedBar from "@shared/ui/BottomFixedBar";
 import PrimaryButton from "@shared/ui/PrimaryButton";
 import { PhoneRequestRow, OtpField } from "@components/auth";
 
+// AuthGuard가 박은 state.from URL에서 wrkRcpNo 추출.
+// /order/reservation/:wrkRcpNo/... 또는 /order/today/:wrkRcpNo/... 패턴.
+function extractWrkRcpNoFromPath(pathname: string): string | null {
+  const m = pathname.match(/^\/order\/(?:reservation|today)\/([^/]+)/);
+  return m?.[1] ?? null;
+}
+
 function LoginOtpPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { wrkRcpNo } = useKakaoEntryParams();
   const setAuthenticated = useAuthStore((s) => s.setAuthenticated);
 
-  const { data: maskedPhone = "" } = useMaskedCustPhone(wrkRcpNo ?? null);
+  // 진입 컨텍스트 — AuthGuard 경유 진입만 허용
+  const from = (location.state as { from?: Location } | null)?.from ?? null;
+  const entryWrkRcpNo = from ? extractWrkRcpNoFromPath(from.pathname) : null;
 
+  // hooks (early return 전 일관 호출)
+  const { data: maskedPhone = "" } = useMaskedCustPhone(entryWrkRcpNo);
   const [sent, setSent] = useState(false);
   const [otp, setOtp] = useState("");
   const [sendLoading, setSendLoading] = useState(false);
   const [verifyLoading, setVerifyLoading] = useState(false);
   const { timer, start: startTimer } = useOtpTimer(180);
+
+  // 가드 — 정상 카카오 진입이 아니면 차단
+  if (!from || !entryWrkRcpNo) {
+    return <Navigate to="/error" state={{ code: "INVALID_ENTRY" }} replace />;
+  }
 
   const canVerify = sent && otp.length >= 4;
 
@@ -42,22 +56,9 @@ function LoginOtpPage() {
     setVerifyLoading(true);
     setTimeout(() => {
       setVerifyLoading(false);
-
-      const from = (location.state as { from?: Location } | null)?.from;
-
-      // mock 인증 — from URL path에서 wrkRcpNo 추출해 store에 저장
-      // 진짜 백엔드 정합 시점에 verifyOtp 응답으로 교체 예정
-      const fromMatch = from?.pathname.match(
-        /^\/order\/(?:reservation|today)\/([^/]+)/,
-      );
-      const wrkForAuth = fromMatch?.[1] ?? wrkRcpNo ?? "1O2026050712345";
-      setAuthenticated(wrkForAuth);
-
-      if (from) {
-        navigate(from.pathname + from.search, { replace: true });
-      } else {
-        navigate("/error", { replace: true });
-      }
+      // mock 인증 — 진짜 백엔드 정합 시점에 verifyOtp 응답으로 교체 예정
+      setAuthenticated(entryWrkRcpNo!);
+      navigate(from!.pathname + from!.search, { replace: true });
     }, 1200);
   }
 

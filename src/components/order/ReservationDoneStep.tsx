@@ -1,3 +1,4 @@
+import { DAY_NAMES_KO } from "@shared/lib/calendar";
 import CheckIcon from "@shared/ui/CheckIcon";
 import CSNote from "@shared/ui/CSNote";
 
@@ -7,8 +8,6 @@ interface ReservationDoneStepProps {
   newDate: string;       // "YYYY-MM-DD"
   newTime: string;       // "HH:00"
 }
-
-const DAY_NAMES = ["일", "월", "화", "수", "목", "금", "토"] as const;
 
 function pad2(n: number): string {
   return String(n).padStart(2, "0");
@@ -21,7 +20,7 @@ function ReservationDoneStep({
   newTime,
 }: ReservationDoneStepProps) {
   const [y, m, d] = newDate.split("-").map(Number);
-  const dow = DAY_NAMES[new Date(y, m - 1, d).getDay()];
+  const dow = DAY_NAMES_KO[new Date(y, m - 1, d).getDay()];
   const [h] = newTime.split(":").map(Number);
   const newTimeRange = `${newTime} ~ ${pad2(h + 1)}:00`;
 

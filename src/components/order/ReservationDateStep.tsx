@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { useAvailability } from "@entities/order";
+import {
+  RESERVATION_CHANGE_WINDOW_DAYS,
+  useAvailability,
+} from "@entities/order";
+import { DAY_NAMES_KO } from "@shared/lib/calendar";
 import BackArrow from "@shared/ui/BackArrow";
 import BottomFixedBar from "@shared/ui/BottomFixedBar";
 import PrimaryButton from "@shared/ui/PrimaryButton";
@@ -10,9 +14,6 @@ interface ReservationDateStepProps {
   onNext: (rsrvDate: string) => void;
   onBack: () => void;
 }
-
-const DAY_NAMES = ["일", "월", "화", "수", "목", "금", "토"] as const;
-const WINDOW_DAYS = 14;
 
 function pad2(n: number): string {
   return String(n).padStart(2, "0");
@@ -38,7 +39,7 @@ function addDays(
 
 function ReservationDateStep({ wrkRcpNo, onNext, onBack }: ReservationDateStepProps) {
   const today = todayLocal();
-  const windowEnd = addDays(today, WINDOW_DAYS);
+  const windowEnd = addDays(today, RESERVATION_CHANGE_WINDOW_DAYS);
   const fromYmd = toYmd(today.y, today.m, today.d);
   const toYmdStr = toYmd(windowEnd.y, windowEnd.m, windowEnd.d);
 
@@ -86,7 +87,7 @@ function ReservationDateStep({ wrkRcpNo, onNext, onBack }: ReservationDateStepPr
   }
 
   const selDow =
-    sel !== null ? DAY_NAMES[new Date(sel.y, sel.m - 1, sel.d).getDay()] : "";
+    sel !== null ? DAY_NAMES_KO[new Date(sel.y, sel.m - 1, sel.d).getDay()] : "";
 
   return (
     <>
@@ -123,7 +124,7 @@ function ReservationDateStep({ wrkRcpNo, onNext, onBack }: ReservationDateStepPr
           </div>
 
           <div className="grid grid-cols-7 mb-1.5">
-            {DAY_NAMES.map((d, i) => (
+            {DAY_NAMES_KO.map((d, i) => (
               <div
                 key={d}
                 className={`text-center text-xs font-semibold py-1 ${

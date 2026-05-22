@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAvailability, useChangeReservation } from "@entities/order";
+import { DAY_NAMES_KO } from "@shared/lib/calendar";
 import BackArrow from "@shared/ui/BackArrow";
 import BottomFixedBar from "@shared/ui/BottomFixedBar";
 import CSNote from "@shared/ui/CSNote";
@@ -25,8 +26,6 @@ const TIME_SLOTS = [
   "16:00",
   "17:00",
 ] as const;
-
-const DAY_NAMES = ["일", "월", "화", "수", "목", "금", "토"] as const;
 
 function pad2(n: number): string {
   return String(n).padStart(2, "0");
@@ -73,7 +72,7 @@ function ReservationTimeStep({
   }
 
   const [y, m, d] = selDate.split("-").map(Number);
-  const dow = DAY_NAMES[new Date(y, m - 1, d).getDay()];
+  const dow = DAY_NAMES_KO[new Date(y, m - 1, d).getDay()];
 
   function handleSubmit() {
     if (!selTime) return;

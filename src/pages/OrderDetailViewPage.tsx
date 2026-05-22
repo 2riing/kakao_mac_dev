@@ -1,12 +1,18 @@
-import { useState } from "react";
-import { useLocation, useParams } from "react-router";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router";
+import { useReservation } from "@entities/order";
 import {
   ReservationDateStep,
   ReservationDoneStep,
+  ReservationInfoCard,
   ReservationTimeStep,
 } from "@components/order";
 import { DAY_NAMES_KO } from "@shared/lib/calendar";
+import BottomFixedBar from "@shared/ui/BottomFixedBar";
+import CSNote from "@shared/ui/CSNote";
+import PrimaryButton from "@shared/ui/PrimaryButton";
 import ScreenContainer from "@shared/ui/ScreenContainer";
+import Spinner from "@shared/ui/Spinner";
 
 type Step = "view" | "date" | "time" | "done";
 
@@ -38,12 +44,24 @@ function OrderDetailViewPage() {
     reservationDate: string;
   }>();
   const location = useLocation();
+  const navigate = useNavigate();
 
   // 카카오 [예약 변경] 알림톡 진입 시 변경 흐름 직진
   const isChangeEntry = location.pathname.endsWith("/change");
   const [step, setStep] = useState<Step>(isChangeEntry ? "date" : "view");
   const [selDate, setSelDate] = useState<string | null>(null);
   const [selTime, setSelTime] = useState<string | null>(null);
+
+  const reservationQuery = useReservation(wrkRcpNo ?? null);
+
+  useEffect(() => {
+    if (step === "view" && reservationQuery.isError) {
+      navigate("/error", {
+        replace: true,
+        state: { code: "ORDER_INVALID" },
+      });
+    }
+  }, [step, reservationQuery.isError, navigate]);
 
   if (!wrkRcpNo || !reservationDate) {
     return (
@@ -61,22 +79,43 @@ function OrderDetailViewPage() {
   return (
     <ScreenContainer>
       {step === "view" && (
-        <main className="p-4 flex-1">
-          <h1 className="text-xl font-bold mb-4">
-            예약 확인 (Screen 2 placeholder)
-          </h1>
-          <p className="text-kt-gray-500 mb-1">wrkRcpNo: {wrkRcpNo}</p>
-          <p className="text-kt-gray-500 mb-4">
-            reservationDate: {reservationDate}
-          </p>
-          <button
-            type="button"
-            className="px-4 py-2 bg-kt-red text-white rounded"
-            onClick={() => setStep("date")}
-          >
-            예약 변경
-          </button>
-        </main>
+        <>
+          <div className="h-[52px] bg-white flex items-center justify-center border-b border-kt-border shrink-0">
+            <span className="text-[16px] font-bold text-kt-ink">
+              방문 예약 안내
+            </span>
+          </div>
+
+          <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 pt-4 pb-[100px]">
+            <div className="bg-kt-red-light border border-kt-red-border rounded-[12px] px-4 py-3.5 mb-4">
+              <div className="text-[13px] text-kt-gray-700 leading-[1.65]">
+                예정된 방문 작업을 확인해 주세요.
+              </div>
+            </div>
+
+            {reservationQuery.isLoading || !reservationQuery.data ? (
+              <div className="flex items-center justify-center py-10">
+                <Spinner color="red" size="lg" />
+              </div>
+            ) : (
+              <ReservationInfoCard
+                reservation={reservationQuery.data}
+                variant="detailed"
+              />
+            )}
+
+            <div className="text-[12px] text-kt-gray-500 text-center mt-4 mb-1">
+              ⚠ 방문 1일 전까지 변경 가능합니다.
+            </div>
+            <CSNote />
+          </div>
+
+          <BottomFixedBar>
+            <PrimaryButton onClick={() => setStep("date")}>
+              예약 변경
+            </PrimaryButton>
+          </BottomFixedBar>
+        </>
       )}
 
       {step === "date" && (

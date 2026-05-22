@@ -120,20 +120,9 @@ function ReservationConfirmPage() {
       </div>
 
       <BottomFixedBar>
-        <div className="flex gap-2.5">
-          <button
-            type="button"
-            onClick={() => navigate("/login")}
-            className="flex-1 h-[50px] rounded-[10px] bg-white border border-kt-red text-kt-red text-[15px] font-bold tracking-[-0.3px]"
-          >
-            예약 변경
-          </button>
-          <div className="flex-1">
-            <PrimaryButton onClick={() => setDialogOpen(true)}>
-              예약 확정
-            </PrimaryButton>
-          </div>
-        </div>
+        <PrimaryButton onClick={() => setDialogOpen(true)}>
+          예약 확정
+        </PrimaryButton>
       </BottomFixedBar>
 
       <ConfirmDialog

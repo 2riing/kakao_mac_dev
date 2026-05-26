@@ -177,7 +177,7 @@ function UnresolvedScreen({ onBack }: { onBack: () => void }) {
       <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 pt-5 pb-4">
         <div className="text-center mt-2 mb-[22px]">
           <div className="text-[19px] font-extrabold text-kt-ink mb-2 tracking-[-0.5px]">
-            고객센터 전화 상담
+            고객센터 상담
           </div>
           <div className="text-[13.5px] text-kt-gray-500 leading-[1.7] tracking-[-0.2px]">
             전문 상담원이 직접 도와드릴게요.<br />
@@ -208,7 +208,10 @@ function UnresolvedScreen({ onBack }: { onBack: () => void }) {
                 KT 고객센터 <span className="text-kt-red">100</span>
               </div>
               <div className="text-[12px] text-kt-gray-500 mt-0.5">
-                평일 09:00 ~ 18:00 · 수신자 부담 없이 통화 가능
+                평일 09:00 ~ 18:00
+              </div>
+              <div className="text-[12px] text-kt-gray-500 mt-0.5">
+                (점심시간 12:00 ~ 13:00)
               </div>
             </div>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">

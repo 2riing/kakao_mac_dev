@@ -18,7 +18,7 @@ export const HELP_DATA: Record<ProductKey, HelpProduct> = {
     key: "internet",
     label: "인터넷",
     intro:
-      "인터넷이 평소와 다르신가요? 가장 많이 묻는 질문부터 함께 살펴볼게요.",
+      "인터넷이 평소와 다르신가요?",
     steps: [
       {
         id: "i1",
@@ -61,19 +61,19 @@ export const HELP_DATA: Record<ProductKey, HelpProduct> = {
   tv: {
     key: "tv",
     label: "TV",
-    intro: "TV 시청에 어려움이 있으신가요? 자주 묻는 질문을 함께 살펴볼게요.",
+    intro: "TV 시청에 어려움이 있으신가요?",
     steps: [
       {
         id: "t1",
         title: "TV 화면이 안나와요.",
         description:
-          "셋톱박스의 전원을 한 번 껐다 켜보시고, 연결된 케이블이 헐겁지 않은지도 함께 살펴봐 주세요.",
+          "셋톱박스의 전원을 껐다 켜주세요. 추가로, 셋톱박스의 랜케이블이 잘 연결되어 있는지 확인해주세요.",
       },
       {
         id: "t2",
         title: "채널 이동이나 서비스 이용이 안돼요.",
         description:
-          "셋톱박스를 재부팅해 보신 뒤 1~2분 정도 기다린 후 다시 시도해 주세요. 정상으로 돌아오는 경우가 많습니다.",
+          "셋톱박스를 전원을 껐다 켜고 1~2분 후 다시 시도해 주세요.",
       },
       {
         id: "t3",
@@ -81,24 +81,18 @@ export const HELP_DATA: Record<ProductKey, HelpProduct> = {
         description:
           "리모컨의 [TV 전원]과 [확인] 버튼을 3초간 동시에 눌러 재설정해 보세요. 페어링 문제로 인한 작동 불량이 해소될 수 있습니다.",
       },
-      {
-        id: "t4",
-        title: "영화/TV 다시보기를 무료로 이용할 수 있나요?",
-        description:
-          "콘텐츠 결제 화면에서 TV포인트를 선택하시면 무료로 이용하실 수 있어요. 회원가입은 890번 채널에서 진행하실 수 있습니다.",
-      },
     ],
   },
   phone: {
     key: "phone",
     label: "전화",
-    intro: "전화 연결에 어려움이 있으신가요? 몇 가지 확인부터 함께 해볼게요.",
+    intro: "전화 연결에 어려움이 있으신가요?",
     steps: [
       {
         id: "p1",
         title: "집전화가 안돼요.",
         description:
-          "전화기 플러그와 전화선이 양쪽 모두 정상적으로 꽂혀 있는지 먼저 확인해 주세요. 헐겁게 꽂혀 있는 경우에 발생할 수 있습니다.",
+          "전화기 플러그와 전화선이 양쪽 모두 정상적으로 꽂혀 있는지 확인해 주세요.",
       },
       {
         id: "p2",

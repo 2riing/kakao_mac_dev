@@ -5,7 +5,6 @@ import PrimaryButton from "@shared/ui/PrimaryButton";
 import SecondaryButton from "@shared/ui/SecondaryButton";
 import TabStrip from "@shared/ui/TabStrip";
 import CheckIcon from "@shared/ui/CheckIcon";
-import AlertIcon from "@shared/ui/AlertIcon";
 import CSNote from "@shared/ui/CSNote";
 import { HELP_DATA, PRODUCT_TABS, type ProductKey, type HelpStep } from "./HelpPage.data";
 
@@ -28,23 +27,13 @@ function HelpPage() {
     <ScreenContainer>
       <TopBar title="조치방법 안내" />
 
-      <div className="px-4 pt-[18px] pb-[14px] bg-white">
-        <div className="text-[20px] font-extrabold text-kt-ink tracking-[-0.6px] mb-1.5">
-          어떤 도움이 필요하세요?
-        </div>
-        <div className="text-[13.5px] text-kt-gray-500 leading-[1.55] tracking-[-0.2px]">
-          이용 중인 서비스를 선택하시면, 자주 발생하는 문제와 해결 방법을
-          안내해 드려요.
-        </div>
-      </div>
-
       <TabStrip<ProductKey>
         value={product}
         options={PRODUCT_TABS}
         onChange={setProduct}
       />
 
-      <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 pt-4 pb-[156px]">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 pt-4 pb-4">
         <div className="flex items-center gap-2.5 bg-kt-red-light border border-kt-red-border rounded-[10px] px-[13px] py-[11px] mb-3.5">
           <ProductIcon kind={product} />
           <span className="text-[13px] text-kt-ink font-medium leading-[1.5] tracking-[-0.2px]">
@@ -149,7 +138,7 @@ function ResolvedScreen({ onBack }: { onBack: () => void }) {
   return (
     <ScreenContainer>
       <TopBar title="해결 완료" />
-      <div className="flex-1 flex flex-col items-center justify-center px-7 pb-20 text-center">
+      <div className="flex-1 flex flex-col items-center justify-center px-7 text-center">
         <CheckIcon />
         <div className="text-[21px] font-extrabold text-kt-ink mt-[18px] mb-2.5 tracking-[-0.5px]">
           도움이 되셨다니 다행이에요
@@ -185,11 +174,10 @@ function UnresolvedScreen({ onBack }: { onBack: () => void }) {
   return (
     <ScreenContainer>
       <TopBar title="상담 신청" />
-      <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 pt-5 pb-[156px]">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 pt-5 pb-4">
         <div className="text-center mt-2 mb-[22px]">
-          <AlertIcon />
-          <div className="text-[19px] font-extrabold text-kt-ink mt-4 mb-2 tracking-[-0.5px]">
-            도움이 더 필요하시군요
+          <div className="text-[19px] font-extrabold text-kt-ink mb-2 tracking-[-0.5px]">
+            고객센터 전화 상담
           </div>
           <div className="text-[13.5px] text-kt-gray-500 leading-[1.7] tracking-[-0.2px]">
             전문 상담원이 직접 도와드릴게요.<br />
@@ -259,14 +247,24 @@ function UnresolvedScreen({ onBack }: { onBack: () => void }) {
                 전문 기사 방문
               </div>
               <div className="text-[16px] font-extrabold text-kt-ink tracking-[-0.3px]">
-                방문 점검 신청하기
+                A/S 방문 점검 신청하기
               </div>
               <div className="text-[12px] text-kt-gray-500 mt-0.5">
-                원하시는 날짜와 시간을 선택하실 수 있어요
+                KT 서비스/장비와 관계없는 고객님 댁내 사유로 인한 출동인 경우 출동비가 부과될 수 있습니다.
               </div>
             </div>
           </div>
-          <PrimaryButton>방문 신청하기</PrimaryButton>
+          <PrimaryButton
+            onClick={() => {
+              window.open(
+                "https://help.kt.com/asreq/HomeAsReqStatus.do",
+                "_blank",
+                "noopener,noreferrer",
+              );
+            }}
+          >
+            방문 신청하기
+          </PrimaryButton>
         </div>
 
         <div className="bg-white border border-kt-border rounded-[12px] px-4 py-3.5">

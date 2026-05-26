@@ -94,6 +94,16 @@ function StepCard({
       <div className="text-[13px] text-kt-gray-700 leading-[1.65] tracking-[-0.2px] pl-[26px]">
         {step.description}
       </div>
+      {step.link && (
+        <a
+          href={step.link.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block mt-2 ml-[26px] text-[13px] font-semibold text-kt-red tracking-[-0.2px] underline underline-offset-2 active:opacity-70"
+        >
+          {step.link.label}
+        </a>
+      )}
     </div>
   );
 }

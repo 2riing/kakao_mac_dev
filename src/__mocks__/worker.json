@@ -1,6 +1,28 @@
 {
-  "spotWrkUserId": "KT12345",
-  "spotWrkUserNm": "김기사",
-  "spotWrkUserHpNo": "010-1234-5678",
-  "spotWrkUserPic": ""
+  "candidates": [
+    {
+      "spotWrkUserId": "82273967",
+      "spotWrkUserNm": "박한별",
+      "spotWrkUserHpNo": "010-2212-4097",
+      "spotWrkUserPic": "https://picsum.photos/seed/worker1/300/400"
+    },
+    {
+      "spotWrkUserId": "82273968",
+      "spotWrkUserNm": "김기사",
+      "spotWrkUserHpNo": "010-1234-5678",
+      "spotWrkUserPic": "https://picsum.photos/seed/worker2/500/300"
+    },
+    {
+      "spotWrkUserId": "82273969",
+      "spotWrkUserNm": "이엔지니어",
+      "spotWrkUserHpNo": "010-9999-9999",
+      "spotWrkUserPic": "https://picsum.photos/seed/worker3/360/360"
+    },
+    {
+      "spotWrkUserId": "82273970",
+      "spotWrkUserNm": "최작업",
+      "spotWrkUserHpNo": "010-5555-1234",
+      "spotWrkUserPic": ""
+    }
+  ]
 }

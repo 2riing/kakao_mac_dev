@@ -25,7 +25,7 @@ const mockRules: MockRule[] = [
   { method: "GET",  pattern: /\/auth\/phonenum\/[^/]+$/,              data: () => pickRandom(custphoneMock.candidates) },
   // order
   { method: "GET",  pattern: /\/order\/status\/[^/]+/,                data: orderMock },
-  { method: "GET",  pattern: /\/order\/worker\/[^/]+$/,               data: workerMock },
+  { method: "GET",  pattern: /\/order\/worker\/[^/]+$/,               data: () => pickRandom(workerMock.candidates) },
   // reservation
   { method: "GET",  pattern: /\/reservations\/[^/]+\/availability/,   data: availabilityMock },
   { method: "GET",  pattern: /\/reservations\/[^/]+$/,                data: () => pickRandom(reservationMock.candidates) },

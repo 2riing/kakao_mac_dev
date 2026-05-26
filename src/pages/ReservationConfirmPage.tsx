@@ -104,7 +104,7 @@ function ReservationConfirmPage() {
         <span className="text-[16px] font-bold text-kt-ink">방문 예약 안내</span>
       </div>
 
-      <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 pt-4 pb-[100px]">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 pt-4 pb-4">
         <div className="bg-kt-red-light border border-kt-red-border rounded-[12px] px-4 py-3.5 mb-4">
           <div className="text-[13px] text-kt-gray-700 leading-[1.65]">
             예정된 방문 작업을 확인해 주세요.

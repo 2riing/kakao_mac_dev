@@ -79,7 +79,7 @@ function LoginOtpPage() {
         <KTLogo />
       </div>
 
-      <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 pt-[18px] pb-[96px]">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 pt-[18px] pb-4">
         <div className="mb-6">
           <div className="text-[21px] font-bold text-kt-ink mb-1.5">본인인증</div>
           <div className="text-[14px] text-kt-gray-500 leading-[1.65]">

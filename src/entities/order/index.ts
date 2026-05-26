@@ -6,8 +6,8 @@ export {
   useReservation,
   useWorker,
 } from "./hooks";
-export { getSpotWrkTypeLabel } from "./labels";
-export { RESERVATION_CHANGE_WINDOW_DAYS } from "./constants";
+export { getSpotWrkTypeLabel } from "./config/labels";
+export { RESERVATION_CHANGE_WINDOW_DAYS } from "./config/constants";
 export type {
   AvailabilityDay,
   AvailabilityResponse,

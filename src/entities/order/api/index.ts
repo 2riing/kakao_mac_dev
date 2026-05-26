@@ -9,7 +9,7 @@ import type {
   ReservationPatchPayload,
   ReservationPatchResult,
   Technician,
-} from "./types";
+} from "../types";
 
 export async function getOrderStatus(
   wrkRcpNo: string,

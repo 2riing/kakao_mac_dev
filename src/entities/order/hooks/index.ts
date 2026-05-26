@@ -6,8 +6,8 @@ import {
   getReservationByWrkRcpNo,
   getWorker,
   patchReservation,
-} from "./api";
-import type { ReservationPatchPayload } from "./types";
+} from "../api";
+import type { ReservationPatchPayload } from "../types";
 
 export function useOrderStatus(
   wrkRcpNo: string | null,

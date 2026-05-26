@@ -4,6 +4,8 @@
 
 Stack: Vite 6 + React 19 + TS 5.6 + Tailwind 4 + React Router 7 + TanStack Query 5 + Zustand 5 + axios 1.7
 
+** 코드 주석·문서·커밋 메시지는 간결·명확하게. 불필요한 부연 금지 ** 
+
 ## claude.md rules
 
 - **config 파일(vite.config.ts, tsconfig.*.json, package.json, eslint.config.js, .env.*) 수정 전 사용자 허락 필수**. 자동 수정 금지
@@ -20,6 +22,8 @@ Stack: Vite 6 + React 19 + TS 5.6 + Tailwind 4 + React Router 7 + TanStack Query
 - 동일 layer의 다른 도메인끼리 import 금지
 - 여러 도메인 합치기는 `pages`에서만
 - 도메인은 폴더 경로로만 import. `@entities/auth` OK, `@entities/auth/api` 금지
+- entities/{도메인}/ 안 segment는 폴더 패턴 (api/, hooks/, store/, types/, config/). 단일 파일이어도 폴더 + index.ts 유지
+- config/ 안에는 의미별 파일명 (labels.ts, messages.ts, codes.ts). 두루뭉술 constants.ts·config.ts 금지
 - 새 라이브러리(npm 패키지) 추가 금지. 진짜 필요 시 사용자 확인 필수
 - UI는 카카오톡 인앱브라우저(iOS·Android) 둘 다 동작 기준. 한쪽만 되는 CSS·동작 금지
 
@@ -35,7 +39,7 @@ src/
 ├── app/          main.tsx, App.tsx, providers.tsx, router.tsx
 ├── pages/        화면 (components 조립)
 ├── components/   도메인별 UI (auth, order)
-├── entities/     도메인별 데이터 (api, store, hooks, types)
+├── entities/     도메인별 데이터 (각 도메인 안: api/, hooks/, store/, types/, config/)
 └── shared/       공통 (api, ui, lib, hooks, config, model, styles, assets)
 ```
 

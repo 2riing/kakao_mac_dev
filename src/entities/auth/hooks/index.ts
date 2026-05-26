@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { requestOtp, verifyOtp, getMaskedCustPhone } from "./api";
-import { useAuthStore } from "./store";
-import type { OtpRequestPayload, OtpVerifyPayload } from "./types";
+import { requestOtp, verifyOtp, getMaskedCustPhone } from "../api";
+import { useAuthStore } from "../store";
+import type { OtpRequestPayload, OtpVerifyPayload } from "../types";
 
 /* 인증 상태 selector */
 export function useIsAuthenticated(): boolean {

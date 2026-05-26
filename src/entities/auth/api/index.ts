@@ -1,7 +1,7 @@
 import { apiClient } from "@shared/api/client";
 import { unwrap } from "@shared/api/unwrap";
 import type { Envelope } from "@shared/api/envelope";
-import type { CustPhoneMask, OtpRequestPayload, OtpVerifyPayload } from "./types";
+import type { CustPhoneMask, OtpRequestPayload, OtpVerifyPayload } from "../types";
 
 export async function requestOtp(payload: OtpRequestPayload): Promise<void> {
   const { data } = await apiClient.post<Envelope<null>>(

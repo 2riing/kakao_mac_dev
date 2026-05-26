@@ -4,11 +4,18 @@ userflow 시나리오 2: 알림톡 [예약 변경] → OTP → 새 일정 선택
 
 ## 진입 URL
 
+**로컬 (mock — 풀 플로우 동작)**
 ```
 http://localhost:8080/order/reservation/1O2026051812345/202605251400/change
 ```
 
+**Vercel (prod — API 의존이라 OTP 단계에서 실패할 수 있음)**
+```
+https://oss-customer-kakao-web.vercel.app/order/reservation/1O2026051812345/202605251400/change
+```
+
 > 카카오 알림톡 [예약 변경] 버튼 시뮬레이션. AuthGuard 가 가로채서 `/login`으로 이동시킴.
+> Vercel 환경에서 mock 동작시키려면 README의 환경 섹션 참고.
 
 ## 단계별 체크
 

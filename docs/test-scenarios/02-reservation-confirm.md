@@ -4,14 +4,28 @@ userflow 시나리오 1: 사전방문안내 알림톡 [예약 확정] → 정보
 
 ## 진입 URL
 
+**로컬 (mock)**
 ```
 http://localhost:8080/order/confirm/1O2026051812345/202605251400
 ```
 
+**Vercel (prod — API 의존이라 로딩 실패 가능)**
+```
+https://oss-customer-kakao-web.vercel.app/order/confirm/1O2026051812345/202605251400
+```
+
 **멀티 오더 케이스 확인용 (캐시 30초 만료 대기 필요)**
+
+로컬:
 ```
 http://localhost:8080/order/confirm/1O20260520ABCDE/202605281000   (인터넷+TV)
 http://localhost:8080/order/confirm/1O2026060100A05/202606050900   (인터넷+TV+전화)
+```
+
+Vercel:
+```
+https://oss-customer-kakao-web.vercel.app/order/confirm/1O20260520ABCDE/202605281000
+https://oss-customer-kakao-web.vercel.app/order/confirm/1O2026060100A05/202606050900
 ```
 
 ## 단계별 체크

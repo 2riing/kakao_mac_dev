@@ -6,9 +6,16 @@ AuthGuard, LoginOtpPage 진입 가드, ErrorPage 코드 분기.
 
 ### 진입 URL
 
+로컬:
 ```
 http://localhost:8080/order/reservation/1O2026051812345/202605251400
 http://localhost:8080/order/today/1O2026051812345/202605251400
+```
+
+Vercel:
+```
+https://oss-customer-kakao-web.vercel.app/order/reservation/1O2026051812345/202605251400
+https://oss-customer-kakao-web.vercel.app/order/today/1O2026051812345/202605251400
 ```
 
 ### 체크
@@ -23,9 +30,8 @@ http://localhost:8080/order/today/1O2026051812345/202605251400
 
 ### 진입 URL
 
-```
-http://localhost:8080/login
-```
+로컬: `http://localhost:8080/login`
+Vercel: `https://oss-customer-kakao-web.vercel.app/login`
 
 ### 체크
 
@@ -52,16 +58,18 @@ URL은 `/error`로 고정. code는 `navigate('/error', { state: { code } })`로 
 ### 체크 — 코드별 진입 트리거
 
 **ORDER_INVALID — 잘못된 wrkRcpNo 형식**
-```
-http://localhost:8080/order/confirm/INVALID_FORMAT/202605251400
-```
+
+로컬: `http://localhost:8080/order/confirm/INVALID_FORMAT/202605251400`
+Vercel: `https://oss-customer-kakao-web.vercel.app/order/confirm/INVALID_FORMAT/202605251400`
+
 - [ ] `/error` 이동 + "예약 정보를 확인할 수 없습니다" 표시
 - [ ] URL은 `/error` (코드 노출 X)
 
 **UNKNOWN — /error 직접 진입**
-```
-http://localhost:8080/error
-```
+
+로컬: `http://localhost:8080/error`
+Vercel: `https://oss-customer-kakao-web.vercel.app/error`
+
 - [ ] AlertIcon + "오류가 발생했습니다" + "잠시 후 다시 시도해 주세요"
 
 **CONFIRM_FAILED — 모킹 어려움 (스킵)**
@@ -73,9 +81,16 @@ http://localhost:8080/error
 
 ### 진입 URL
 
+로컬:
 ```
 http://localhost:8080/random-path
 http://localhost:8080/order/foo
+```
+
+Vercel:
+```
+https://oss-customer-kakao-web.vercel.app/random-path
+https://oss-customer-kakao-web.vercel.app/order/foo
 ```
 
 ### 체크
@@ -89,9 +104,8 @@ http://localhost:8080/order/foo
 
 ### 진입 URL
 
-```
-http://localhost:8080/
-```
+로컬: `http://localhost:8080/`
+Vercel: `https://oss-customer-kakao-web.vercel.app/`
 
 ### 체크
 

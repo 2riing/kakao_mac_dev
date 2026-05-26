@@ -55,7 +55,7 @@ export const HELP_DATA: Record<ProductKey, HelpProduct> = {
         id: "i6",
         title: "인터넷 사용 방법이나 장애 해결 영상을 보고 싶어요.",
         description:
-          "자주 발생하는 문제와 해결 방법을 영상으로도 안내해 드리고 있어요. 아래 링크에서 확인해 보세요. https://kt.com/he56",
+          "자주 발생하는 문제와 해결 방법을 영상으로도 안내해 드리고 있어요. 아래 링크에서 확인해 보세요.",
         link: { label: "▶ 영상 가이드", href: "https://kt.com/he56" },
       },
     ],

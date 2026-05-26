@@ -14,3 +14,9 @@ dist-ssr
 *.log
 
 *.tsbuildinfo
+
+# playwright
+test-results/
+playwright-report/
+playwright/.cache/
+.vercel

@@ -83,6 +83,7 @@ function PhotoFrame({
 }
 
 function WorkerInfo({ worker }: { worker: Technician }) {
+  const telHref = `tel:${worker.spotWrkUserHpNo.replace(/\D/g, "")}`;
   return (
     <div className="flex flex-col justify-center min-w-0">
       <div className="text-[11px] text-kt-gray-400 font-semibold tracking-[0.5px] mb-1">
@@ -91,9 +92,20 @@ function WorkerInfo({ worker }: { worker: Technician }) {
       <div className="text-[18px] font-bold text-kt-ink mb-1.5">
         {worker.spotWrkUserNm}
       </div>
-      <div className="text-[13px] text-kt-gray-700 font-medium">
+      <a
+        href={telHref}
+        className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-kt-red underline underline-offset-2 active:opacity-70 w-fit"
+      >
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden>
+          <path
+            d="M5 4h4l2 5-3 2c1 2 3 4 5 5l2-3 5 2v4c0 1.1-.9 2-2 2A16 16 0 0 1 3 6c0-1.1.9-2 2-2z"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinejoin="round"
+          />
+        </svg>
         {worker.spotWrkUserHpNo}
-      </div>
+      </a>
     </div>
   );
 }

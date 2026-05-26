@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { Navigate, useNavigate, useLocation } from "react-router";
 import type { Location } from "react-router";
-import { useAuthStore, useOtpTimer, useMaskedCustPhone } from "@entities/auth";
+import {
+  useAuthStore,
+  useOtpTimer,
+  useMaskedCustPhone,
+  useRequestOtp,
+  useVerifyOtp,
+} from "@entities/auth";
 import KTLogo from "@shared/ui/KTLogo";
 import Spinner from "@shared/ui/Spinner";
 import CSNote from "@shared/ui/CSNote";
@@ -30,8 +36,8 @@ function LoginOtpPage() {
   const { data: maskedPhone = "" } = useMaskedCustPhone(entryWrkRcpNo);
   const [sent, setSent] = useState(false);
   const [otp, setOtp] = useState("");
-  const [sendLoading, setSendLoading] = useState(false);
-  const [verifyLoading, setVerifyLoading] = useState(false);
+  const { mutate: requestOtp, isPending: sendLoading } = useRequestOtp();
+  const { mutate: verifyOtp, isPending: verifyLoading } = useVerifyOtp();
   const { timer, start: startTimer } = useOtpTimer(180);
 
   // 가드 — 정상 카카오 진입이 아니면 차단
@@ -42,24 +48,29 @@ function LoginOtpPage() {
   const canVerify = sent && otp.length >= 4;
 
   function handleSendOtp() {
-    setSendLoading(true);
-    setTimeout(() => {
-      setSendLoading(false);
-      setSent(true);
-      startTimer();
-      setOtp("");
-    }, 1200);
+    requestOtp(
+      { wrkRcpNo: entryWrkRcpNo! },
+      {
+        onSuccess: () => {
+          setSent(true);
+          startTimer();
+          setOtp("");
+        },
+      },
+    );
   }
 
   function handleVerify() {
     if (!canVerify || verifyLoading) return;
-    setVerifyLoading(true);
-    setTimeout(() => {
-      setVerifyLoading(false);
-      // mock 인증 — 진짜 백엔드 정합 시점에 verifyOtp 응답으로 교체 예정
-      setAuthenticated(entryWrkRcpNo!);
-      navigate(from!.pathname + from!.search, { replace: true });
-    }, 1200);
+    verifyOtp(
+      { wrkRcpNo: entryWrkRcpNo!, otpNo: otp },
+      {
+        onSuccess: () => {
+          setAuthenticated(entryWrkRcpNo!);
+          navigate(from!.pathname + from!.search, { replace: true });
+        },
+      },
+    );
   }
 
   return (

@@ -35,19 +35,21 @@ function useImageLayout(src: string): Layout | null {
   return measured.ratio >= 1 ? "landscape" : "portrait";
 }
 
+const PHOTO_SIZE = {
+  portrait: "w-[88px] h-[112px]",
+  landscape: "w-[152px] h-[92px]",
+} as const;
+
 function PhotoPlaceholder({ variant }: { variant: Layout }) {
-  const isPortrait = variant === "portrait";
   return (
     <div
-      className={`shrink-0 rounded-lg border border-kt-gray-200 flex flex-col items-center justify-center gap-1.5 overflow-hidden ${
-        isPortrait ? "w-[96px] h-[124px]" : "w-[168px] h-[100px]"
-      }`}
+      className={`shrink-0 rounded-[10px] border border-kt-gray-200 flex items-center justify-center overflow-hidden ${PHOTO_SIZE[variant]}`}
       style={{
         background:
           "repeating-linear-gradient(135deg, var(--color-kt-gray-100), var(--color-kt-gray-100) 8px, white 8px, white 16px)",
       }}
     >
-      <svg width="32" height="32" viewBox="0 0 36 36" fill="none">
+      <svg width="30" height="30" viewBox="0 0 36 36" fill="none">
         <circle cx="18" cy="13" r="6.5" fill="var(--color-kt-gray-300)" />
         <path
           d="M4 33c0-7.732 6.268-14 14-14s14 6.268 14 14"
@@ -70,61 +72,89 @@ function PhotoFrame({
   alt: string;
   variant: Layout;
 }) {
-  const isPortrait = variant === "portrait";
   return (
     <img
       src={src}
       alt={alt}
-      className={`shrink-0 rounded-lg border border-kt-gray-200 object-cover ${
-        isPortrait ? "w-[96px] h-[124px]" : "w-[168px] h-[100px]"
-      }`}
+      className={`shrink-0 rounded-[10px] border border-kt-gray-200 object-cover ${PHOTO_SIZE[variant]}`}
     />
   );
 }
 
-function WorkerInfo({ worker }: { worker: Technician }) {
-  const telHref = `tel:${worker.spotWrkUserHpNo.replace(/\D/g, "")}`;
+function WorkerNameBlock({ worker }: { worker: Technician }) {
   return (
     <div className="flex flex-col justify-center min-w-0">
-      <div className="text-[11px] text-kt-gray-400 font-semibold tracking-[0.5px] mb-1">
+      <div className="text-[11px] text-kt-gray-400 font-semibold tracking-[0.5px] mb-1.5">
         방문 직원
       </div>
-      <div className="text-[18px] font-bold text-kt-ink mb-1.5">
+      <div className="text-[20px] font-extrabold text-kt-ink tracking-[-0.3px] leading-[1.2]">
         {worker.spotWrkUserNm}
       </div>
-      <a
-        href={telHref}
-        className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-kt-red underline underline-offset-2 active:opacity-70 w-fit"
-      >
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden>
+    </div>
+  );
+}
+
+function PhoneCallRow({ phone }: { phone: string }) {
+  const telHref = `tel:${phone.replace(/\D/g, "")}`;
+  return (
+    <a
+      href={telHref}
+      className="flex items-center gap-3 bg-kt-red-light border border-kt-red-border rounded-[10px] px-3.5 py-3 active:opacity-85 transition-opacity"
+    >
+      <span className="w-8 h-8 rounded-full bg-kt-red shrink-0 flex items-center justify-center">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
           <path
             d="M5 4h4l2 5-3 2c1 2 3 4 5 5l2-3 5 2v4c0 1.1-.9 2-2 2A16 16 0 0 1 3 6c0-1.1.9-2 2-2z"
-            stroke="currentColor"
+            stroke="white"
             strokeWidth="1.8"
             strokeLinejoin="round"
           />
         </svg>
-        {worker.spotWrkUserHpNo}
-      </a>
+      </span>
+      <div className="flex-1 min-w-0">
+        <div className="text-[11px] text-kt-red font-bold tracking-[0.5px] mb-0.5">
+          전화 걸기
+        </div>
+        <div className="text-[15px] font-extrabold text-kt-ink tracking-[-0.3px]">
+          {phone}
+        </div>
+      </div>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <path
+          d="M9 5l7 7-7 7"
+          stroke="#aaaaaa"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </a>
+  );
+}
+
+function CardShell({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="bg-white rounded-[12px] px-4 pt-3.5 pb-4 shadow-[0_2px_10px_rgba(0,0,0,0.06)] border border-kt-border">
+      <div className="text-[14px] font-bold text-kt-ink mb-3 pb-[11px] border-b border-kt-gray-200">
+        방문 작업자 정보
+      </div>
+      {children}
     </div>
   );
 }
 
 function WorkerCardSkeleton() {
   return (
-    <div className="bg-white rounded-[12px] px-4 pt-3.5 pb-4 shadow-[0_2px_10px_rgba(0,0,0,0.06)] border border-kt-border">
-      <div className="text-[14px] font-bold text-kt-ink mb-3 pb-[11px] border-b border-kt-gray-200">
-        방문 작업자 정보
-      </div>
-      <div className="flex gap-3.5 animate-pulse">
-        <div className="w-[96px] h-[124px] rounded-lg bg-kt-gray-100" />
+    <CardShell>
+      <div className="flex gap-3.5 animate-pulse mb-3.5">
+        <div className="w-[88px] h-[112px] rounded-[10px] bg-kt-gray-100" />
         <div className="flex-1 flex flex-col justify-center gap-2">
           <div className="h-3 w-12 bg-kt-gray-100 rounded" />
           <div className="h-5 w-20 bg-kt-gray-100 rounded" />
-          <div className="h-4 w-28 bg-kt-gray-100 rounded" />
         </div>
       </div>
-    </div>
+      <div className="h-[58px] bg-kt-gray-100 rounded-[10px] animate-pulse" />
+    </CardShell>
   );
 }
 
@@ -136,14 +166,9 @@ function WorkerCard({ worker }: WorkerCardProps) {
   const hasPic = !!worker.spotWrkUserPic;
 
   return (
-    <div className="bg-white rounded-[12px] px-4 pt-3.5 pb-4 shadow-[0_2px_10px_rgba(0,0,0,0.06)] border border-kt-border">
-      <div className="text-[14px] font-bold text-kt-ink mb-3 pb-[11px] border-b border-kt-gray-200">
-        방문 작업자 정보
-      </div>
-
+    <CardShell>
       {layout === "portrait" ? (
-        // 증명사진형: 세로 사진 좌측 + 정보 우측
-        <div className="flex gap-3.5">
+        <div className="flex gap-3.5 mb-3.5">
           {hasPic ? (
             <PhotoFrame
               src={worker.spotWrkUserPic}
@@ -153,24 +178,28 @@ function WorkerCard({ worker }: WorkerCardProps) {
           ) : (
             <PhotoPlaceholder variant="portrait" />
           )}
-          <WorkerInfo worker={worker} />
+          <WorkerNameBlock worker={worker} />
         </div>
       ) : (
-        // 명함형: 가로 사진 상단 + 정보 하단 (회색 박스로 묶음)
-        <div className="bg-kt-gray-100 border border-kt-gray-200 rounded-[12px] p-3.5 flex flex-col gap-3">
-          <div className="flex justify-center">
-            <PhotoFrame
-              src={worker.spotWrkUserPic}
-              alt={worker.spotWrkUserNm}
-              variant="landscape"
-            />
-          </div>
-          <div className="pt-2.5 border-t border-kt-gray-200">
-            <WorkerInfo worker={worker} />
+        <div className="flex flex-col items-center gap-3 mb-3.5">
+          <PhotoFrame
+            src={worker.spotWrkUserPic}
+            alt={worker.spotWrkUserNm}
+            variant="landscape"
+          />
+          <div className="w-full text-center">
+            <div className="text-[11px] text-kt-gray-400 font-semibold tracking-[0.5px] mb-1">
+              방문 직원
+            </div>
+            <div className="text-[20px] font-extrabold text-kt-ink tracking-[-0.3px]">
+              {worker.spotWrkUserNm}
+            </div>
           </div>
         </div>
       )}
-    </div>
+
+      <PhoneCallRow phone={worker.spotWrkUserHpNo} />
+    </CardShell>
   );
 }
 

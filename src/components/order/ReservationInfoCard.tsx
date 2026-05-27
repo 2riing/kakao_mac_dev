@@ -49,35 +49,20 @@ function CategoryIcon({ category }: { category: Category }) {
   );
 }
 
-function ClockIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6" />
-      <path d="M12 7v5l3 2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-// 방문 예정일 큰 강조 — "M월 D일" (검정) + "요일" (빨강)
-function VisitDateHeadline({ rsrvDate }: { rsrvDate: string }) {
+// 방문 일시 한 줄 — "M월 D일"(검정 강조) "요일"(회색) "HH:00 ~ HH:00"(검정)
+function VisitDateTimeRow({
+  rsrvDate,
+  rsrvTod,
+}: {
+  rsrvDate: string;
+  rsrvTod: string;
+}) {
   const [, m, d] = rsrvDate.split("-").map(Number);
   const dow = formatVisitDate(rsrvDate).match(/\(([가-힣])\)/)?.[1] ?? "";
   return (
-    <div className="flex items-baseline gap-1.5">
-      <span className="text-[26px] font-extrabold text-kt-ink tracking-tight">
-        {m}월 {d}일
-      </span>
-      <span className="text-[20px] font-bold text-kt-red">{dow}요일</span>
+    <div className="text-[18px] font-bold text-kt-ink">
+      {m}월 {d}일 {dow}요일 {formatTimeRange(rsrvTod)}
     </div>
-  );
-}
-
-function TimeChip({ rsrvTod }: { rsrvTod: string }) {
-  return (
-    <span className="inline-flex items-center gap-1.5 bg-kt-gray-100 border border-kt-gray-200 rounded-full px-3 py-1.5 text-[13px] font-semibold text-kt-gray-700">
-      <ClockIcon />
-      {formatTimeRange(rsrvTod)}
-    </span>
   );
 }
 
@@ -115,7 +100,7 @@ function ReservationInfoCard({
 
   if (variant === "summary") {
     return (
-      <div className="w-full bg-kt-gray-100 border border-kt-border rounded-[12px] px-4 pt-4 pb-1">
+      <div className="w-full bg-white border border-kt-border rounded-[12px] px-4 pt-4 pb-1 shadow-[0_2px_10px_rgba(0,0,0,0.06)]">
         <InfoRow label="방문 예정일" value={dateLabel} />
         <InfoRow label="방문 시간대" value={timeLabel} />
         <InfoRow
@@ -142,10 +127,10 @@ function ReservationInfoCard({
         <div className="text-[12px] text-kt-gray-500 mb-1.5 font-medium">
           방문 예정일
         </div>
-        <VisitDateHeadline rsrvDate={reservation.rsrvDate} />
-        <div className="mt-3">
-          <TimeChip rsrvTod={reservation.rsrvTod} />
-        </div>
+        <VisitDateTimeRow
+          rsrvDate={reservation.rsrvDate}
+          rsrvTod={reservation.rsrvTod}
+        />
       </div>
 
       {/* 작업 종류 섹션 */}

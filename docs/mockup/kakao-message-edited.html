@@ -520,13 +520,8 @@ function Screen6({ selDate, selTime, onClose }) {
         <div style={{ fontSize: 20, fontWeight: 700, color: C.black, marginTop: 18, marginBottom: 20 }}>예약이 변경되었습니다</div>
 
         <div style={{ ...cardStyle, width: '100%' }}>
-          <div style={{ marginBottom: 12 }}>
-            <div style={{ fontSize: 11, color: C.g400, marginBottom: 5, fontWeight: 600, letterSpacing: '0.5px' }}>변경 전</div>
-            <div style={{ fontSize: 14, color: C.g400, textDecoration: 'line-through' }}>4월 28일 (화) &nbsp; 14:00 ~ 15:00</div>
-          </div>
-          <div style={{ height: 1, backgroundColor: C.g200, margin: '0 0 12px' }} />
           <div>
-            <div style={{ fontSize: 11, color: C.red, marginBottom: 5, fontWeight: 700, letterSpacing: '0.5px' }}>변경 후</div>
+            <div style={{ fontSize: 11, color: C.red, marginBottom: 5, fontWeight: 700, letterSpacing: '0.5px' }}>방문 일정</div>
             <div style={{ fontSize: 15, color: C.black, fontWeight: 700 }}>
               {selDate ? `${selDate.m}월 ${selDate.d}일 (${dow})` : '4월 30일 (목)'} &nbsp; {selTime || '10:00 ~ 11:00'}
             </div>

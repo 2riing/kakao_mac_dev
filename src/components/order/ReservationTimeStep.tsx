@@ -107,6 +107,7 @@ function ReservationTimeStep({
 
         <div className="bg-kt-red-light border border-kt-red-border rounded-[10px] px-3.5 py-2.5 mb-3.5 text-sm font-semibold text-kt-ink">
           {y}년 {m}월 {d}일 ({dow})
+          {selTime && ` · ${formatSlotLabel(selTime)}`}
         </div>
 
         <div className="text-[15px] font-semibold text-kt-ink mb-3.5">

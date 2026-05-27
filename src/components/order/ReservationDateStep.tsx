@@ -7,6 +7,7 @@ import { DAY_NAMES_KO } from "@shared/lib/calendar";
 import BackArrow from "@shared/ui/BackArrow";
 import BottomFixedBar from "@shared/ui/BottomFixedBar";
 import PrimaryButton from "@shared/ui/PrimaryButton";
+import Spinner from "@shared/ui/Spinner";
 import StepBar from "@shared/ui/StepBar";
 
 interface ReservationDateStepProps {
@@ -43,7 +44,8 @@ function ReservationDateStep({ wrkRcpNo, onNext, onBack }: ReservationDateStepPr
   const fromYmd = toYmd(today.y, today.m, today.d);
   const toYmdStr = toYmd(windowEnd.y, windowEnd.m, windowEnd.d);
 
-  const { data: availability } = useAvailability(wrkRcpNo, fromYmd, toYmdStr);
+  const availabilityQuery = useAvailability(wrkRcpNo, fromYmd, toYmdStr);
+  const availability = availabilityQuery.data;
 
   const [sel, setSel] = useState<{ y: number; m: number; d: number } | null>(null);
   const [cm, setCm] = useState<{ y: number; m: number }>({ y: today.y, m: today.m });
@@ -153,39 +155,58 @@ function ReservationDateStep({ wrkRcpNo, onNext, onBack }: ReservationDateStepPr
             ))}
           </div>
 
-          <div className="grid grid-cols-7">
-            {Array.from({ length: firstDay }).map((_, i) => (
-              <div key={`empty-${i}`} className="h-[38px]" />
-            ))}
-            {Array.from({ length: daysInMonth }).map((_, i) => {
-              const d = i + 1;
-              const dis = isDisabled(d);
-              const selected = isSelected(d);
-              const col = (firstDay + i) % 7;
-              const textColorClass = selected
-                ? "text-white font-bold"
-                : dis
-                  ? "text-kt-gray-300"
-                  : col === 0
-                    ? "text-kt-red"
-                    : col === 6
-                      ? "text-[#2060CC]"
-                      : "text-kt-ink";
-              return (
-                <button
-                  key={d}
-                  onClick={() => !dis && setSel({ y: cm.y, m: cm.m, d })}
-                  disabled={dis}
-                  type="button"
-                  className={`h-[38px] flex items-center justify-center rounded-full text-sm transition-colors ${
-                    selected ? "bg-kt-red" : ""
-                  } ${dis ? "cursor-not-allowed" : "cursor-pointer"} ${textColorClass}`}
-                >
-                  {d}
-                </button>
-              );
-            })}
-          </div>
+          {availabilityQuery.isLoading ? (
+            <div className="min-h-[228px] flex items-center justify-center">
+              <Spinner color="red" size="lg" />
+            </div>
+          ) : availabilityQuery.isError ? (
+            <div className="min-h-[228px] flex flex-col items-center justify-center text-center px-4 gap-2">
+              <div className="text-sm text-kt-warn-urgent font-semibold">
+                예약 가능 시간을 불러올 수 없습니다
+              </div>
+              <button
+                type="button"
+                onClick={() => availabilityQuery.refetch()}
+                className="text-xs text-kt-red font-semibold underline underline-offset-2"
+              >
+                다시 시도
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-7 min-h-[228px]">
+              {Array.from({ length: firstDay }).map((_, i) => (
+                <div key={`empty-${i}`} className="h-[38px]" />
+              ))}
+              {Array.from({ length: daysInMonth }).map((_, i) => {
+                const d = i + 1;
+                const dis = isDisabled(d);
+                const selected = isSelected(d);
+                const col = (firstDay + i) % 7;
+                const textColorClass = selected
+                  ? "text-white font-bold"
+                  : dis
+                    ? "text-kt-gray-300"
+                    : col === 0
+                      ? "text-kt-red"
+                      : col === 6
+                        ? "text-[#2060CC]"
+                        : "text-kt-ink";
+                return (
+                  <button
+                    key={d}
+                    onClick={() => !dis && setSel({ y: cm.y, m: cm.m, d })}
+                    disabled={dis}
+                    type="button"
+                    className={`h-[38px] flex items-center justify-center rounded-full text-sm ${
+                      selected ? "bg-kt-red" : ""
+                    } ${dis ? "cursor-not-allowed" : "cursor-pointer"} ${textColorClass}`}
+                  >
+                    {d}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {sel && (

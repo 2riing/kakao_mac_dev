@@ -51,6 +51,13 @@ function ReservationDateStep({ wrkRcpNo, onNext, onBack }: ReservationDateStepPr
   const daysInMonth = new Date(cm.y, cm.m, 0).getDate();
   const firstDay = new Date(cm.y, cm.m - 1, 1).getDay();
 
+  // 가용 윈도우 안에서만 월 이동 허용 (year*12+month 인덱스로 비교)
+  const cmYM = cm.y * 12 + cm.m;
+  const startYM = today.y * 12 + today.m;
+  const endYM = windowEnd.y * 12 + windowEnd.m;
+  const canPrev = cmYM > startYM;
+  const canNext = cmYM < endYM;
+
   function isDisabled(d: number): boolean {
     // 오늘 이전
     if (cm.y < today.y) return true;
@@ -108,7 +115,12 @@ function ReservationDateStep({ wrkRcpNo, onNext, onBack }: ReservationDateStepPr
 
         <div className="bg-white rounded-xl p-4 mb-3 shadow-[0_2px_10px_rgba(0,0,0,0.06)] border border-kt-border">
           <div className="flex items-center justify-between mb-[14px]">
-            <button onClick={prevMonth} className="p-1.5 rounded-lg" type="button">
+            <button
+              onClick={prevMonth}
+              disabled={!canPrev}
+              className={`p-1.5 rounded-lg ${canPrev ? "" : "opacity-30 cursor-not-allowed"}`}
+              type="button"
+            >
               <BackArrow />
             </button>
             <span className="text-base font-bold text-kt-ink">
@@ -116,7 +128,8 @@ function ReservationDateStep({ wrkRcpNo, onNext, onBack }: ReservationDateStepPr
             </span>
             <button
               onClick={nextMonth}
-              className="p-1.5 rounded-lg -scale-x-100"
+              disabled={!canNext}
+              className={`p-1.5 rounded-lg -scale-x-100 ${canNext ? "" : "opacity-30 cursor-not-allowed"}`}
               type="button"
             >
               <BackArrow />

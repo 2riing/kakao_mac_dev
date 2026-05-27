@@ -7,7 +7,6 @@ import {
   ReservationInfoCard,
   ReservationTimeStep,
 } from "@components/order";
-import { DAY_NAMES_KO } from "@shared/lib/calendar";
 import BottomFixedBar from "@shared/ui/BottomFixedBar";
 import CSNote from "@shared/ui/CSNote";
 import PrimaryButton from "@shared/ui/PrimaryButton";
@@ -16,32 +15,10 @@ import Spinner from "@shared/ui/Spinner";
 
 type Step = "view" | "date" | "time" | "done";
 
-function pad2(n: number): string {
-  return String(n).padStart(2, "0");
-}
-
-// 진입 시점 reservationDate(YYYYMMDDHHMM) → 변경 완료 화면의 "이전 일정" 표시용
-function parseReservationDate(raw: string): {
-  dateLabel: string;
-  timeLabel: string;
-} {
-  if (raw.length < 12) return { dateLabel: raw, timeLabel: "" };
-  const y = Number(raw.slice(0, 4));
-  const m = Number(raw.slice(4, 6));
-  const d = Number(raw.slice(6, 8));
-  const hh = raw.slice(8, 10);
-  const h = Number(hh);
-  const dow = DAY_NAMES_KO[new Date(y, m - 1, d).getDay()];
-  return {
-    dateLabel: `${m}월 ${d}일 (${dow})`,
-    timeLabel: `${hh}:00 ~ ${pad2(h + 1)}:00`,
-  };
-}
-
-function OrderDetailViewPage() {
+function ReservationChangePage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { wrkRcpNo, reservationDate, isValid } = useValidatedOrderParams();
+  const { wrkRcpNo, isValid } = useValidatedOrderParams();
 
   // 카카오 [예약 변경] 알림톡 진입 시 변경 흐름 직진
   const isChangeEntry = location.pathname.endsWith("/change");
@@ -62,8 +39,6 @@ function OrderDetailViewPage() {
 
   // useValidatedOrderParams가 invalid 시 /error로 navigate. navigate 처리되는 동안 짧게 null
   if (!isValid) return null;
-
-  const prevInfo = parseReservationDate(reservationDate);
 
   return (
     <ScreenContainer>
@@ -134,15 +109,10 @@ function OrderDetailViewPage() {
       )}
 
       {step === "done" && selDate && selTime && (
-        <ReservationDoneStep
-          prevDateLabel={prevInfo.dateLabel}
-          prevTimeLabel={prevInfo.timeLabel}
-          newDate={selDate}
-          newTime={selTime}
-        />
+        <ReservationDoneStep variant="changed" date={selDate} time={selTime} />
       )}
     </ScreenContainer>
   );
 }
 
-export default OrderDetailViewPage;
+export default ReservationChangePage;

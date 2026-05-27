@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Navigate, useNavigate, useLocation } from "react-router";
 import type { Location } from "react-router";
 import {
@@ -8,6 +8,8 @@ import {
   useRequestOtp,
   useVerifyOtp,
 } from "@entities/auth";
+import { getErrorMessage } from "@shared/lib/getErrorMessage";
+import { INLINE_MESSAGES } from "@shared/config/messages";
 import KTLogo from "@shared/ui/KTLogo";
 import Spinner from "@shared/ui/Spinner";
 import CSNote from "@shared/ui/CSNote";
@@ -33,23 +35,46 @@ function LoginOtpPage() {
   const entryWrkRcpNo = from ? extractWrkRcpNoFromPath(from.pathname) : null;
 
   // hooks (early return 전 일관 호출)
-  const { data: maskedPhone = "" } = useMaskedCustPhone(entryWrkRcpNo);
+  const maskedQuery = useMaskedCustPhone(entryWrkRcpNo);
   const [sent, setSent] = useState(false);
   const [otp, setOtp] = useState("");
+  const [throttleMessage, setThrottleMessage] = useState<string | null>(null);
   const requestMutation = useRequestOtp();
   const verifyMutation = useVerifyOtp();
   const { mutate: requestOtp, isPending: sendLoading } = requestMutation;
   const { mutate: verifyOtp, isPending: verifyLoading } = verifyMutation;
   const { timer, start: startTimer } = useOtpTimer(180);
 
+  // 마스킹 연락처 조회 실패 → 페이지 fallback (본인 확인 정보 자체가 없으면 진행 불가)
+  useEffect(() => {
+    if (maskedQuery.isError) {
+      navigate("/error", {
+        replace: true,
+        state: { code: "ORDER_INVALID" },
+      });
+    }
+  }, [maskedQuery.isError, navigate]);
+
   // 가드 — 정상 카카오 진입이 아니면 차단
   if (!from || !entryWrkRcpNo) {
     return <Navigate to="/error" state={{ code: "INVALID_ENTRY" }} replace />;
   }
 
+  const maskedPhone = maskedQuery.data ?? "";
   const canVerify = sent && otp.length === 6;
+  const sendErrorMessage = throttleMessage
+    ?? (requestMutation.isError ? getErrorMessage(requestMutation.error) : null);
+  const verifyErrorMessage = verifyMutation.isError
+    ? getErrorMessage(verifyMutation.error)
+    : undefined;
 
   function handleSendOtp() {
+    // 클라이언트 단 throttle — disabled 버튼을 우회해도 한 번 더 차단
+    if (sent && timer > 0) {
+      setThrottleMessage(INLINE_MESSAGES.throttleRetry);
+      return;
+    }
+    setThrottleMessage(null);
     requestOtp(
       { wrkRcpNo: entryWrkRcpNo! },
       {
@@ -101,9 +126,9 @@ function LoginOtpPage() {
           onSend={handleSendOtp}
         />
 
-        {requestMutation.isError && (
+        {sendErrorMessage && (
           <div className="text-xs text-kt-warn-urgent mb-2 -mt-1.5 font-medium">
-            {requestMutation.error?.message ?? "인증번호 발송에 실패했습니다."}
+            {sendErrorMessage}
           </div>
         )}
 
@@ -112,7 +137,7 @@ function LoginOtpPage() {
             value={otp}
             onChange={setOtp}
             timer={timer}
-            errorMessage={verifyMutation.error?.message}
+            errorMessage={verifyErrorMessage}
           />
         )}
 

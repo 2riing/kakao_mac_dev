@@ -1,3 +1,10 @@
+// 페이지 인라인 표시용 짧은 메시지 (페이지 fallback 아닌 form 옆 빨강 안내 등)
+export const INLINE_MESSAGES = {
+  throttleRetry: "잠시 후 다시 시도해 주세요.",
+  network: "네트워크 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.",
+  unknown: "알 수 없는 오류가 발생했습니다.",
+} as const;
+
 // ErrorPage 진입 시 ?code= 로 전달되는 코드별 표시 문구
 // /error?code=ORDER_INVALID 형식
 export const ERROR_PAGE_MESSAGES: Record<

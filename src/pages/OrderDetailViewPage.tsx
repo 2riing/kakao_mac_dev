@@ -104,9 +104,6 @@ function OrderDetailViewPage() {
               />
             )}
 
-            <div className="text-[12px] text-kt-gray-500 text-center mt-4 mb-1">
-              ⚠ 방문 1일 전까지 변경 가능합니다.
-            </div>
             <CSNote />
           </div>
 

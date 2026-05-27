@@ -20,19 +20,37 @@ export interface Technician {
   workerPhotoUrl: string;
 }
 
-/* 예약에 포함된 오더 정보 */
+/* 예약에 포함된 오더 정보 (도메인 — 컴포넌트에서 사용) */
 export interface ReservationOrder {
   wrkRcpNo: string;
   spotWrkTypeCd: string; // 현장작업 종류 코드 (오더 단위 — INSTALL/AS/MOVE 등)
   prodDescNm: string;    // 상품 설명명 (수리는 빈 문자열 가능)
 }
 
-/* 예약 정보 — GET /api/reservations/{wrkRcpNo} */
+/* 예약 정보 (도메인 — 컴포넌트에서 사용) */
 export interface Reservation {
   rsrvDate: string;        // 예약일 YYYY-MM-DD
   rsrvTod: string;         // 예약시간 (예: "14:00")
   smtCnt: number;          // 동시건수
   orders: ReservationOrder[];
+}
+
+/* 백엔드 응답 — GET /reservation/{workReceiptNo} (2026-05-27 정합)
+ * naming-conventions.md "백엔드 풀이름 매핑" 참조.
+ * 도메인 타입 Reservation으로 변환 후 컴포넌트에 전달 (api/index.ts의 toReservation).
+ */
+export interface ReservationDetailResponseOrder {
+  workReceiptNo: string;
+  serviceName: string;
+}
+
+export interface ReservationDetailResponse {
+  customerName: string;          // 미사용 (향후 화면 노출 시 도메인 타입에 추가)
+  reservationDate: string;       // "YYYY-MM-DD HH:MM:SS" — 시각 부분 의미 없음
+  reservationTimeOfDay: string;  // "HHMM" 정시
+  spotWorkTypeCode: string;      // "1" 등 정수문자열 — 의미 매핑 미정
+  sameTimeOrderCount: number;
+  orders: ReservationDetailResponseOrder[];
 }
 
 /* 가용수 조회 — GET /api/reservations/{wrkRcpNo}/availability */

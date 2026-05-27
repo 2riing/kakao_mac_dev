@@ -1,77 +1,79 @@
 {
   "candidates": [
     {
-      "rsrvDate": "2026-05-25",
-      "rsrvTod": "14:00",
-      "smtCnt": 1,
+      "customerName": "김인터넷",
+      "reservationDate": "2026-05-25 00:00:00",
+      "reservationTimeOfDay": "1400",
+      "spotWorkTypeCode": "1",
+      "sameTimeOrderCount": 1,
       "orders": [
         {
-          "wrkRcpNo": "1O2026051812345",
-          "spotWrkTypeCd": "INSTALL",
-          "prodDescNm": "기가 인터넷 500M"
+          "workReceiptNo": "1O2026051812345",
+          "serviceName": "기가 인터넷 500M"
         }
       ]
     },
     {
-      "rsrvDate": "2026-05-28",
-      "rsrvTod": "10:00",
-      "smtCnt": 2,
+      "customerName": "박지니",
+      "reservationDate": "2026-05-28 00:00:00",
+      "reservationTimeOfDay": "1000",
+      "spotWorkTypeCode": "2",
+      "sameTimeOrderCount": 2,
       "orders": [
         {
-          "wrkRcpNo": "1O20260520ABCDE",
-          "spotWrkTypeCd": "INSTALL",
-          "prodDescNm": "인터넷 베이직"
+          "workReceiptNo": "1O20260520ABCDE",
+          "serviceName": "인터넷 베이직"
         },
         {
-          "wrkRcpNo": "1O20260520ABCDF",
-          "spotWrkTypeCd": "TV_INSTALL",
-          "prodDescNm": "지니 TV 베이직"
+          "workReceiptNo": "1O20260520ABCDF",
+          "serviceName": "지니 TV 베이직"
         }
       ]
     },
     {
-      "rsrvDate": "2026-06-02",
-      "rsrvTod": "16:30",
-      "smtCnt": 1,
+      "customerName": "이와이",
+      "reservationDate": "2026-06-02 00:00:00",
+      "reservationTimeOfDay": "1630",
+      "spotWorkTypeCode": "3",
+      "sameTimeOrderCount": 1,
       "orders": [
         {
-          "wrkRcpNo": "1O2026053000F01",
-          "spotWrkTypeCd": "AS",
-          "prodDescNm": "와이파이 공유기 교체"
+          "workReceiptNo": "1O2026053000F01",
+          "serviceName": "에센스 베이직"
         }
       ]
     },
     {
-      "rsrvDate": "2026-06-05",
-      "rsrvTod": "09:00",
-      "smtCnt": 3,
+      "customerName": "최기가",
+      "reservationDate": "2026-06-05 00:00:00",
+      "reservationTimeOfDay": "0900",
+      "spotWorkTypeCode": "1",
+      "sameTimeOrderCount": 3,
       "orders": [
         {
-          "wrkRcpNo": "1O2026060100A05",
-          "spotWrkTypeCd": "INSTALL",
-          "prodDescNm": "기가 인터넷 1G"
+          "workReceiptNo": "1O2026060100A05",
+          "serviceName": "기가 인터넷 1G"
         },
         {
-          "wrkRcpNo": "1O2026060100A06",
-          "spotWrkTypeCd": "TV_INSTALL",
-          "prodDescNm": "지니 TV 프리미엄"
+          "workReceiptNo": "1O2026060100A06",
+          "serviceName": "지니 TV 프리미엄"
         },
         {
-          "wrkRcpNo": "1O2026060100A07",
-          "spotWrkTypeCd": "PHONE_INSTALL",
-          "prodDescNm": "집전화 베이직"
+          "workReceiptNo": "1O2026060100A07",
+          "serviceName": "집전화 베이직"
         }
       ]
     },
     {
-      "rsrvDate": "2026-06-10",
-      "rsrvTod": "13:00",
-      "smtCnt": 1,
+      "customerName": "정이전",
+      "reservationDate": "2026-06-10 00:00:00",
+      "reservationTimeOfDay": "1300",
+      "spotWorkTypeCode": "1",
+      "sameTimeOrderCount": 1,
       "orders": [
         {
-          "wrkRcpNo": "1O20260605DEAD0",
-          "spotWrkTypeCd": "MOVE",
-          "prodDescNm": "이전설치 - 기가 인터넷"
+          "workReceiptNo": "1O20260605DEAD0",
+          "serviceName": "이전설치 - 기가 인터넷"
         }
       ]
     }

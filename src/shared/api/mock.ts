@@ -26,9 +26,10 @@ const mockRules: MockRule[] = [
   // order
   { method: "GET",  pattern: /\/order\/status\/[^/]+/,                data: orderMock },
   { method: "GET",  pattern: /\/order\/worker\/[^/]+$/,               data: () => pickRandom(workerMock.candidates) },
-  // reservation
+  // reservation 상세 — 백엔드 정합 완료 (2026-05-27): /reservation/{workReceiptNo} 단수형
+  { method: "GET",  pattern: /\/reservation\/[^/]+$/,                 data: () => pickRandom(reservationMock.candidates) },
+  // 그 외 reservations 복수형 — 백엔드 미정합 (변경/확정/가용수)
   { method: "GET",  pattern: /\/reservations\/[^/]+\/availability/,   data: availabilityMock },
-  { method: "GET",  pattern: /\/reservations\/[^/]+$/,                data: () => pickRandom(reservationMock.candidates) },
   { method: "PATCH", pattern: /\/reservations\/[^/]+$/,               data: { ok: true, updatedCnt: 1 } },
   { method: "POST", pattern: /\/reservations\/[^/]+\/confirm$/,       data: { ok: true } },
 ];

@@ -84,7 +84,7 @@ function WorkerNameBlock({ worker }: { worker: Technician }) {
         방문 직원
       </div>
       <div className="text-[20px] font-extrabold text-kt-ink tracking-[-0.3px] leading-[1.2]">
-        {worker.spotWrkUserNm}
+        {worker.workerName}
       </div>
     </div>
   );
@@ -155,11 +155,11 @@ function WorkerCardSkeleton() {
 }
 
 function WorkerCard({ worker }: WorkerCardProps) {
-  const layout = useImageLayout(worker.spotWrkUserPic);
+  const layout = useImageLayout(worker.workerPhotoUrl);
 
   if (layout === null) return <WorkerCardSkeleton />;
 
-  const hasPic = !!worker.spotWrkUserPic;
+  const hasPic = !!worker.workerPhotoUrl;
 
   return (
     <CardShell>
@@ -167,8 +167,8 @@ function WorkerCard({ worker }: WorkerCardProps) {
         <div className="flex gap-3.5 mb-3.5">
           {hasPic ? (
             <PhotoFrame
-              src={worker.spotWrkUserPic}
-              alt={worker.spotWrkUserNm}
+              src={worker.workerPhotoUrl}
+              alt={worker.workerName}
               variant="portrait"
             />
           ) : (
@@ -179,8 +179,8 @@ function WorkerCard({ worker }: WorkerCardProps) {
       ) : (
         <div className="flex flex-col items-center gap-3 mb-3.5">
           <PhotoFrame
-            src={worker.spotWrkUserPic}
-            alt={worker.spotWrkUserNm}
+            src={worker.workerPhotoUrl}
+            alt={worker.workerName}
             variant="landscape"
           />
           <div className="w-full text-center">
@@ -188,13 +188,13 @@ function WorkerCard({ worker }: WorkerCardProps) {
               방문 직원
             </div>
             <div className="text-[20px] font-extrabold text-kt-ink tracking-[-0.3px]">
-              {worker.spotWrkUserNm}
+              {worker.workerName}
             </div>
           </div>
         </div>
       )}
 
-      <PhoneCallRow phone={worker.spotWrkUserHpNo} />
+      <PhoneCallRow phone={worker.workerPhoneNumber} />
     </CardShell>
   );
 }

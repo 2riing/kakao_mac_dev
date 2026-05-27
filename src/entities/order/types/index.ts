@@ -12,12 +12,12 @@ export interface OrderStatus {
 
 /* 작업자 정보 — GET /api/order/worker/{wrkRcpNo} */
 // wrkFlowSttusCd='4'(당일 방문) 일 때만 조회 가능.
-// spotWrkUserPic은 정적 이미지 경로 (예: /order/images/workers/{wrkRcpNo}).
+// workerPhotoUrl은 정적 이미지 경로 (예: /images/workers/{wrkRcpNo}). 빈 문자열 가능.
+// 백엔드 응답 풀이름 평탄형 — naming-conventions.md "백엔드 응답 정본" 참조.
 export interface Technician {
-  spotWrkUserId: string;
-  spotWrkUserNm: string;
-  spotWrkUserHpNo: string;
-  spotWrkUserPic: string;
+  workerName: string;
+  workerPhoneNumber: string;
+  workerPhotoUrl: string;
 }
 
 /* 예약에 포함된 오더 정보 */

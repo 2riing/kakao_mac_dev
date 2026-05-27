@@ -1,7 +1,11 @@
-# 네이밍 컨벤션 (사내 표준 약어 사전)
+# 네이밍 컨벤션 (사내 약어 ↔ 백엔드 풀이름)
 
-용도: 사내 시스템·DB에서 통용되는 약어를 그대로 사용.
-원칙: 사내 표준 약어를 따른다. 새 약어는 절대 도입하지 않는다. 모르는 약어는 풀네임으로 쓰거나 사전에 등재한 뒤 사용한다.
+용도: 사내 시스템·DB 약어 + 백엔드 API 응답 풀이름 둘을 함께 관리.
+원칙:
+1. 새 약어 임의 도입 금지. 모르는 약어는 풀네임.
+2. **백엔드 응답은 풀이름 camelCase가 정본** — 2026-05-27 `/reservation/{workReceiptNo}` 응답 수신 후 확정.
+3. path 파라미터·내부 변수·DB 컬럼은 사내 약어 유지. 백엔드 응답 ↔ 클라 변환은 entities 레이어에서 처리.
+4. 백엔드 풀이름 ↔ 사내 약어 매핑은 아래 "백엔드 풀이름 매핑" 표 참조.
 
 
 ## 약어 사전
@@ -13,7 +17,6 @@
 | wrk_rcp_no          | wrkRcpNo          | work receipt number       | 작업접수번호       | 예: 1O2026042812345 |
 | svc_cont_id         | svcContId         | service contract id       | 서비스 계약ID      |                     |
 | prod_id             | prodId            | product id                | 상품코드           |                     |
-| spot_wrk_user_id    | spotWrkUserId     | spot work user id         | 작업자 사용자 ID   |                     |
 | cust_nm             | custNm            | customer name             | 고객명             |                     |
 | osc_rcp_no_cnt      | oscRcpNoCnt       | one-stop receipt no count | 원스톱 오더 개수   | 동시성              |
 | wrk_flow_sttus_cd   | wrkFlowSttusCd    | work flow status code     | 작업 흐름 상태코드 | '4'=당일방문        |
@@ -27,7 +30,9 @@
 | is_div_cd           | isDivCd           | division code             | 분할 여부 코드     | 추정 — 의미 확인    |
 | smt_cnt             | smtCnt            | simultaneous count        | 동시건수           | 추정                |
 | otp_no              | otpNo             | OTP number                | 인증번호           |                     |
-| spot_wrk_user_nm    | spotWrkUserNm     | spot work user name       | 작업자명           |                     |
+| worker_name         | workerName        | worker name               | 작업자명           | 백엔드 응답 정본    |
+| worker_phone_number | workerPhoneNumber | worker phone number       | 작업자 휴대폰번호  | 백엔드 응답 정본    |
+| worker_photo_url    | workerPhotoUrl    | worker photo url          | 작업자 사진 URL    | 백엔드 응답 정본    |
 
 ### 추정 (백엔드 확정 필요)
 
@@ -39,15 +44,13 @@
 ### 유추 (확정된 약어 패턴 기반 — 백엔드 확정 필수)
 
 패턴: `_no` 번호 / `_id` ID / `_nm` 이름 / `_dt` 일자 / `_tm` 시간 / `_cd` 코드 / `_addr` 주소 / `_url` URL
-도메인: `cust_` 고객 / `prod_` 상품 / `svc_` 서비스 / `wrk_` 작업 / `spot_wrk_` 현장작업 / `obdng_` 국사 / `vist_` 방문 / `rsv_` 예약 / `reg_` 등록
+도메인: `cust_` 고객 / `prod_` 상품 / `svc_` 서비스 / `wrk_` 작업 / `spot_wrk_` 현장작업 / `worker_` 작업자(평탄형, 백엔드 응답) / `obdng_` 국사 / `vist_` 방문 / `rsv_` 예약 / `reg_` 등록
 
 | DB 컬럼 (유추)         | JS 변수             | 의미(한글)       | 근거 패턴               |
 | ---------------------- | ------------------- | ---------------- | ----------------------- |
 | cust_id                | custId              | 고객 ID          | cust_nm ↔ cust_id       |
 | cust_hp_no             | custHpNo            | 고객 휴대폰번호  | _hp_no (handphone)      |
 | prod_nm                | prodNm              | 상품명           | prod_id + _nm           |
-| spot_wrk_user_hp_no    | spotWrkUserHpNo     | 작업자 휴대폰번호 | 동일 도메인 + _hp_no    |
-| spot_wrk_user_pic_url  | spotWrkUserPicUrl   | 작업자 사진 URL  | _pic_url                |
 | svc_lctg_nm            | svcLctgNm           | 작업종류명       | svc_lctg_id + _nm       |
 | vist_pln_dt            | vistPlnDt           | 방문예정일       | vist_pln_*              |
 | vist_pln_tm_zn         | vistPlnTmZn         | 방문시간대       | _tm_zn (time zone)      |
@@ -65,6 +68,50 @@
 
 - 우편번호 (와이어프레임 불필요)
 - 청약번호 (사내 시스템 미존재 — `svc_cont_id` 대체)
+- `spot_wrk_user_*` 시리즈 (id/nm/hp_no/pic_url) — 백엔드 응답이 `worker_*` 평탄형으로 정합됨. 신규 작성·참조 금지. 코드 잔재는 백엔드 정합 시점에 일괄 마이그레이션
+
+
+## 백엔드 풀이름 매핑
+
+`GET /reservation/{workReceiptNo}` 응답 (2026-05-27 수신). 응답 필드는 풀이름 camelCase가 정본.
+
+| 백엔드 응답 (풀이름)    | 사내 약어 매핑       | 의미(한글)         | 비고 |
+| ----------------------- | -------------------- | ------------------ | ---- |
+| workReceiptNo           | wrkRcpNo             | 작업접수번호       | path 파라미터는 사내 약어 사용 가능, 응답 키는 풀이름 |
+| customerName            | custNm               | 고객명             | |
+| reservationDate         | rsrvDate (+시각)     | 예약일시           | `"YYYY-MM-DD HH:MM:SS"` datetime. 시각 부분 의미 없음 |
+| reservationTimeOfDay    | rsrvTod              | 예약 시간대        | `"HHMM"` 정시 기준. 기존 `"HH:MM"`과 다름 |
+| spotWorkTypeCode        | spotWrkTypeCd        | 현장작업 종류코드  | 값이 `"1"` 같은 정수문자열 — 의미 매핑 미정 |
+| sameTimeOrderCount      | smtCnt               | 동시건수           | `orders.length`와 동일 추정 |
+| serviceName             | prodDescNm (추정)    | 상품(서비스)명     | 풀이름과 사내 약어 의미 살짝 다름 — 백엔드 확인 |
+| extraBoolean            | -                    | 미정 부가 플래그   | envelope에 동반. 클라이언트는 무시 |
+
+응답 envelope:
+- `resultCode` 타입 **integer** (기존 정본은 문자열 `"2000"`이었으나 2026-05-27자로 정수형 통일)
+- 정상 코드: `2000`
+
+### 변환 패턴
+
+```ts
+// 백엔드 응답 (정본) → 클라 도메인 타입 (사내 약어 유지)
+function toReservation(api: ReservationDetailResponse): Reservation {
+  return {
+    wrkRcpNo: api.orders[0].workReceiptNo,
+    custNm: api.customerName,
+    rsrvDate: api.reservationDate.slice(0, 10),
+    rsrvTod: `${api.reservationTimeOfDay.slice(0, 2)}:${api.reservationTimeOfDay.slice(2)}`,
+    smtCnt: api.sameTimeOrderCount,
+    spotWrkTypeCd: api.spotWorkTypeCode,
+    orders: api.orders.map((o) => ({
+      wrkRcpNo: o.workReceiptNo,
+      prodDescNm: o.serviceName,
+    })),
+  };
+}
+```
+
+- 변환 위치: `src/entities/order/api/index.ts` (응답 받자마자 변환 → 컴포넌트는 사내 약어만 알면 됨)
+- 추후 컨벤션 통일(풀이름 전면 전환) 결정되면 변환 제거하고 도메인 타입 자체를 풀이름으로 재작성
 
 
 ## 케이스 변환 규칙

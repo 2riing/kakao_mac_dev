@@ -16,8 +16,9 @@ axios 인스턴스. 모든 API 호출 출입구.
 ### envelope.ts
 백엔드 응답 표준 형식 타입 + 정상 코드 상수. 동작 코드 없음.
 
-- `Envelope<T>` = `{ resultCode, resultMessage, data: T }`
-- `RESULT_CODE_OK = "2000"` — 사내 표준
+- `Envelope<T>` = `{ resultCode, resultMessage, data: T }` — `resultCode`는 number
+- `RESULT_CODE_OK = 2000` — 사내 표준 (integer)
+- 백엔드가 `extraBoolean`도 같이 내려주지만 클라이언트는 무시 (스키마 미정의)
 - 모든 응답이 이 envelope으로 옴 → unwrap 필요
 
 ### unwrap.ts

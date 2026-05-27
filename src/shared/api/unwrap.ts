@@ -1,9 +1,9 @@
 import { RESULT_CODE_OK, type Envelope } from "./envelope";
 
 export class ApiError extends Error {
-  resultCode: string;
+  resultCode: number;
 
-  constructor(resultCode: string, message: string) {
+  constructor(resultCode: number, message: string) {
     super(message);
     this.resultCode = resultCode;
     this.name = "ApiError";

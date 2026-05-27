@@ -2,14 +2,16 @@ openapi: 3.1.0
 
 info:
   title: KT myspeed 카카오 웹뷰 API
-  version: 0.2.0
+  version: 0.3.0
   description: |
     카카오 알림톡 진입 → OTP 인증 → 예약 조회/변경/확정.
     응답은 envelope 패턴 `{resultCode, resultMessage, data}` + camelCase.
-    정상은 `resultCode = "2000"`, 그 외는 에러.
+    정상은 `resultCode = 2000` (integer), 그 외는 에러.
+    백엔드가 `extraBoolean` 필드를 같이 내려주지만 클라이언트는 무시.
 
-    이 문서에는 백엔드 확정된 엔드포인트만 포함.
-    예약(reservation) 관련 엔드포인트는 백엔드 확정 후 추가 예정.
+    네이밍: 백엔드 응답은 풀이름 camelCase (예: `workReceiptNo`, `customerName`).
+    사내 약어(wrkRcpNo 등)는 path 파라미터·내부 변수에서만 사용.
+    예약 외 endpoint(/order/*, /auth/*)는 백엔드 확정 전 — 응답 컨벤션 미정.
 
 servers:
   - url: https://api-dev.example.com/api
@@ -22,6 +24,8 @@ tags:
     description: OTP 발송·검증·마스킹 연락처
   - name: order
     description: 오더 상태·작업자 정보
+  - name: reservation
+    description: 예약 상세 조회 (토큰 필요)
 
 paths:
   /auth/otp/request:
@@ -136,6 +140,31 @@ paths:
         '404':
           $ref: '#/components/responses/ErrorEnvelope'
 
+  /reservation/{workReceiptNo}:
+    get:
+      tags: [reservation]
+      summary: 예약 상세 조회
+      description: |
+        OTP 인증 후 호출. 동시 묶음 오더 포함.
+        백엔드 실제 응답 (2026-05-27 수신) — 필드명 풀이름 camelCase.
+        `reservationDate`는 datetime 형식이지만 시각 부분은 의미 없음.
+        실제 예약 시간대는 `reservationTimeOfDay`(`"HHMM"`) 별도 필드.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/WorkReceiptNoPath'
+      responses:
+        '200':
+          description: 정상
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvelopeReservationDetail'
+        '401':
+          $ref: '#/components/responses/ErrorEnvelope'
+        '404':
+          $ref: '#/components/responses/ErrorEnvelope'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -149,14 +178,23 @@ components:
       name: wrkRcpNo
       in: path
       required: true
-      description: 작업접수번호 (예 1O2026050712345)
+      description: 작업접수번호 (예 1O2026050712345). 사내 약어 path — 백엔드 미정합 endpoint에서 사용.
       schema:
         type: string
       example: '1O2026050712345'
 
+    WorkReceiptNoPath:
+      name: workReceiptNo
+      in: path
+      required: true
+      description: 작업접수번호 (풀이름). 백엔드 정합 완료된 reservation endpoint에서 사용.
+      schema:
+        type: string
+      example: '1O202410230FF20'
+
   responses:
     ErrorEnvelope:
-      description: 에러 (resultCode != '2000')
+      description: 에러 (resultCode != 2000)
       content:
         application/json:
           schema:
@@ -168,14 +206,18 @@ components:
       required: [resultCode, resultMessage, data]
       properties:
         resultCode:
-          type: string
-          description: 정상은 '2000'. 그 외는 에러.
-          example: '2000'
+          type: integer
+          description: 정상은 2000. 그 외는 에러.
+          example: 2000
         resultMessage:
           type: string
-          example: '정상'
+          example: '성공하였습니다.'
         data:
           nullable: true
+        extraBoolean:
+          type: boolean
+          description: 백엔드가 항상 내려주지만 클라이언트는 무시. 타입·존재만 명시.
+          example: false
 
     EnvelopeNull:
       allOf:
@@ -191,7 +233,7 @@ components:
         - type: object
           properties:
             resultCode:
-              example: '9999'
+              example: 9999
             resultMessage:
               example: '오더 정보를 찾을 수 없습니다.'
             data:
@@ -259,21 +301,21 @@ components:
 
     Technician:
       type: object
-      required: [spotWrkUserId, spotWrkUserNm, spotWrkUserHpNo, spotWrkUserPic]
+      required: [workerName, workerPhoneNumber, workerPhotoUrl]
       properties:
-        spotWrkUserId:
+        workerName:
           type: string
-          example: '82273967'
-        spotWrkUserNm:
+          example: '허슈미'
+        workerPhoneNumber:
           type: string
-          example: '염수홍'
-        spotWrkUserHpNo:
+          description: 하이픈 포함 또는 미포함 (백엔드 응답 그대로). 클라이언트 tel 링크 시 숫자만 추출
+          example: '010-2222-3333'
+        workerPhotoUrl:
           type: string
-          example: '01000000000'
-        spotWrkUserPic:
-          type: string
-          description: 작업자 사진 정적 경로
-          example: '/order/images/workers/1O2026050712345'
+          description: 작업자 사진 정적 경로 (없으면 빈 문자열)
+          example: '/images/workers/1O202410230FF20'
+      # 비고: 이전 스키마는 spotWrkUserId/Nm/HpNo/Pic. 백엔드 실 응답이 worker* 필드명으로
+      # 평탄화되어 있어 갱신. ID 필드는 응답에 없음.
 
     EnvelopeTechnician:
       allOf:
@@ -282,3 +324,65 @@ components:
           properties:
             data:
               $ref: '#/components/schemas/Technician'
+
+    ReservationDetail:
+      type: object
+      required:
+        - customerName
+        - reservationDate
+        - reservationTimeOfDay
+        - spotWorkTypeCode
+        - sameTimeOrderCount
+        - orders
+      properties:
+        customerName:
+          type: string
+          description: 고객명
+          example: '삼준식'
+        reservationDate:
+          type: string
+          description: |
+            예약일시 (`YYYY-MM-DD HH:MM:SS`). datetime 형식이지만 시각 부분은 의미 없음.
+            실제 시간대는 `reservationTimeOfDay` 별도 필드.
+          example: '2025-12-13 00:00:00'
+        reservationTimeOfDay:
+          type: string
+          description: 예약 시간대 (`HHMM`, 정시 기준)
+          pattern: '^\d{4}$'
+          example: '0900'
+        spotWorkTypeCode:
+          type: string
+          description: |
+            현장작업 종류 코드 (정수 문자열).
+            의미 매핑 미확정 — 백엔드 합의 필요 ("1" → ?).
+          example: '1'
+        sameTimeOrderCount:
+          type: integer
+          description: 동시건수 (orders 길이와 같을 것으로 추정)
+          example: 6
+        orders:
+          type: array
+          description: 같은 시간대 묶음 오더 목록
+          items:
+            $ref: '#/components/schemas/ReservationOrder'
+
+    ReservationOrder:
+      type: object
+      required: [workReceiptNo, serviceName]
+      properties:
+        workReceiptNo:
+          type: string
+          description: 작업접수번호
+          example: '1O202410230FF20'
+        serviceName:
+          type: string
+          description: 상품(서비스)명
+          example: '에센스/베이직 인터넷'
+
+    EnvelopeReservationDetail:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/ReservationDetail'

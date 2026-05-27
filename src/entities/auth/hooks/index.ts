@@ -9,10 +9,6 @@ export function useIsAuthenticated(): boolean {
   return useAuthStore((state) => state.isAuthenticated);
 }
 
-export function useWrkRcpNo(): string | null {
-  return useAuthStore((state) => state.wrkRcpNo);
-}
-
 /* 마스킹 연락처 조회 */
 export function useMaskedCustPhone(wrkRcpNo: string | null) {
   return useQuery({

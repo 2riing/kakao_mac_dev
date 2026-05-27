@@ -85,3 +85,14 @@ button, a, [role="button"] {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
 }
+
+/* 작업자 사진 placeholder — 대각 stripe */
+.bg-stripe-placeholder {
+  background: repeating-linear-gradient(
+    135deg,
+    var(--color-kt-gray-100) 0,
+    var(--color-kt-gray-100) 8px,
+    white 8px,
+    white 16px
+  );
+}

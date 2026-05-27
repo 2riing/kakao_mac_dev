@@ -1,7 +1,6 @@
 export { useAuthStore } from "./store";
 export {
   useIsAuthenticated,
-  useWrkRcpNo,
   useMaskedCustPhone,
   useRequestOtp,
   useVerifyOtp,

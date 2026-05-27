@@ -47,7 +47,7 @@ function LoginOtpPage() {
     return <Navigate to="/error" state={{ code: "INVALID_ENTRY" }} replace />;
   }
 
-  const canVerify = sent && otp.length >= 4;
+  const canVerify = sent && otp.length === 6;
 
   function handleSendOtp() {
     requestOtp(

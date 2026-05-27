@@ -43,11 +43,7 @@ const PHOTO_SIZE = {
 function PhotoPlaceholder({ variant }: { variant: Layout }) {
   return (
     <div
-      className={`shrink-0 rounded-[10px] border border-kt-gray-200 flex items-center justify-center overflow-hidden ${PHOTO_SIZE[variant]}`}
-      style={{
-        background:
-          "repeating-linear-gradient(135deg, var(--color-kt-gray-100), var(--color-kt-gray-100) 8px, white 8px, white 16px)",
-      }}
+      className={`shrink-0 rounded-[10px] border border-kt-gray-200 flex items-center justify-center overflow-hidden bg-stripe-placeholder ${PHOTO_SIZE[variant]}`}
     >
       <svg width="30" height="30" viewBox="0 0 36 36" fill="none">
         <circle cx="18" cy="13" r="6.5" fill="var(--color-kt-gray-300)" />

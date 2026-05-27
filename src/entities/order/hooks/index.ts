@@ -2,23 +2,11 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   confirmReservation,
   getAvailability,
-  getOrderStatus,
   getReservationByWrkRcpNo,
   getWorker,
   patchReservation,
 } from "../api";
 import type { ReservationPatchPayload } from "../types";
-
-export function useOrderStatus(
-  wrkRcpNo: string | null,
-  reservationDate: string | null,
-) {
-  return useQuery({
-    queryKey: ["order", "status", wrkRcpNo, reservationDate],
-    queryFn: () => getOrderStatus(wrkRcpNo!, reservationDate!),
-    enabled: !!wrkRcpNo && !!reservationDate,
-  });
-}
 
 export function useWorker(wrkRcpNo: string | null) {
   return useQuery({

@@ -1,12 +1,5 @@
 import { DAY_NAMES_KO } from "./calendar";
 
-export function formatPhoneNumber(raw: string): string {
-  const digits = raw.replace(/\D/g, "").slice(0, 11);
-  if (digits.length < 4) return digits;
-  if (digits.length < 8) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
-  return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
-}
-
 // "2026-05-25" → "2026년 5월 25일 (월)"
 export function formatVisitDate(isoDate: string): string {
   const [y, m, d] = isoDate.split("-").map(Number);

@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router";
-import { useReservation, useConfirmReservation } from "@entities/order";
+import { useNavigate } from "react-router";
+import {
+  useConfirmReservation,
+  useReservation,
+  useValidatedOrderParams,
+} from "@entities/order";
 import { ReservationInfoCard } from "@components/order";
 import { formatVisitDate, formatTimeRange } from "@shared/lib/formatters";
-import { isValidWrkRcpNo } from "@shared/lib/validators";
 import ScreenContainer from "@shared/ui/ScreenContainer";
 import BottomFixedBar from "@shared/ui/BottomFixedBar";
 import PrimaryButton from "@shared/ui/PrimaryButton";
@@ -16,26 +19,13 @@ type Stage = "view" | "done";
 
 function ReservationConfirmPage() {
   const navigate = useNavigate();
-  const { wrkRcpNo = "" } = useParams<{
-    wrkRcpNo: string;
-    reservationDate: string;
-  }>();
+  const { wrkRcpNo, isValid } = useValidatedOrderParams();
 
   const [stage, setStage] = useState<Stage>("view");
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const isFormatValid = isValidWrkRcpNo(wrkRcpNo);
-  const reservationQuery = useReservation(isFormatValid ? wrkRcpNo : null);
+  const reservationQuery = useReservation(isValid ? wrkRcpNo : null);
   const confirmMutation = useConfirmReservation();
-
-  useEffect(() => {
-    if (!isFormatValid) {
-      navigate("/error", {
-        replace: true,
-        state: { code: "ORDER_INVALID" },
-      });
-    }
-  }, [isFormatValid, navigate]);
 
   useEffect(() => {
     if (reservationQuery.isError) {

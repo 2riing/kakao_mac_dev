@@ -1,31 +1,21 @@
 import { useEffect } from "react";
-import { useNavigate, useParams } from "react-router";
-import { useReservation, useWorker } from "@entities/order";
+import { useNavigate } from "react-router";
+import {
+  useReservation,
+  useValidatedOrderParams,
+  useWorker,
+} from "@entities/order";
 import { ReservationInfoCard, WorkerCard } from "@components/order";
-import { isValidWrkRcpNo } from "@shared/lib/validators";
 import ScreenContainer from "@shared/ui/ScreenContainer";
 import CSNote from "@shared/ui/CSNote";
 import Spinner from "@shared/ui/Spinner";
 
 function TodayVisitPage() {
   const navigate = useNavigate();
-  const { wrkRcpNo = "" } = useParams<{
-    wrkRcpNo: string;
-    reservationDate: string;
-  }>();
+  const { wrkRcpNo, isValid } = useValidatedOrderParams();
 
-  const isFormatValid = isValidWrkRcpNo(wrkRcpNo);
-  const reservationQuery = useReservation(isFormatValid ? wrkRcpNo : null);
-  const workerQuery = useWorker(isFormatValid ? wrkRcpNo : null);
-
-  useEffect(() => {
-    if (!isFormatValid) {
-      navigate("/error", {
-        replace: true,
-        state: { code: "ORDER_INVALID" },
-      });
-    }
-  }, [isFormatValid, navigate]);
+  const reservationQuery = useReservation(isValid ? wrkRcpNo : null);
+  const workerQuery = useWorker(isValid ? wrkRcpNo : null);
 
   useEffect(() => {
     if (reservationQuery.isError || workerQuery.isError) {

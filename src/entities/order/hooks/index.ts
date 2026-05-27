@@ -1,4 +1,7 @@
+import { useEffect } from "react";
+import { useNavigate, useParams } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { isValidWrkRcpNo } from "@shared/lib/validators";
 import {
   confirmReservation,
   getAvailability,
@@ -7,6 +10,32 @@ import {
   patchReservation,
 } from "../api";
 import type { ReservationPatchPayload } from "../types";
+
+// 라우트 파라미터 검증 + invalid 시 /error(ORDER_INVALID) 자동 리다이렉트.
+// 모든 order 도메인 페이지가 동일 가드를 갖도록 통일.
+export function useValidatedOrderParams(): {
+  wrkRcpNo: string;
+  reservationDate: string;
+  isValid: boolean;
+} {
+  const navigate = useNavigate();
+  const { wrkRcpNo = "", reservationDate = "" } = useParams<{
+    wrkRcpNo: string;
+    reservationDate: string;
+  }>();
+  const isValid = isValidWrkRcpNo(wrkRcpNo);
+
+  useEffect(() => {
+    if (!isValid) {
+      navigate("/error", {
+        replace: true,
+        state: { code: "ORDER_INVALID" },
+      });
+    }
+  }, [isValid, navigate]);
+
+  return { wrkRcpNo, reservationDate, isValid };
+}
 
 export function useWorker(wrkRcpNo: string | null) {
   return useQuery({

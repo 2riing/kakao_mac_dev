@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router";
-import { useReservation } from "@entities/order";
+import { useLocation, useNavigate } from "react-router";
+import { useReservation, useValidatedOrderParams } from "@entities/order";
 import {
   ReservationDateStep,
   ReservationDoneStep,
@@ -39,12 +39,9 @@ function parseReservationDate(raw: string): {
 }
 
 function OrderDetailViewPage() {
-  const { wrkRcpNo, reservationDate } = useParams<{
-    wrkRcpNo: string;
-    reservationDate: string;
-  }>();
   const location = useLocation();
   const navigate = useNavigate();
+  const { wrkRcpNo, reservationDate, isValid } = useValidatedOrderParams();
 
   // 카카오 [예약 변경] 알림톡 진입 시 변경 흐름 직진
   const isChangeEntry = location.pathname.endsWith("/change");
@@ -52,7 +49,7 @@ function OrderDetailViewPage() {
   const [selDate, setSelDate] = useState<string | null>(null);
   const [selTime, setSelTime] = useState<string | null>(null);
 
-  const reservationQuery = useReservation(wrkRcpNo ?? null);
+  const reservationQuery = useReservation(isValid ? wrkRcpNo : null);
 
   useEffect(() => {
     if (step === "view" && reservationQuery.isError) {
@@ -63,16 +60,8 @@ function OrderDetailViewPage() {
     }
   }, [step, reservationQuery.isError, navigate]);
 
-  if (!wrkRcpNo || !reservationDate) {
-    return (
-      <ScreenContainer>
-        <main className="p-4">
-          <h1 className="text-xl font-bold mb-4">잘못된 진입</h1>
-          <p className="text-kt-gray-500">필수 파라미터가 누락되었습니다.</p>
-        </main>
-      </ScreenContainer>
-    );
-  }
+  // useValidatedOrderParams가 invalid 시 /error로 navigate. navigate 처리되는 동안 짧게 null
+  if (!isValid) return null;
 
   const prevInfo = parseReservationDate(reservationDate);
 

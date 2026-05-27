@@ -3,6 +3,7 @@ export {
   useChangeReservation,
   useConfirmReservation,
   useReservation,
+  useValidatedOrderParams,
   useWorker,
 } from "./hooks";
 export { getSpotWrkTypeLabel } from "./config/labels";

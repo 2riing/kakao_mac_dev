@@ -29,7 +29,7 @@ const mockRules: MockRule[] = [
   // reservation
   { method: "GET",  pattern: /\/reservations\/[^/]+\/availability/,   data: availabilityMock },
   { method: "GET",  pattern: /\/reservations\/[^/]+$/,                data: () => pickRandom(reservationMock.candidates) },
-  { method: "PATCH", pattern: /\/reservations$/,                      data: { ok: true, updatedCnt: 1 } },
+  { method: "PATCH", pattern: /\/reservations\/[^/]+$/,               data: { ok: true, updatedCnt: 1 } },
   { method: "POST", pattern: /\/reservations\/[^/]+\/confirm$/,       data: { ok: true } },
 ];
 

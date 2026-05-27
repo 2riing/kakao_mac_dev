@@ -17,6 +17,7 @@ interface ReservationTimeStepProps {
   selDate: string; // "YYYY-MM-DD"
   onNext: (rsrvTod: string) => void;
   onBack: () => void;
+  onError: () => void; // 변경 mutation 실패 시 호출 (부모가 /error 등으로 처리)
 }
 
 const TIME_SLOTS = [
@@ -58,6 +59,7 @@ function ReservationTimeStep({
   selDate,
   onNext,
   onBack,
+  onError,
 }: ReservationTimeStepProps) {
   // 1단계(DateStep)에서 받은 availability 캐시 재사용 — 동일 from/to/window 필수
   const fromYmd = todayYmd();
@@ -84,7 +86,7 @@ function ReservationTimeStep({
       { wrkRcpNo, payload: { rsrvDate: selDate, rsrvTod: selTime } },
       {
         onSuccess: () => onNext(selTime),
-        onError: () => onNext(selTime), // mock 환경: 일단 진행
+        onError: () => onError(),
       },
     );
   }

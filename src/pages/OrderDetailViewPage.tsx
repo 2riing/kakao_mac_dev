@@ -135,6 +135,12 @@ function OrderDetailViewPage() {
             setStep("done");
           }}
           onBack={() => setStep("date")}
+          onError={() =>
+            navigate("/error", {
+              replace: true,
+              state: { code: "CHANGE_FAILED" },
+            })
+          }
         />
       )}
 

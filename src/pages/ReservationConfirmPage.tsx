@@ -5,14 +5,13 @@ import {
   useReservation,
   useValidatedOrderParams,
 } from "@entities/order";
-import { ReservationInfoCard } from "@components/order";
+import { ReservationDoneStep, ReservationInfoCard } from "@components/order";
 import { formatVisitDate, formatTimeRange } from "@shared/lib/formatters";
 import ScreenContainer from "@shared/ui/ScreenContainer";
 import BottomFixedBar from "@shared/ui/BottomFixedBar";
 import PrimaryButton from "@shared/ui/PrimaryButton";
 import Spinner from "@shared/ui/Spinner";
 import CSNote from "@shared/ui/CSNote";
-import CheckIcon from "@shared/ui/CheckIcon";
 import ConfirmDialog from "@shared/ui/ConfirmDialog";
 
 type Stage = "view" | "done";
@@ -67,23 +66,11 @@ function ReservationConfirmPage() {
   if (stage === "done") {
     return (
       <ScreenContainer>
-        <div className="h-[52px] bg-white flex items-center justify-center border-b border-kt-border shrink-0">
-          <span className="text-[16px] font-bold text-kt-ink">예약 확정</span>
-        </div>
-
-        <div className="flex-1 flex flex-col items-center justify-center px-6">
-          <CheckIcon />
-          <div className="mt-[18px] mb-2 text-[20px] font-bold text-kt-ink">
-            예약이 확정되었습니다
-          </div>
-          <div className="mb-6 text-[13px] text-kt-gray-500 text-center leading-[1.7]">
-            방문 당일 예약 정보를
-            <br />
-            별도로 안내드립니다.
-          </div>
-
-          <ReservationInfoCard reservation={reservation} variant="summary" />
-        </div>
+        <ReservationDoneStep
+          variant="confirmed"
+          date={reservation.rsrvDate}
+          time={reservation.rsrvTod}
+        />
       </ScreenContainer>
     );
   }

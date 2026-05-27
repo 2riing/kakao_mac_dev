@@ -81,9 +81,10 @@
 | customerName            | custNm               | 고객명             | |
 | reservationDate         | rsrvDate (+시각)     | 예약일시           | `"YYYY-MM-DD HH:MM:SS"` datetime. 시각 부분 의미 없음 |
 | reservationTimeOfDay    | rsrvTod              | 예약 시간대        | `"HHMM"` 정시 기준. 기존 `"HH:MM"`과 다름 |
-| spotWorkTypeCode        | spotWrkTypeCd        | 현장작업 종류코드  | 값이 `"1"` 같은 정수문자열 — 의미 매핑 미정 |
+| spotWorkTypeCode        | spotWrkTypeCd        | 현장작업 종류코드  | reservation 단위. `"1"`=개통 / `"2"`=수리. 그 외 코드 백엔드 확인 |
 | sameTimeOrderCount      | smtCnt               | 동시건수           | `orders.length`와 동일 추정 |
 | serviceName             | prodDescNm (추정)    | 상품(서비스)명     | 풀이름과 사내 약어 의미 살짝 다름 — 백엔드 확인 |
+| serviceLctgName         | svcLctgNm            | 서비스 카테고리명  | **백엔드 인계 요청 중** — orders 안 옵셔널. 값 후보: "인터넷"/"인터넷전화"/"TV"/"IoT" |
 | extraBoolean            | -                    | 미정 부가 플래그   | envelope에 동반. 클라이언트는 무시 |
 
 응답 envelope:

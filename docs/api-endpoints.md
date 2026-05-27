@@ -24,9 +24,13 @@
 | GET | `/api/order/status/{wrkRcpNo}?reservationDate=YYYYMMDDHHMM` | 오더 상태 조회 |
 | GET | `/api/order/worker/{wrkRcpNo}` | 작업자 정보 조회 (당일방문 시만) |
 
-### reservation — 예약 (미정)
+### reservation — 예약
 
-백엔드 확정 후 추가 예정.
+| Method | Path | 설명 |
+|--------|------|------|
+| GET | `/api/reservation/{workReceiptNo}` | 예약 상세 조회 (토큰 필요) |
+
+응답 필드명은 풀이름 camelCase (`customerName`, `reservationDate`, `reservationTimeOfDay`, `spotWorkTypeCode`, `sameTimeOrderCount`, `orders[{workReceiptNo, serviceName}]`). 자세히는 `docs/api.yaml`의 `ReservationDetail` 스키마 + `docs/naming-conventions.md`의 "백엔드 풀이름 매핑" 참조.
 
 ## 풀 URL 예시 (개발 서버, 실제 백엔드 기준)
 
@@ -44,15 +48,17 @@ GET   https://api-dev.example.com/api/order/worker/{wrkRcpNo}
 ```
 - 작업자 사진은 위 worker 응답에 URL 필드로 포함됨 (정적 경로 예: `/order/images/workers/{wrkRcpNo}`)
 
-### reservation(미정)
+### reservation
 ```
+GET   https://api-dev.example.com/api/reservation/{workReceiptNo}
 ```
+- 응답: `docs/api.yaml`의 `EnvelopeReservationDetail`
+- 토큰 필요 (Authorization: Bearer 또는 Set-Cookie)
 
 ## 도메인 → 코드 위치 매핑
 
 | 도메인 | 파일 |
 |--------|------|
-| auth | `src/entities/auth/api.ts` |
-| order | `src/entities/order/api.ts` (작업자 포함) |
-| reservation | `src/entities/reservation/api.ts` |
+| auth | `src/entities/auth/api/index.ts` |
+| order | `src/entities/order/api/index.ts` (작업자·예약 상세 포함) |
 

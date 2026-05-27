@@ -97,7 +97,7 @@ function LoginOtpPage() {
           maskedPhone={maskedPhone}
           sent={sent}
           loading={sendLoading}
-          cooldownSeconds={timer}
+          cooldownSeconds={sent ? timer : 0}
           onSend={handleSendOtp}
         />
 

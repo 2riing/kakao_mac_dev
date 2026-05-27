@@ -42,6 +42,9 @@ interface UseOtpTimerReturn {
   reset: () => void;
 }
 
+// dev에선 100ms마다 -1 (10배 가속). 180초 → 18초만에 종료. 비율 유지라 색 전환·UI 흐름 그대로.
+const TICK_MS = import.meta.env.DEV ? 100 : 1000;
+
 export function useOtpTimer(duration: number = 180): UseOtpTimerReturn {
   const [timer, setTimer] = useState(duration);
   const [running, setRunning] = useState(false);
@@ -49,7 +52,7 @@ export function useOtpTimer(duration: number = 180): UseOtpTimerReturn {
 
   useEffect(() => {
     if (running && timer > 0) {
-      timerRef.current = setTimeout(() => setTimer((t) => t - 1), 1000);
+      timerRef.current = setTimeout(() => setTimer((t) => t - 1), TICK_MS);
       return () => {
         if (timerRef.current) clearTimeout(timerRef.current);
       };

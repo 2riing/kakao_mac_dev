@@ -22,12 +22,8 @@ function PhoneRequestRow({
 
   function renderLabel() {
     if (loading) return <Spinner />;
-    if (cooling) {
-      const mm = String(Math.floor(cooldownSeconds / 60)).padStart(2, "0");
-      const ss = String(cooldownSeconds % 60).padStart(2, "0");
-      return `재발송 (${mm}:${ss})`;
-    }
-    return sent ? "재발송" : "인증번호 받기";
+    if (sent || cooling) return "재발송";
+    return "인증번호 받기";
   }
 
   return (

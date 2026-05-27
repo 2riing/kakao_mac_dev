@@ -39,6 +39,7 @@ https://oss-customer-kakao-web.vercel.app   (main 자동 배포, stable URL)
 | [01-reservation-change.md](./01-reservation-change.md) | `/order/reservation/.../change` | OTP → 캘린더 → 시간대 → 변경 완료 |
 | [02-reservation-confirm.md](./02-reservation-confirm.md) | `/order/confirm/...` | 예약 정보 → ConfirmDialog → 확정 완료 |
 | [03-guards.md](./03-guards.md) | 비정상 진입 | AuthGuard·진입 가드·에러 코드 분기 |
+| [04-login-otp.md](./04-login-otp.md) | `/login` (AuthGuard 경유) | OTP 발송·검증·throttle·에러 매트릭스 |
 
 ## 🔗 전체 테스트 URL 풀 리스트
 

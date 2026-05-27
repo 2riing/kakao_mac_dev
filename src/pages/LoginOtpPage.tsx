@@ -36,8 +36,10 @@ function LoginOtpPage() {
   const { data: maskedPhone = "" } = useMaskedCustPhone(entryWrkRcpNo);
   const [sent, setSent] = useState(false);
   const [otp, setOtp] = useState("");
-  const { mutate: requestOtp, isPending: sendLoading } = useRequestOtp();
-  const { mutate: verifyOtp, isPending: verifyLoading } = useVerifyOtp();
+  const requestMutation = useRequestOtp();
+  const verifyMutation = useVerifyOtp();
+  const { mutate: requestOtp, isPending: sendLoading } = requestMutation;
+  const { mutate: verifyOtp, isPending: verifyLoading } = verifyMutation;
   const { timer, start: startTimer } = useOtpTimer(180);
 
   // 가드 — 정상 카카오 진입이 아니면 차단
@@ -69,6 +71,10 @@ function LoginOtpPage() {
           setAuthenticated(entryWrkRcpNo!);
           navigate(from!.pathname + from!.search, { replace: true });
         },
+        onError: () => {
+          // 검증 실패 시 입력 클리어해서 재입력 유도. 메시지는 verifyMutation.error로 표시
+          setOtp("");
+        },
       },
     );
   }
@@ -91,11 +97,23 @@ function LoginOtpPage() {
           maskedPhone={maskedPhone}
           sent={sent}
           loading={sendLoading}
+          cooldownSeconds={timer}
           onSend={handleSendOtp}
         />
 
+        {requestMutation.isError && (
+          <div className="text-xs text-kt-warn-urgent mb-2 -mt-1.5 font-medium">
+            {requestMutation.error?.message ?? "인증번호 발송에 실패했습니다."}
+          </div>
+        )}
+
         {sent && (
-          <OtpField value={otp} onChange={setOtp} timer={timer} />
+          <OtpField
+            value={otp}
+            onChange={setOtp}
+            timer={timer}
+            errorMessage={verifyMutation.error?.message}
+          />
         )}
 
         <CSNote />

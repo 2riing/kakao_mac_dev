@@ -5,6 +5,8 @@ interface PhoneRequestRowProps {
   maskedPhone: string;
   sent: boolean;
   loading: boolean;
+  // > 0이면 재발송 쿨다운 — 버튼 disabled + 라벨에 mm:ss 표시
+  cooldownSeconds?: number;
   onSend: () => void;
 }
 
@@ -12,28 +14,38 @@ function PhoneRequestRow({
   maskedPhone,
   sent,
   loading,
+  cooldownSeconds = 0,
   onSend,
 }: PhoneRequestRowProps) {
+  const cooling = cooldownSeconds > 0;
+  const disabled = loading || cooling;
+
+  function renderLabel() {
+    if (loading) return <Spinner />;
+    if (cooling) {
+      const mm = String(Math.floor(cooldownSeconds / 60)).padStart(2, "0");
+      const ss = String(cooldownSeconds % 60).padStart(2, "0");
+      return `재발송 (${mm}:${ss})`;
+    }
+    return sent ? "재발송" : "인증번호 받기";
+  }
+
   return (
     <div className="mb-3.5">
       <div className="text-xs text-kt-gray-500 mb-[5px] font-medium">
         휴대폰 번호
       </div>
       <div className="flex gap-2">
-        <TextInput
-          value={maskedPhone}
-          readOnly
-          className="flex-1"
-        />
+        <TextInput value={maskedPhone} readOnly className="flex-1" />
         <button
           type="button"
           onClick={onSend}
-          disabled={loading}
+          disabled={disabled}
           className={`w-[110px] h-[46px] bg-kt-red text-white rounded-[10px] text-[13px] font-bold tracking-[-0.3px] shrink-0 flex items-center justify-center transition-opacity ${
-            loading ? "opacity-70" : "opacity-100"
+            disabled ? "opacity-60 cursor-not-allowed" : "opacity-100"
           }`}
         >
-          {loading ? <Spinner /> : sent ? "재발송" : "인증번호 받기"}
+          {renderLabel()}
         </button>
       </div>
     </div>

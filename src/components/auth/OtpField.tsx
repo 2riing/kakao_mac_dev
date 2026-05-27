@@ -4,9 +4,10 @@ interface OtpFieldProps {
   value: string;
   onChange: (value: string) => void;
   timer: number;
+  errorMessage?: string;
 }
 
-function OtpField({ value, onChange, timer }: OtpFieldProps) {
+function OtpField({ value, onChange, timer, errorMessage }: OtpFieldProps) {
   const mm = String(Math.floor(timer / 60)).padStart(2, "0");
   const ss = String(timer % 60).padStart(2, "0");
   const timerColorClass =
@@ -36,9 +37,15 @@ function OtpField({ value, onChange, timer }: OtpFieldProps) {
           {mm}:{ss}
         </span>
       </div>
-      <div className="text-xs text-kt-gray-400 mt-[5px] leading-[1.5]">
-        인증번호가 오지 않으면 재발송 버튼을 눌러주세요.
-      </div>
+      {errorMessage ? (
+        <div className="text-xs text-kt-warn-urgent mt-[5px] leading-[1.5] font-medium">
+          {errorMessage}
+        </div>
+      ) : (
+        <div className="text-xs text-kt-gray-400 mt-[5px] leading-[1.5]">
+          인증번호가 오지 않으면 재발송 버튼을 눌러주세요.
+        </div>
+      )}
     </div>
   );
 }

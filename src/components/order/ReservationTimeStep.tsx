@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { useAvailability, useChangeReservation } from "@entities/order";
+import {
+  RESERVATION_CHANGE_WINDOW_DAYS,
+  useAvailability,
+  useChangeReservation,
+} from "@entities/order";
 import { DAY_NAMES_KO } from "@shared/lib/calendar";
 import BackArrow from "@shared/ui/BackArrow";
 import BottomFixedBar from "@shared/ui/BottomFixedBar";
@@ -55,9 +59,9 @@ function ReservationTimeStep({
   onNext,
   onBack,
 }: ReservationTimeStepProps) {
-  // 1단계에서 받은 캐시 재사용
+  // 1단계(DateStep)에서 받은 availability 캐시 재사용 — 동일 from/to/window 필수
   const fromYmd = todayYmd();
-  const toYmd = addDaysYmd(fromYmd, 14);
+  const toYmd = addDaysYmd(fromYmd, RESERVATION_CHANGE_WINDOW_DAYS);
   const { data: availability } = useAvailability(wrkRcpNo, fromYmd, toYmd);
 
   const [selTime, setSelTime] = useState<string | null>(null);

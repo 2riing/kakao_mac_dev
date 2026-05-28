@@ -35,17 +35,18 @@ function useImageLayout(src: string): Layout | null {
   return measured.ratio >= 1 ? "landscape" : "portrait";
 }
 
-const PHOTO_SIZE = {
-  portrait: "w-[88px] h-[112px]",
-  landscape: "w-[152px] h-[92px]",
+// portrait 118×148 r8(증명사진 ~3:4), landscape 폭제한 4:3 r12 가운데(가로 사진)
+const PHOTO_BOX = {
+  portrait: "w-[118px] h-[148px] rounded-lg",
+  landscape: "block w-full max-w-[220px] mx-auto aspect-[4/3] rounded-xl",
 } as const;
 
 function PhotoPlaceholder({ variant }: { variant: Layout }) {
   return (
     <div
-      className={`shrink-0 rounded-[10px] border border-kt-gray-200 flex items-center justify-center overflow-hidden bg-stripe-placeholder ${PHOTO_SIZE[variant]}`}
+      className={`shrink-0 border border-kt-gray-200 flex items-center justify-center overflow-hidden bg-stripe-placeholder ${PHOTO_BOX[variant]}`}
     >
-      <svg width="30" height="30" viewBox="0 0 36 36" fill="none">
+      <svg width="32" height="32" viewBox="0 0 36 36" fill="none">
         <circle cx="18" cy="13" r="6.5" fill="var(--color-kt-gray-300)" />
         <path
           d="M4 33c0-7.732 6.268-14 14-14s14 6.268 14 14"
@@ -72,59 +73,37 @@ function PhotoFrame({
     <img
       src={src}
       alt={alt}
-      className={`shrink-0 rounded-[10px] border border-kt-gray-200 object-cover ${PHOTO_SIZE[variant]}`}
+      className={`shrink-0 border border-kt-gray-200 object-cover ${PHOTO_BOX[variant]}`}
     />
   );
 }
 
-function WorkerNameBlock({ worker }: { worker: Technician }) {
+// 라벨 + 이름 한 블록 — portrait/landscape 공용
+function NameBlock({ name }: { name: string }) {
   return (
-    <div className="flex flex-col justify-center min-w-0">
+    <>
       <div className="text-[11px] text-kt-gray-400 font-semibold tracking-[0.5px] mb-1.5">
         방문 직원
       </div>
-      <div className="text-[20px] font-extrabold text-kt-ink tracking-[-0.3px] leading-[1.2]">
-        {worker.workerName}
+      <div className="text-[18px] font-bold text-kt-ink tracking-[-0.5px]">
+        {name}
       </div>
-    </div>
+    </>
   );
 }
 
-function PhoneCallRow({ phone }: { phone: string }) {
+// 라벨 + tel: 링크 한 블록 — portrait/landscape 공용
+function PhoneBlock({ phone }: { phone: string }) {
   const telHref = `tel:${phone.replace(/\D/g, "")}`;
   return (
-    <a
-      href={telHref}
-      className="flex items-center gap-3 bg-kt-red-light border border-kt-red-border rounded-[10px] px-3.5 py-3 active:opacity-85 transition-opacity"
-    >
-      <span className="w-8 h-8 rounded-full bg-kt-red shrink-0 flex items-center justify-center">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-          <path
-            d="M5 4h4l2 5-3 2c1 2 3 4 5 5l2-3 5 2v4c0 1.1-.9 2-2 2A16 16 0 0 1 3 6c0-1.1.9-2 2-2z"
-            stroke="white"
-            strokeWidth="1.8"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </span>
-      <div className="flex-1 min-w-0">
-        <div className="text-[11px] text-kt-red font-bold tracking-[0.5px] mb-0.5">
-          전화 걸기
-        </div>
-        <div className="text-[15px] font-extrabold text-kt-ink tracking-[-0.3px]">
-          {phone}
-        </div>
+    <>
+      <div className="text-[11px] text-kt-gray-400 font-semibold tracking-[0.5px] mb-1.5">
+        연락처
       </div>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-        <path
-          d="M9 5l7 7-7 7"
-          stroke="#aaaaaa"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </a>
+      <a href={telHref} className="text-[18px] font-bold text-kt-ink tracking-[-0.5px]">
+        {phone}
+      </a>
+    </>
   );
 }
 
@@ -142,14 +121,16 @@ function CardShell({ children }: { children: React.ReactNode }) {
 function WorkerCardSkeleton() {
   return (
     <CardShell>
-      <div className="flex gap-3.5 animate-pulse mb-3.5">
-        <div className="w-[88px] h-[112px] rounded-[10px] bg-kt-gray-100" />
-        <div className="flex-1 flex flex-col justify-center gap-2">
+      <div className="flex gap-4 items-center animate-pulse px-0.5 py-1">
+        <div className="w-[108px] h-[144px] rounded-lg bg-kt-gray-100" />
+        <div className="flex-1 flex flex-col gap-2">
           <div className="h-3 w-12 bg-kt-gray-100 rounded" />
-          <div className="h-5 w-20 bg-kt-gray-100 rounded" />
+          <div className="h-6 w-24 bg-kt-gray-100 rounded" />
+          <div className="h-px bg-kt-gray-100 my-1" />
+          <div className="h-3 w-10 bg-kt-gray-100 rounded" />
+          <div className="h-4 w-28 bg-kt-gray-100 rounded" />
         </div>
       </div>
-      <div className="h-[58px] bg-kt-gray-100 rounded-[10px] animate-pulse" />
     </CardShell>
   );
 }
@@ -164,7 +145,8 @@ function WorkerCard({ worker }: WorkerCardProps) {
   return (
     <CardShell>
       {layout === "portrait" ? (
-        <div className="flex gap-3.5 mb-3.5">
+        // 증명사진형: 세로 사진(좌) + 정보(우, 라벨/이름/구분선/라벨/전화)
+        <div className="flex gap-4 items-center px-0.5 py-1">
           {hasPic ? (
             <PhotoFrame
               src={worker.workerPhotoUrl}
@@ -174,27 +156,34 @@ function WorkerCard({ worker }: WorkerCardProps) {
           ) : (
             <PhotoPlaceholder variant="portrait" />
           )}
-          <WorkerNameBlock worker={worker} />
+          <div className="flex-1 flex flex-col min-w-0">
+            <NameBlock name={worker.workerName} />
+            <div className="h-px bg-kt-gray-200 my-2.5" />
+            <PhoneBlock phone={worker.workerPhoneNumber} />
+          </div>
         </div>
       ) : (
-        <div className="flex flex-col items-center gap-3 mb-3.5">
-          <PhotoFrame
-            src={worker.workerPhotoUrl}
-            alt={worker.workerName}
-            variant="landscape"
-          />
-          <div className="w-full text-center">
-            <div className="text-[11px] text-kt-gray-400 font-semibold tracking-[0.5px] mb-1">
-              방문 직원
+        // 명함형: 가로 사진(상단 풀폭) + 정보(하단, 방문직원 | 연락처 좌우 split)
+        <div>
+          {hasPic ? (
+            <PhotoFrame
+              src={worker.workerPhotoUrl}
+              alt={worker.workerName}
+              variant="landscape"
+            />
+          ) : (
+            <PhotoPlaceholder variant="landscape" />
+          )}
+          <div className="flex justify-between items-end gap-3 mt-4">
+            <div className="min-w-0 flex-1">
+              <NameBlock name={worker.workerName} />
             </div>
-            <div className="text-[20px] font-extrabold text-kt-ink tracking-[-0.3px]">
-              {worker.workerName}
+            <div className="text-right">
+              <PhoneBlock phone={worker.workerPhoneNumber} />
             </div>
           </div>
         </div>
       )}
-
-      <PhoneCallRow phone={worker.workerPhoneNumber} />
     </CardShell>
   );
 }

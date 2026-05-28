@@ -52,6 +52,7 @@ URL은 `/error`로 고정. code는 `navigate('/error', { state: { code } })`로 
 | `INVALID_ENTRY` | /login 직접 진입 | "비정상적인 접근입니다" |
 | `ORDER_INVALID` | wrkRcpNo 형식 invalid / 오더 조회 실패 | "예약 정보를 확인할 수 없습니다" |
 | `CONFIRM_FAILED` | 예약 확정 API 실패 | "예약 확정에 실패했습니다" |
+| `CHANGE_FAILED` | 예약 변경 API 실패 | "예약 변경에 실패했습니다" |
 | `NETWORK` | 네트워크 오류 (예약) | "네트워크 오류" |
 | (없음 / 알 수 없음) | state 휘발·직접 진입 | "오류가 발생했습니다" (UNKNOWN) |
 

@@ -19,6 +19,10 @@ export const ERROR_PAGE_MESSAGES: Record<
     title: "예약 확정에 실패했습니다",
     desc: "잠시 후 다시 시도해 주세요.\n계속 실패하면 고객센터로 문의해 주세요.",
   },
+  CHANGE_FAILED: {
+    title: "예약 변경에 실패했습니다",
+    desc: "잠시 후 다시 시도해 주세요.\n계속 실패하면 고객센터로 문의해 주세요.",
+  },
   NETWORK: {
     title: "네트워크 오류",
     desc: "네트워크 상태를 확인하고\n다시 시도해 주세요.",

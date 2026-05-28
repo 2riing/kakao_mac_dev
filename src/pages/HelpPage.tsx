@@ -4,19 +4,15 @@ import BottomFixedBar from "@shared/ui/BottomFixedBar";
 import PrimaryButton from "@shared/ui/PrimaryButton";
 import SecondaryButton from "@shared/ui/SecondaryButton";
 import TabStrip from "@shared/ui/TabStrip";
-import CheckIcon from "@shared/ui/CheckIcon";
 import CSNote from "@shared/ui/CSNote";
 import { HELP_DATA, PRODUCT_TABS, type ProductKey, type HelpStep } from "./HelpPage.data";
 
-type Stage = "guide" | "resolved" | "unresolved";
+type Stage = "guide" | "unresolved";
 
 function HelpPage() {
   const [product, setProduct] = useState<ProductKey>("internet");
   const [stage, setStage] = useState<Stage>("guide");
 
-  if (stage === "resolved") {
-    return <ResolvedScreen onBack={() => setStage("guide")} />;
-  }
   if (stage === "unresolved") {
     return <UnresolvedScreen onBack={() => setStage("guide")} />;
   }
@@ -141,42 +137,6 @@ function ProductIcon({ kind }: { kind: ProductKey }) {
         </svg>
       )}
     </span>
-  );
-}
-
-function ResolvedScreen({ onBack }: { onBack: () => void }) {
-  return (
-    <ScreenContainer>
-      <TopBar title="해결 완료" />
-      <div className="flex-1 flex flex-col items-center justify-center px-7 text-center">
-        <CheckIcon />
-        <div className="text-[21px] font-extrabold text-kt-ink mt-[18px] mb-2.5 tracking-[-0.5px]">
-          도움이 되셨다니 다행이에요
-        </div>
-        <div className="text-[13.5px] text-kt-gray-500 leading-[1.7] tracking-[-0.2px] mb-[22px]">
-          앞으로 같은 문제가 생기시면<br />
-          언제든 이 페이지를 다시 찾아주세요.
-        </div>
-
-        <div className="w-full bg-white border border-kt-border rounded-[12px] px-4 py-3.5 text-left">
-          <div className="text-[12px] text-kt-gray-400 font-bold tracking-[0.5px] mb-2">
-            TIP
-          </div>
-          <div className="text-[13px] text-kt-gray-700 leading-[1.65]">
-            모뎀과 공유기는 한 달에 한 번 정도 재부팅해 주시면<br />
-            더 안정적으로 이용하실 수 있어요.
-          </div>
-        </div>
-
-        <div className="mt-[18px] text-[12.5px] text-kt-gray-400 leading-[1.6]">
-          잠시 후 카카오톡으로 자동으로 이동됩니다.
-        </div>
-      </div>
-
-      <BottomFixedBar>
-        <PrimaryButton onClick={onBack}>카카오톡으로 돌아가기</PrimaryButton>
-      </BottomFixedBar>
-    </ScreenContainer>
   );
 }
 

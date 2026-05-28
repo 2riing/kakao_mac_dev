@@ -1,11 +1,12 @@
 import { useState } from "react";
 import ScreenContainer from "@shared/ui/ScreenContainer";
+import PageHeader from "@shared/ui/PageHeader";
 import BottomFixedBar from "@shared/ui/BottomFixedBar";
 import PrimaryButton from "@shared/ui/PrimaryButton";
 import SecondaryButton from "@shared/ui/SecondaryButton";
 import TabStrip from "@shared/ui/TabStrip";
 import CSNote from "@shared/ui/CSNote";
-import { HELP_DATA, PRODUCT_TABS, type ProductKey, type HelpStep } from "./HelpPage.data";
+import { HELP_DATA, PRODUCT_TABS, type ProductKey, type HelpStep } from "@entities/help";
 
 type Stage = "guide" | "unresolved";
 
@@ -21,7 +22,7 @@ function HelpPage() {
 
   return (
     <ScreenContainer>
-      <TopBar title="조치방법 안내" />
+      <PageHeader title="조치방법 안내" />
 
       <TabStrip<ProductKey>
         value={product}
@@ -57,14 +58,6 @@ function HelpPage() {
         </SecondaryButton>
       </BottomFixedBar>
     </ScreenContainer>
-  );
-}
-
-function TopBar({ title }: { title: string }) {
-  return (
-    <div className="h-[52px] bg-white flex items-center justify-center border-b border-kt-border shrink-0">
-      <span className="text-[16px] font-bold text-kt-ink">{title}</span>
-    </div>
   );
 }
 
@@ -143,7 +136,7 @@ function ProductIcon({ kind }: { kind: ProductKey }) {
 function UnresolvedScreen({ onBack }: { onBack: () => void }) {
   return (
     <ScreenContainer>
-      <TopBar title="상담 신청" />
+      <PageHeader title="상담 신청" />
       <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 pt-5 pb-4">
         <div className="text-center mt-2 mb-[22px]">
           <div className="text-[19px] font-extrabold text-kt-ink mb-2 tracking-[-0.5px]">

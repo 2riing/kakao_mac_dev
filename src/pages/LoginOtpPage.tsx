@@ -8,7 +8,13 @@ import {
   useRequestOtp,
   useVerifyOtp,
 } from "@entities/auth";
+import {
+  useOrderStatus,
+  isEntryAllowed,
+  type OrderEntryKind,
+} from "@entities/order";
 import { getErrorMessage } from "@shared/lib/getErrorMessage";
+import { WRK_RCP_NO_PATTERN } from "@shared/lib/regex";
 import { INLINE_MESSAGES } from "@shared/config/messages";
 import KTLogo from "@shared/ui/KTLogo";
 import Spinner from "@shared/ui/Spinner";
@@ -19,10 +25,9 @@ import PrimaryButton from "@shared/ui/PrimaryButton";
 import { PhoneRequestRow, OtpField } from "@components/auth";
 
 // AuthGuard가 박은 state.from URL에서 wrkRcpNo 추출.
-// /order/reservation/:wrkRcpNo/... 또는 /order/today/:wrkRcpNo/... 패턴.
+// 경로 segment가 아닌 wrkRcpNo 형식으로 찾아 라우트 구조 변경에 안 깨짐.
 function extractWrkRcpNoFromPath(pathname: string): string | null {
-  const m = pathname.match(/^\/order\/(?:reservation|today)\/([^/]+)/);
-  return m?.[1] ?? null;
+  return pathname.match(WRK_RCP_NO_PATTERN)?.[0] ?? null;
 }
 
 function LoginOtpPage() {
@@ -36,6 +41,7 @@ function LoginOtpPage() {
 
   // hooks (early return 전 일관 호출)
   const maskedQuery = useMaskedCustPhone(entryWrkRcpNo);
+  const statusQuery = useOrderStatus(entryWrkRcpNo);
   const [sent, setSent] = useState(false);
   const [otp, setOtp] = useState("");
   const [throttleMessage, setThrottleMessage] = useState<string | null>(null);
@@ -54,6 +60,28 @@ function LoginOtpPage() {
       });
     }
   }, [maskedQuery.isError, navigate]);
+
+  // 오더 진입 가능 상태 검증 — 목적지(예약변경 2,3 / 청약상세 2,3,4)별 wrkFlowSttusCd 체크.
+  // 조회 실패 또는 허용 외 상태면 OTP 발송 전에 차단.
+  useEffect(() => {
+    if (statusQuery.isError) {
+      navigate("/error", {
+        replace: true,
+        state: { code: "ORDER_INVALID" },
+      });
+      return;
+    }
+    if (!from || !statusQuery.data) return;
+    const kind: OrderEntryKind = from.pathname.includes("/order/change")
+      ? "change"
+      : "detail";
+    if (!isEntryAllowed(kind, statusQuery.data.wrkFlowSttusCd)) {
+      navigate("/error", {
+        replace: true,
+        state: { code: "ORDER_INVALID" },
+      });
+    }
+  }, [from, statusQuery.isError, statusQuery.data, navigate]);
 
   // 가드 — 정상 카카오 진입이 아니면 차단
   if (!from || !entryWrkRcpNo) {

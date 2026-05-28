@@ -1,5 +1,6 @@
 import { useLocation } from "react-router";
 import ScreenContainer from "@shared/ui/ScreenContainer";
+import PageHeader from "@shared/ui/PageHeader";
 import { getErrorPageMessage } from "@shared/config/messages";
 import ErrorView from "@shared/ui/ErrorView";
 
@@ -14,9 +15,7 @@ function ErrorPage() {
 
   return (
     <ScreenContainer>
-      <div className="h-[52px] bg-white flex items-center justify-center border-b border-kt-border shrink-0 relative">
-        <span className="text-[16px] font-bold text-kt-ink">안내</span>
-      </div>
+      <PageHeader title="안내" />
       <ErrorView title={title} desc={desc} />
     </ScreenContainer>
   );

@@ -3,11 +3,11 @@
  * reservation 관련 타입도 order 도메인으로 통합됨.
  */
 
-/* 오더 상태 조회 — GET /api/order/status/{wrkRcpNo}?reservationDate=YYYYMMDDHHMM */
+/* 오더 상태 조회 — GET /api/order/status/{wrkRcpNo}
+ * 진입 가능 여부 판단용. wrkFlowSttusCd(작업 흐름 상태):
+ * 2,3 = 예약 변경 가능 / 2,3,4 = 청약 상세 진입 가능 (4=당일 방문). */
 export interface OrderStatus {
-  smtCnt: number;        // 동시건수
-  orders: string[];      // 작업접수번호 배열
-  progressCd: string;    // 진행상태 코드 (원스톱·진행상태 등 판단)
+  wrkFlowSttusCd: string;
 }
 
 /* 작업자 정보 — GET /api/order/worker/{wrkRcpNo} */
@@ -23,8 +23,8 @@ export interface Technician {
 /* 예약에 포함된 오더 정보 (도메인 — 컴포넌트에서 사용) */
 export interface ReservationOrder {
   wrkRcpNo: string;
-  spotWrkTypeCd: string; // 현장작업 종류 코드 (오더 단위 — INSTALL/AS/MOVE 등)
-  prodDescNm: string;    // 상품 설명명 (수리는 빈 문자열 가능)
+  spotWrkTypeCd: string; // 현장작업 종류 코드 (개통 수리)
+  prodDescNm: string;    // 서비스명
 }
 
 /* 예약 정보 (도메인 — 컴포넌트에서 사용) */
@@ -35,13 +35,14 @@ export interface Reservation {
   orders: ReservationOrder[];
 }
 
-/* 백엔드 응답 — GET /reservation/{workReceiptNo} (2026-05-27 정합)
+/* 백엔드 응답 — GET /reservation/{workReceiptNo} 
  * naming-conventions.md "백엔드 풀이름 매핑" 참조.
  * 도메인 타입 Reservation으로 변환 후 컴포넌트에 전달 (api/index.ts의 toReservation).
  */
 export interface ReservationDetailResponseOrder {
-  workReceiptNo: string;
-  serviceName: string;
+  workReceiptNo: string; // 작업접수번호
+  serviceLctgNm: string; // 서비스 대분류명 (예: "인터넷")
+  serviceName: string; // 서비스명 (예: "인터넷 설치")
 }
 
 export interface ReservationDetailResponse {

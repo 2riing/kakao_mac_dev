@@ -1,25 +1,11 @@
-export type ProductKey = "internet" | "tv" | "phone";
+import type { HelpProduct, ProductKey } from "../types";
 
-export interface HelpStep {
-  id: string;
-  title: string;
-  description: string;
-  link?: { label: string; href: string };
-}
-
-export interface HelpProduct {
-  key: ProductKey;
-  label: string;
-  intro: string;
-  steps: HelpStep[];
-}
-
+// 상품별 조치방법 안내 콘텐츠. 정적 — 백엔드 미연동.
 export const HELP_DATA: Record<ProductKey, HelpProduct> = {
   internet: {
     key: "internet",
     label: "인터넷",
-    intro:
-      "인터넷이 평소와 다르신가요?",
+    intro: "인터넷이 평소와 다르신가요?",
     steps: [
       {
         id: "i1",
@@ -74,8 +60,7 @@ export const HELP_DATA: Record<ProductKey, HelpProduct> = {
       {
         id: "t2",
         title: "채널 이동이나 서비스 이용이 안돼요.",
-        description:
-          "셋톱박스를 전원을 껐다 켜고 1~2분 후 다시 시도해 주세요.",
+        description: "셋톱박스를 전원을 껐다 켜고 1~2분 후 다시 시도해 주세요.",
       },
       {
         id: "t3",

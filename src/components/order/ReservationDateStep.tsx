@@ -6,6 +6,7 @@ import {
 import { DAY_NAMES_KO } from "@shared/lib/calendar";
 import BackArrow from "@shared/ui/BackArrow";
 import BottomFixedBar from "@shared/ui/BottomFixedBar";
+import PageHeader from "@shared/ui/PageHeader";
 import PrimaryButton from "@shared/ui/PrimaryButton";
 import Spinner from "@shared/ui/Spinner";
 import StepBar from "@shared/ui/StepBar";
@@ -100,14 +101,7 @@ function ReservationDateStep({ wrkRcpNo, onNext, onBack }: ReservationDateStepPr
 
   return (
     <>
-      <div className="h-[52px] bg-white flex items-center px-3.5 border-b border-kt-border shrink-0 relative">
-        <button onClick={onBack} className="cursor-pointer p-1.5" type="button">
-          <BackArrow />
-        </button>
-        <span className="absolute left-1/2 -translate-x-1/2 text-base font-bold text-kt-ink">
-          예약 변경
-        </span>
-      </div>
+      <PageHeader title="예약 변경" onBack={onBack} />
 
       <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 pt-[18px] pb-4">
         <StepBar current={1} total={2} />

@@ -2,12 +2,13 @@ export {
   useAvailability,
   useChangeReservation,
   useConfirmReservation,
+  useOrderStatus,
   useReservation,
   useValidatedOrderParams,
   useWorker,
 } from "./hooks";
-export { getSpotWrkTypeLabel } from "./config/labels";
-export { RESERVATION_CHANGE_WINDOW_DAYS } from "./config/window";
+export { RESERVATION_CHANGE_WINDOW_DAYS } from "./config/reservation";
+export { isEntryAllowed, type OrderEntryKind } from "./config/orders";
 export type {
   AvailabilityDay,
   AvailabilityResponse,

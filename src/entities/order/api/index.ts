@@ -3,6 +3,7 @@ import { unwrap } from "@shared/api/unwrap";
 import type { Envelope } from "@shared/api/envelope";
 import type {
   AvailabilityResponse,
+  OrderStatus,
   Reservation,
   ReservationConfirmResult,
   ReservationDetailResponse,
@@ -10,6 +11,14 @@ import type {
   ReservationPatchResult,
   Technician,
 } from "../types";
+
+// 오더 진입 가능 여부 판단용 — wrkFlowSttusCd 반환. OTP 인증 전 호출 가능.
+export async function getOrderStatus(wrkRcpNo: string): Promise<OrderStatus> {
+  const { data } = await apiClient.get<Envelope<OrderStatus>>(
+    `/order/status/${wrkRcpNo}`,
+  );
+  return unwrap(data);
+}
 
 // wrkFlowSttusCd='4'(당일 방문) 일 때만 조회 가능.
 export async function getWorker(wrkRcpNo: string): Promise<Technician> {

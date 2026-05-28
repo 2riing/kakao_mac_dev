@@ -1,4 +1,4 @@
-import { getSpotWrkTypeLabel, type Reservation } from "@entities/order";
+import { type Reservation } from "@entities/order";
 import { formatVisitDate, formatTimeRange } from "@shared/lib/formatters";
 import InfoRow from "@shared/ui/InfoRow";
 
@@ -109,7 +109,6 @@ function ReservationInfoCard({
             <div className="flex flex-col gap-[3px]">
               {reservation.orders.map((o) => (
                 <div key={o.wrkRcpNo}>
-                  {getSpotWrkTypeLabel(o.spotWrkTypeCd)}
                   {o.prodDescNm ? ` - ${o.prodDescNm}` : ""}
                 </div>
               ))}

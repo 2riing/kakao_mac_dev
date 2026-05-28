@@ -9,6 +9,7 @@ import {
 } from "@components/order";
 import BottomFixedBar from "@shared/ui/BottomFixedBar";
 import CSNote from "@shared/ui/CSNote";
+import PageHeader from "@shared/ui/PageHeader";
 import PrimaryButton from "@shared/ui/PrimaryButton";
 import ScreenContainer from "@shared/ui/ScreenContainer";
 import Spinner from "@shared/ui/Spinner";
@@ -44,11 +45,7 @@ function ReservationChangePage() {
     <ScreenContainer>
       {step === "view" && (
         <>
-          <div className="h-[52px] bg-white flex items-center justify-center border-b border-kt-border shrink-0">
-            <span className="text-[16px] font-bold text-kt-ink">
-              방문 예약 안내
-            </span>
-          </div>
+          <PageHeader title="방문 예약 안내" />
 
           <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 pt-4 pb-4">
             <div className="bg-kt-red-light border border-kt-red-border rounded-[12px] px-4 py-3.5 mb-4">

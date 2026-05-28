@@ -5,6 +5,7 @@ import { isValidWrkRcpNo } from "@shared/lib/validators";
 import {
   confirmReservation,
   getAvailability,
+  getOrderStatus,
   getReservationByWrkRcpNo,
   getWorker,
   patchReservation,
@@ -35,6 +36,14 @@ export function useValidatedOrderParams(): {
   }, [isValid, navigate]);
 
   return { wrkRcpNo, reservationDate, isValid };
+}
+
+export function useOrderStatus(wrkRcpNo: string | null) {
+  return useQuery({
+    queryKey: ["order", "status", wrkRcpNo],
+    queryFn: () => getOrderStatus(wrkRcpNo!),
+    enabled: !!wrkRcpNo,
+  });
 }
 
 export function useWorker(wrkRcpNo: string | null) {

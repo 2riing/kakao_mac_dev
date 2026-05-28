@@ -1,5 +1,6 @@
 import axios from "axios";
 import { getMockResponse } from "./mock";
+import { AUTH_STORAGE_KEY } from "@shared/config/storage";
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === "true";
 
@@ -31,6 +32,8 @@ apiClient.interceptors.response.use(
       error.response?.status === 401 &&
       !AUTH_REDIRECT_SKIP.has(window.location.pathname)
     ) {
+      // 서버 토큰 만료/무효 → 클라이언트 인증 흔적 제거 (좀비 세션 방지)
+      sessionStorage.removeItem(AUTH_STORAGE_KEY);
       window.location.href = "/login";
     }
     return Promise.reject(error);

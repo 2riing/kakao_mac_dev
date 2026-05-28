@@ -81,6 +81,13 @@ body {
   touch-action: manipulation;
 }
 
+/* 내부 스크롤 영역 바운스 차단 — ScreenContainer 본문 패턴 */
+.overflow-y-auto,
+.overflow-auto,
+.overflow-y-scroll {
+  overscroll-behavior: contain;
+}
+
 button, a, [role="button"] {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;

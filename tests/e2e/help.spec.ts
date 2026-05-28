@@ -31,6 +31,25 @@ test.describe("help page (public)", () => {
     await expect(link).toHaveAttribute("rel", /noopener.*noreferrer|noreferrer.*noopener/);
   });
 
+  test("본문 스크롤 영역에 overscroll-behavior: contain 적용 (바운스 차단)", async ({
+    page,
+  }) => {
+    await page.goto("/help");
+
+    const guideScroll = await page
+      .locator(".overflow-y-auto")
+      .first()
+      .evaluate((el) => getComputedStyle(el).overscrollBehaviorY);
+    expect(guideScroll).toBe("contain");
+
+    await page.getByRole("button", { name: "해결이 어려워요" }).click();
+    const unresolvedScroll = await page
+      .locator(".overflow-y-auto")
+      .first()
+      .evaluate((el) => getComputedStyle(el).overscrollBehaviorY);
+    expect(unresolvedScroll).toBe("contain");
+  });
+
   test("해결이 어려워요 → 상담 화면 → 다시 살펴볼게요로 복귀", async ({ page }) => {
     await page.goto("/help");
 

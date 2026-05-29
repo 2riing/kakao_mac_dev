@@ -1,18 +1,14 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router";
 import {
   useConfirmReservation,
   useReservation,
   useValidatedOrderParams,
 } from "@entities/order";
-import { ReservationDoneStep, ReservationInfoCard } from "@components/order";
+import { ReservationDoneStep, ReservationOverview } from "@components/order";
 import { formatVisitDate, formatTimeRange } from "@shared/lib/formatters";
 import ScreenContainer from "@shared/ui/ScreenContainer";
-import PageHeader from "@shared/ui/PageHeader";
-import BottomFixedBar from "@shared/ui/BottomFixedBar";
-import PrimaryButton from "@shared/ui/PrimaryButton";
-import Spinner from "@shared/ui/Spinner";
-import CSNote from "@shared/ui/CSNote";
+import LoadingView from "@shared/ui/LoadingView";
 import ConfirmDialog from "@shared/ui/ConfirmDialog";
 
 type Stage = "view" | "done";
@@ -27,21 +23,11 @@ function ReservationConfirmPage() {
   const reservationQuery = useReservation(isValid ? wrkRcpNo : null);
   const confirmMutation = useConfirmReservation();
 
-  useEffect(() => {
-    if (reservationQuery.isError) {
-      navigate("/error", {
-        replace: true,
-        state: { code: "ORDER_INVALID" },
-      });
-    }
-  }, [reservationQuery.isError, navigate]);
-
+  // 조회 실패는 throwOnError → ErrorBoundary가 처리
   if (reservationQuery.isLoading || !reservationQuery.data) {
     return (
       <ScreenContainer>
-        <div className="flex-1 flex items-center justify-center">
-          <Spinner color="red" size="lg" />
-        </div>
+        <LoadingView />
       </ScreenContainer>
     );
   }
@@ -78,25 +64,11 @@ function ReservationConfirmPage() {
 
   return (
     <ScreenContainer>
-      <PageHeader title="방문 예약 안내" />
-
-      <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 pt-4 pb-4">
-        <div className="bg-kt-red-light border border-kt-red-border rounded-[12px] px-4 py-3.5 mb-4">
-          <div className="text-[13px] text-kt-gray-700 leading-[1.65]">
-            예정된 방문 작업을 확인해 주세요.
-          </div>
-        </div>
-
-        <ReservationInfoCard reservation={reservation} variant="detailed" />
-
-        <CSNote />
-      </div>
-
-      <BottomFixedBar>
-        <PrimaryButton onClick={() => setDialogOpen(true)}>
-          예약 확정
-        </PrimaryButton>
-      </BottomFixedBar>
+      <ReservationOverview
+        reservation={reservation}
+        primaryLabel="예약 확정"
+        onPrimary={() => setDialogOpen(true)}
+      />
 
       <ConfirmDialog
         open={dialogOpen}

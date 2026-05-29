@@ -3,12 +3,8 @@
  * 모든 API 응답이 { resultCode, resultMessage, data } 구조로 옴.
  * data 타입 T는 도메인별 응답 (Reservation, Technician 등).
  *
- * - resultCode === 2000 → 정상, data 사용 가능
- * - 그 외 코드 → 실패, unwrap에서 ApiError throw
- *
- * 백엔드가 extraBoolean을 같이 내려주지만 클라이언트는 무시 (스키마 미정의).
- *
- * 정본 정의: docs/api.yaml + 03-spec/02-backend-handoff.md
+ * - resultCode === 2000 → 정상, data 사용 가능. 그 외 코드 unwrap에서 ApiError throw
+ * 백엔드가 extraBoolean을 같이 내려주지만 클라이언트는 사용하지 않으므로 envelope에서는 제외
  */
 export interface Envelope<T> {
   resultCode: number;
@@ -16,5 +12,5 @@ export interface Envelope<T> {
   data: T;
 }
 
-/** 정상 응답 판정 코드 — unwrap() 에서 이 값과 비교. 사내 표준. */
+/** 정상 응답 판정 코드 — unwrap() 에서 이 값과 비교 **/
 export const RESULT_CODE_OK = 2000;

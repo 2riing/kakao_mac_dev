@@ -8,14 +8,14 @@ AuthGuard, LoginOtpPage 진입 가드, ErrorPage 코드 분기.
 
 로컬:
 ```
-http://localhost:8080/order/reservation/1O2026051812345/202605251400
-http://localhost:8080/order/today/1O2026051812345/202605251400
+http://localhost:8080/order/change/1O2026051812345
+http://localhost:8080/order/detail/1O2026051812345
 ```
 
 Vercel:
 ```
-https://oss-customer-kakao-web.vercel.app/order/reservation/1O2026051812345/202605251400
-https://oss-customer-kakao-web.vercel.app/order/today/1O2026051812345/202605251400
+https://oss-customer-kakao-web.vercel.app/order/change/1O2026051812345
+https://oss-customer-kakao-web.vercel.app/order/detail/1O2026051812345
 ```
 
 ### 체크
@@ -60,10 +60,13 @@ URL은 `/error`로 고정. code는 `navigate('/error', { state: { code } })`로 
 
 **ORDER_INVALID — 잘못된 wrkRcpNo 형식**
 
-로컬: `http://localhost:8080/order/confirm/INVALID_FORMAT/202605251400`
-Vercel: `https://oss-customer-kakao-web.vercel.app/order/confirm/INVALID_FORMAT/202605251400`
+로컬: `http://localhost:8080/order/detail/INVALID_FORMAT`
+Vercel: `https://oss-customer-kakao-web.vercel.app/order/detail/INVALID_FORMAT`
 
-- [ ] `/error` 이동 + "예약 정보를 확인할 수 없습니다" 표시
+> `/order/change`·`/order/detail`는 protected라 **미인증 진입 시 /login이 먼저** 뜸.
+> wrkRcpNo 형식 검증(ORDER_INVALID)만 보려면 인증 시드 상태에서 진입해야 함 (e2e는 seedAuth로 검증 중).
+
+- [ ] (인증 시드 상태) `/error` 이동 + "예약 정보를 확인할 수 없습니다" 표시
 - [ ] URL은 `/error` (코드 노출 X)
 
 **UNKNOWN — /error 직접 진입**

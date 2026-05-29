@@ -84,12 +84,24 @@
 | spotWorkTypeCode        | spotWrkTypeCd        | 현장작업 종류코드  | reservation 단위. `"1"`=개통 / `"2"`=수리. 그 외 코드 백엔드 확인 |
 | sameTimeOrderCount      | smtCnt               | 동시건수           | `orders.length`와 동일 추정 |
 | serviceName             | prodDescNm (추정)    | 상품(서비스)명     | 풀이름과 사내 약어 의미 살짝 다름 — 백엔드 확인 |
-| serviceLctgName         | svcLctgNm            | 서비스 카테고리명  | **백엔드 인계 요청 중** — orders 안 옵셔널. 값 후보: "인터넷"/"인터넷전화"/"TV"/"IoT" |
+| serviceLctgName         | svcLctgNm            | 서비스 카테고리명  | **백엔드 인계 요청 중** — orders 안 옵셔널. 값 5종: 아래 "서비스 카테고리 식별자" 참조 |
 | extraBoolean            | -                    | 미정 부가 플래그   | envelope에 동반. 클라이언트는 무시 |
 
 응답 envelope:
 - `resultCode` 타입 **integer** (기존 정본은 문자열 `"2000"`이었으나 2026-05-27자로 정수형 통일)
 - 정상 코드: `2000`
+
+### 서비스 카테고리 식별자
+
+`svcLctgNm`(백엔드 한글) → 프론트 카테고리 식별자. 카드 아이콘·라벨 분기에 사용. 전화는 인터넷전화(VoIP)·일반전화(PSTN)로 구분.
+
+| svcLctgNm (백엔드) | 식별자     | 라벨       |
+| ------------------ | ---------- | ---------- |
+| 인터넷             | `internet` | 인터넷     |
+| 인터넷전화         | `voip`     | 인터넷전화 |
+| 일반전화           | `pstn`     | 일반전화   |
+| TV                 | `tv`       | TV         |
+| IoT                | `iot`      | IoT        |
 
 ### 변환 패턴
 

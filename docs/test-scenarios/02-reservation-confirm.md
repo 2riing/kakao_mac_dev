@@ -1,5 +1,10 @@
 # 02. 예약 확정 흐름
 
+> ⚠️ **현재 비활성 (라우트 보류)** — `/order/confirm` 라우트가 `app/router.tsx`에서 주석 처리됨.
+> 아래 URL로 진입하면 catch-all로 `/error`로 빠짐. `ReservationConfirmPage` 컴포넌트 자체는 남아있어,
+> 라우트 부활 시 이 시나리오 + 진입 URL 스킴(아래는 옛 `/order/confirm/{wrkRcpNo}/{date}` 기준)을
+> 확정 후 갱신할 것. e2e `reservation-confirm.spec.ts`도 `.skip` 해제 필요.
+
 userflow 시나리오 1: 사전방문안내 알림톡 [예약 확정] → 정보 확인 → 확정 → 완료. OTP 불필요(public).
 
 ## 진입 URL

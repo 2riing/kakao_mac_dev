@@ -4,7 +4,12 @@ import {
   useAvailability,
   useChangeReservation,
 } from "@entities/order";
-import { DAY_NAMES_KO } from "@shared/lib/calendar";
+import {
+  DAY_NAMES_KO,
+  todayYmd,
+  addDaysYmd,
+  formatTimeRange,
+} from "@shared/lib/formatters";
 import BottomFixedBar from "@shared/ui/BottomFixedBar";
 import CSNote from "@shared/ui/CSNote";
 import PageHeader from "@shared/ui/PageHeader";
@@ -31,28 +36,6 @@ const TIME_SLOTS = [
   "16:00",
   "17:00",
 ] as const;
-
-function pad2(n: number): string {
-  return String(n).padStart(2, "0");
-}
-
-function todayYmd(): string {
-  const n = new Date();
-  return `${n.getFullYear()}-${pad2(n.getMonth() + 1)}-${pad2(n.getDate())}`;
-}
-
-function addDaysYmd(ymd: string, days: number): string {
-  const [y, m, d] = ymd.split("-").map(Number);
-  const dt = new Date(y, m - 1, d);
-  dt.setDate(dt.getDate() + days);
-  return `${dt.getFullYear()}-${pad2(dt.getMonth() + 1)}-${pad2(dt.getDate())}`;
-}
-
-function formatSlotLabel(time: string): string {
-  // "09:00" → "09:00 ~ 10:00"
-  const [h] = time.split(":").map(Number);
-  return `${time} ~ ${pad2(h + 1)}:00`;
-}
 
 function ReservationTimeStep({
   wrkRcpNo,
@@ -100,7 +83,7 @@ function ReservationTimeStep({
 
         <div className="bg-kt-red-light border border-kt-red-border rounded-[10px] px-3.5 py-2.5 mb-3.5 text-sm font-semibold text-kt-ink">
           {y}년 {m}월 {d}일 ({dow})
-          {selTime && ` · ${formatSlotLabel(selTime)}`}
+          {selTime && ` · ${formatTimeRange(selTime)}`}
         </div>
 
         <div className="text-[15px] font-semibold text-kt-ink mb-3.5">
@@ -126,7 +109,7 @@ function ReservationTimeStep({
                         : "bg-kt-gray-100 text-kt-gray-400 font-medium border-[1.5px] border-kt-gray-200 cursor-not-allowed"
                   }`}
               >
-                <span>{formatSlotLabel(time)}</span>
+                <span>{formatTimeRange(time)}</span>
                 {!available && (
                   <span className="text-[11px] text-kt-gray-400">마감</span>
                 )}

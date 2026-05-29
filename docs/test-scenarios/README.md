@@ -36,8 +36,8 @@ https://oss-customer-kakao-web.vercel.app   (main 자동 배포, stable URL)
 
 | 파일 | 진입점 | 핵심 검증 |
 |------|--------|----------|
-| [01-reservation-change.md](./01-reservation-change.md) | `/order/reservation/.../change` | OTP → 캘린더 → 시간대 → 변경 완료 |
-| [02-reservation-confirm.md](./02-reservation-confirm.md) | `/order/confirm/...` | 예약 정보 → ConfirmDialog → 확정 완료 |
+| [01-reservation-change.md](./01-reservation-change.md) | `/order/change/{wrkRcpNo}` | OTP → 예약정보(view) → 캘린더 → 시간대 → 변경 완료 |
+| [02-reservation-confirm.md](./02-reservation-confirm.md) | `/order/confirm/...` (보류) | 라우트 주석처리 상태 — 부활 시 갱신 |
 | [03-guards.md](./03-guards.md) | 비정상 진입 | AuthGuard·진입 가드·에러 코드 분기 |
 | [04-login-otp.md](./04-login-otp.md) | `/login` (AuthGuard 경유) | OTP 발송·검증·throttle·에러 매트릭스 |
 
@@ -71,81 +71,50 @@ https://oss-customer-kakao-web.vercel.app   (main 자동 배포, stable URL)
 
 ---
 
-### 예약 확정 (public, mock 필요)
+### 예약 확정 (현재 비활성 — 라우트 주석처리)
 
-**1O2026051812345 (인터넷 단일)**
-- 로컬: http://localhost:8080/order/confirm/1O2026051812345/202605251400
-- Vercel: https://oss-customer-kakao-web.vercel.app/order/confirm/1O2026051812345/202605251400
-
-**1O20260520ABCDE (인터넷+TV 멀티)**
-- 로컬: http://localhost:8080/order/confirm/1O20260520ABCDE/202605281000
-- Vercel: https://oss-customer-kakao-web.vercel.app/order/confirm/1O20260520ABCDE/202605281000
-
-**1O2026053000F01 (AS 수리)**
-- 로컬: http://localhost:8080/order/confirm/1O2026053000F01/202606020930
-- Vercel: https://oss-customer-kakao-web.vercel.app/order/confirm/1O2026053000F01/202606020930
-
-**1O2026060100A05 (인터넷+TV+전화 트리플)**
-- 로컬: http://localhost:8080/order/confirm/1O2026060100A05/202606050900
-- Vercel: https://oss-customer-kakao-web.vercel.app/order/confirm/1O2026060100A05/202606050900
-
-**1O20260605DEAD0 (이전설치 MOVE)**
-- 로컬: http://localhost:8080/order/confirm/1O20260605DEAD0/202606101300
-- Vercel: https://oss-customer-kakao-web.vercel.app/order/confirm/1O20260605DEAD0/202606101300
-
-**INVALID_FORMAT (잘못된 wrkRcpNo 에러 검증)**
-- 로컬: http://localhost:8080/order/confirm/INVALID_FORMAT/202605251400
-- Vercel: https://oss-customer-kakao-web.vercel.app/order/confirm/INVALID_FORMAT/202605251400
+`/order/confirm/{wrkRcpNo}` 라우트는 `app/router.tsx`에서 주석 처리됨 (청약 확정 흐름 보류).
+현재 `/order/confirm/...` 진입은 catch-all로 `/error` 리다이렉트됨. 라우트 부활 시 이 섹션 + `02-reservation-confirm.md` + e2e spec(.skip 해제) 갱신.
 
 ---
 
-### 예약 변경 — view 진입 (protected, OTP 필요)
+### 예약 변경 (protected, OTP 필요)
+
+진입 시 예약 정보(view) → [예약 변경] 버튼 → 캘린더 → 시간대 → 완료.
+직접 진입하면 AuthGuard가 `/login`으로 보내 OTP 검증 후 복귀.
 
 **1O2026051812345**
-- 로컬: http://localhost:8080/order/reservation/1O2026051812345/202605251400
-- Vercel: https://oss-customer-kakao-web.vercel.app/order/reservation/1O2026051812345/202605251400
+- 로컬: http://localhost:8080/order/change/1O2026051812345
+- Vercel: https://oss-customer-kakao-web.vercel.app/order/change/1O2026051812345
 
 **1O20260520ABCDE**
-- 로컬: http://localhost:8080/order/reservation/1O20260520ABCDE/202605281000
-- Vercel: https://oss-customer-kakao-web.vercel.app/order/reservation/1O20260520ABCDE/202605281000
+- 로컬: http://localhost:8080/order/change/1O20260520ABCDE
+- Vercel: https://oss-customer-kakao-web.vercel.app/order/change/1O20260520ABCDE
 
 **1O2026060100A05**
-- 로컬: http://localhost:8080/order/reservation/1O2026060100A05/202606050900
-- Vercel: https://oss-customer-kakao-web.vercel.app/order/reservation/1O2026060100A05/202606050900
+- 로컬: http://localhost:8080/order/change/1O2026060100A05
+- Vercel: https://oss-customer-kakao-web.vercel.app/order/change/1O2026060100A05
 
 ---
 
-### 예약 변경 — /change 직진 (protected, 카톡 [예약 변경] 시뮬)
+### 청약 상세 / 오늘의 방문 (OrderDetailPage, protected)
+
+직접 진입 시 AuthGuard가 `/login`으로 보내 OTP 검증 후 복귀.
 
 **1O2026051812345**
-- 로컬: http://localhost:8080/order/reservation/1O2026051812345/202605251400/change
-- Vercel: https://oss-customer-kakao-web.vercel.app/order/reservation/1O2026051812345/202605251400/change
+- 로컬: http://localhost:8080/order/detail/1O2026051812345
+- Vercel: https://oss-customer-kakao-web.vercel.app/order/detail/1O2026051812345
 
 **1O20260520ABCDE**
-- 로컬: http://localhost:8080/order/reservation/1O20260520ABCDE/202605281000/change
-- Vercel: https://oss-customer-kakao-web.vercel.app/order/reservation/1O20260520ABCDE/202605281000/change
+- 로컬: http://localhost:8080/order/detail/1O20260520ABCDE
+- Vercel: https://oss-customer-kakao-web.vercel.app/order/detail/1O20260520ABCDE
 
 **1O2026060100A05**
-- 로컬: http://localhost:8080/order/reservation/1O2026060100A05/202606050900/change
-- Vercel: https://oss-customer-kakao-web.vercel.app/order/reservation/1O2026060100A05/202606050900/change
+- 로컬: http://localhost:8080/order/detail/1O2026060100A05
+- Vercel: https://oss-customer-kakao-web.vercel.app/order/detail/1O2026060100A05
 
----
-
-### 오늘의 방문 (TodayVisitPage, protected)
-
-**1O2026051812345**
-- 로컬: http://localhost:8080/order/today/1O2026051812345/202605251400
-- Vercel: https://oss-customer-kakao-web.vercel.app/order/today/1O2026051812345/202605251400
-
-**1O20260520ABCDE**
-- 로컬: http://localhost:8080/order/today/1O20260520ABCDE/202605281000
-- Vercel: https://oss-customer-kakao-web.vercel.app/order/today/1O20260520ABCDE/202605281000
-
-**1O2026060100A05**
-- 로컬: http://localhost:8080/order/today/1O2026060100A05/202606050900
-- Vercel: https://oss-customer-kakao-web.vercel.app/order/today/1O2026060100A05/202606050900
-
-> Vercel에서 mock 의존 화면(예약 확정/변경/오늘) 보려면 위 ⚠️ 주의 참고.
+> Vercel에서 mock 의존 화면(예약 변경/상세) 보려면 위 ⚠️ 주의 참고.
+> 잘못된 wrkRcpNo 포맷 에러 검증은 `/order/change/INVALID_FORMAT` 또는 `/order/detail/INVALID_FORMAT`로 진입(→ /error).
 
 ## 데이터 케이스
 

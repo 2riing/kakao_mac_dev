@@ -1,4 +1,4 @@
-import { DAY_NAMES_KO } from "@shared/lib/calendar";
+import { DAY_NAMES_KO, formatTimeRange } from "@shared/lib/formatters";
 import CheckIcon from "@shared/ui/CheckIcon";
 import CSNote from "@shared/ui/CSNote";
 
@@ -32,16 +32,11 @@ const COPY: Record<DoneVariant, DoneCopy> = {
   },
 };
 
-function pad2(n: number): string {
-  return String(n).padStart(2, "0");
-}
-
 function ReservationDoneStep({ variant, date, time }: ReservationDoneStepProps) {
   const copy = COPY[variant];
   const [y, m, d] = date.split("-").map(Number);
   const dow = DAY_NAMES_KO[new Date(y, m - 1, d).getDay()];
-  const [h] = time.split(":").map(Number);
-  const timeRange = `${time} ~ ${pad2(h + 1)}:00`;
+  const timeRange = formatTimeRange(time);
 
   return (
     <>

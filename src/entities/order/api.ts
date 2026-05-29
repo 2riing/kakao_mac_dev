@@ -1,0 +1,84 @@
+import { apiClient } from "@shared/api/client";
+import { unwrap } from "@shared/api/unwrap";
+import type { Envelope } from "@shared/api/envelope";
+import type {
+  AvailabilityResponse,
+  OrderStatus,
+  Reservation,
+  ReservationConfirmResult,
+  ReservationDetailResponse,
+  ReservationPatchPayload,
+  ReservationPatchResult,
+  Technician,
+} from "./types";
+
+// 오더 진입 가능 여부 판단용 — wrkFlowSttusCd 반환. OTP 인증 전 호출 가능.
+export async function getOrderStatus(wrkRcpNo: string): Promise<OrderStatus> {
+  const { data } = await apiClient.get<Envelope<OrderStatus>>(
+    `/order/status/${wrkRcpNo}`,
+  );
+  return unwrap(data);
+}
+
+// wrkFlowSttusCd='4'(수령)일 때만 조회 가능.
+export async function getWorker(wrkRcpNo: string): Promise<Technician> {
+  const { data } = await apiClient.get<Envelope<Technician>>(
+    `/order/worker/${wrkRcpNo}`,
+  );
+  return unwrap(data);
+}
+
+function toReservation(api: ReservationDetailResponse): Reservation {
+  return {
+    rsrvDate: api.reservationDate.slice(0, 10),
+    rsrvTod: `${api.reservationTimeOfDay.slice(0, 2)}:${api.reservationTimeOfDay.slice(2)}`,
+    smtCnt: api.sameTimeOrderCount,
+    orders: api.orders.map((o) => ({
+      wrkRcpNo: o.workReceiptNo,
+      spotWrkTypeCd: api.spotWorkTypeCode,
+      prodDescNm: o.serviceName,
+    })),
+  };
+}
+
+export async function getReservationByWrkRcpNo(
+  wrkRcpNo: string,
+): Promise<Reservation> {
+  const { data } = await apiClient.get<Envelope<ReservationDetailResponse>>(
+    `/reservation/${wrkRcpNo}`,
+  );
+  return toReservation(unwrap(data));
+}
+
+export async function getAvailability(
+  wrkRcpNo: string,
+  from: string,
+  to: string,
+): Promise<AvailabilityResponse> {
+  const { data } = await apiClient.get<Envelope<AvailabilityResponse>>(
+    `/reservations/${wrkRcpNo}/availability`,
+    { params: { from, to } },
+  );
+  return unwrap(data);
+}
+
+// 단일 wrkRcpNo로 변경 요청 → 백엔드가 동시성 기준으로 자동 처리
+export async function patchReservation(
+  wrkRcpNo: string,
+  payload: ReservationPatchPayload,
+): Promise<ReservationPatchResult> {
+  const { data } = await apiClient.patch<Envelope<ReservationPatchResult>>(
+    `/reservations/${wrkRcpNo}`,
+    payload,
+  );
+  return unwrap(data);
+}
+
+export async function confirmReservation(
+  wrkRcpNo: string,
+): Promise<ReservationConfirmResult> {
+  const { data } = await apiClient.post<Envelope<ReservationConfirmResult>>(
+    `/reservations/${wrkRcpNo}/confirm`,
+  );
+  return unwrap(data);
+}

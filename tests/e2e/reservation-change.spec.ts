@@ -2,29 +2,36 @@ import { test, expect } from "@playwright/test";
 import { seedAuth } from "../fixtures/auth";
 
 const WRK_RCP_NO = "1O2026051812345";
-const RSRV_DATE = "202605281000";
 
-test.describe("reservation change flow (인증 시드 + /change 직진)", () => {
+test.describe("reservation change flow (인증 시드 + /order/change)", () => {
   test.beforeEach(async ({ page }) => {
     await seedAuth(page, { wrkRcpNo: WRK_RCP_NO });
   });
 
-  test("/change 진입 시 date step부터 시작", async ({ page }) => {
-    await page.goto(`/order/reservation/${WRK_RCP_NO}/${RSRV_DATE}/change`);
-    await expect(page.getByText("예약 변경", { exact: true }).first()).toBeVisible();
+  test("진입 시 예약 정보(view) 화면 → [예약 변경] → 날짜 선택", async ({ page }) => {
+    await page.goto(`/order/change/${WRK_RCP_NO}`);
+
+    // view 단계 — 예약 정보 확인 화면
+    await expect(page.getByText("방문 예약 안내")).toBeVisible();
+    await page.getByRole("button", { name: "예약 변경" }).click();
+
+    // date 단계
     await expect(page.getByText("변경하실 날짜를 선택해 주세요.")).toBeVisible();
     await expect(page.getByRole("button", { name: "다음" })).toBeDisabled();
   });
 
-  test("date → time → done 진입 (availability mock에 살아있는 날짜 선택)", async ({
+  test("view → date → time → done (날짜/시간 선택 후 변경 완료)", async ({
     page,
   }) => {
-    await page.goto(`/order/reservation/${WRK_RCP_NO}/${RSRV_DATE}/change`);
+    await page.goto(`/order/change/${WRK_RCP_NO}`);
+
+    await page.getByRole("button", { name: "예약 변경" }).click();
 
     const nextBtn = page.getByRole("button", { name: "다음" });
 
+    // availability mock은 오늘 기준 동적 생성 — 현재 월에 선택 가능한 날짜 존재
     const enabledDay = page
-      .locator('button:not([disabled])')
+      .locator("button:not([disabled])")
       .filter({ hasText: /^\d{1,2}$/ })
       .first();
     await enabledDay.click();
@@ -36,6 +43,7 @@ test.describe("reservation change flow (인증 시드 + /change 직진)", () => 
       timeout: 5000,
     });
 
+    // 시간 슬롯 라벨은 formatTimeRange 형식("HH:00 ~ HH:00")
     const availableSlot = page
       .getByRole("button", { name: /\d{2}:00 ~ \d{2}:00/ })
       .filter({ hasNotText: "마감" })
@@ -44,6 +52,8 @@ test.describe("reservation change flow (인증 시드 + /change 직진)", () => 
 
     await page.getByRole("button", { name: "예약 변경하기" }).click();
 
-    await expect(page.getByText("예약이 변경되었습니다")).toBeVisible({ timeout: 5000 });
+    await expect(page.getByText("예약이 변경되었습니다")).toBeVisible({
+      timeout: 5000,
+    });
   });
 });

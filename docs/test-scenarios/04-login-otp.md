@@ -7,7 +7,7 @@
 LoginOtpPage는 직접 진입 차단. AuthGuard 경유로만 도달:
 
 ```
-http://localhost:8080/order/reservation/1O2026051812345/202605251400
+http://localhost:8080/order/change/1O2026051812345
 ```
 → AuthGuard 가로채서 `/login`으로 (state.from 보존)
 
@@ -54,7 +54,7 @@ http://localhost:8080/order/reservation/1O2026051812345/202605251400
 
 ### C-1. 정상 검증
 - [ ] OTP 6자 입력 → [확인] 활성
-- [ ] [확인] 클릭 → 스피너 → 원래 가려던 경로(`/order/reservation/.../change` 등)로 자동 복귀
+- [ ] [확인] 클릭 → 스피너 → 원래 가려던 경로(`/order/change/{wrkRcpNo}` 등)로 자동 복귀
 
 ### C-2. OTP 불일치
 - mock에선 항상 성공이라 재현 불가. 백엔드 응답 `resultCode: "9011"`

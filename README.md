@@ -26,10 +26,10 @@ npm run dev
 
 ## 환경 변수
 
-| 키                 | 설명                                                 |
-| ------------------ | ---------------------------------------------------- |
-| VITE_API_BASE_URL  | API 서버 베이스 URL (`/v1` 까지)                     |
-| VITE_USE_MOCK      | true 일 때 mock 데이터 사용 (백엔드 미정합 동안)     |
+| 키             | 설명                                             |
+| -------------- | ------------------------------------------------ |
+| VITE_BASE_URL  | API 서버 베이스 URL (`/api` 까지)                |
+| VITE_USE_MOCK  | true 일 때 mock 데이터 사용 (백엔드 미정합 동안) |
 
 `.env.development` / `.env.production` 자동 적용.
 로컬 토글은 `.env.local` 사용 (gitignore 됨).

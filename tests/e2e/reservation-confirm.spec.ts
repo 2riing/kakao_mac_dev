@@ -3,7 +3,9 @@ import { test, expect } from "@playwright/test";
 const WRK_RCP_NO = "1O2026051812345";
 const RSRV_DATE = "202605281000";
 
-test.describe("reservation confirm flow (public 라우트)", () => {
+// /order/confirm 라우트가 현재 router.tsx에서 주석 처리됨 (청약 확정 흐름 보류).
+// 라우트 부활 시 .skip 제거 + 새 URL 스킴에 맞춰 갱신.
+test.describe.skip("reservation confirm flow (public 라우트)", () => {
   test("진입 → 다이얼로그 열기 → 확정 → done 화면", async ({ page }) => {
     await page.goto(`/order/confirm/${WRK_RCP_NO}/${RSRV_DATE}`);
 

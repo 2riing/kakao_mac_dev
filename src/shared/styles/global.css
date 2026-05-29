@@ -34,6 +34,10 @@
   --animate-fade-in: fadeIn 0.3s ease-out;
   --animate-slide-up: slideUp 0.3s ease-out;
   --animate-slide-in: slideIn 0.3s ease-out;
+
+  /* 컴포넌트 디자인 토큰 (반복 인라인 값 토큰화 — 점진 확산) */
+  --radius-btn: 10px;
+  --text-btn: 15px;
 }
 
 @keyframes fadeIn {

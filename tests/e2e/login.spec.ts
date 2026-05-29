@@ -1,8 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 const WRK_RCP_NO = "1O2026051812345";
-const RSRV_DATE = "202605281000";
-const TARGET_PATH = `/order/reservation/${WRK_RCP_NO}/${RSRV_DATE}`;
+const TARGET_PATH = `/order/change/${WRK_RCP_NO}`;
 
 test.describe("login (OTP) flow", () => {
   test("루트 직접 진입은 /error로 리다이렉트", async ({ page }) => {

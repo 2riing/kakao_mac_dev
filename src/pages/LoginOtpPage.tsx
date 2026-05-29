@@ -14,8 +14,8 @@ import {
   type OrderEntryKind,
 } from "@entities/order";
 import { getErrorMessage } from "@shared/lib/getErrorMessage";
-import { WRK_RCP_NO_PATTERN } from "@shared/lib/regex";
-import { INLINE_MESSAGES } from "@shared/config/messages";
+import { WRK_RCP_NO_PATTERN } from "@shared/lib/formatters";
+import { ERROR_MESSAGES } from "@shared/constants/messages";
 import KTLogo from "@shared/ui/KTLogo";
 import Spinner from "@shared/ui/Spinner";
 import CSNote from "@shared/ui/CSNote";
@@ -51,26 +51,9 @@ function LoginOtpPage() {
   const { mutate: verifyOtp, isPending: verifyLoading } = verifyMutation;
   const { timer, start: startTimer } = useOtpTimer(180);
 
-  // 마스킹 연락처 조회 실패 → 페이지 fallback (본인 확인 정보 자체가 없으면 진행 불가)
-  useEffect(() => {
-    if (maskedQuery.isError) {
-      navigate("/error", {
-        replace: true,
-        state: { code: "ORDER_INVALID" },
-      });
-    }
-  }, [maskedQuery.isError, navigate]);
-
   // 오더 진입 가능 상태 검증 — 목적지(예약변경 2,3 / 청약상세 2,3,4)별 wrkFlowSttusCd 체크.
-  // 조회 실패 또는 허용 외 상태면 OTP 발송 전에 차단.
+  // 조회 실패는 throwOnError → ErrorBoundary. 여기선 데이터 검증(허용 외 상태)만 차단.
   useEffect(() => {
-    if (statusQuery.isError) {
-      navigate("/error", {
-        replace: true,
-        state: { code: "ORDER_INVALID" },
-      });
-      return;
-    }
     if (!from || !statusQuery.data) return;
     const kind: OrderEntryKind = from.pathname.includes("/order/change")
       ? "change"
@@ -99,7 +82,7 @@ function LoginOtpPage() {
   function handleSendOtp() {
     // 클라이언트 단 throttle — disabled 버튼을 우회해도 한 번 더 차단
     if (sent && timer > 0) {
-      setThrottleMessage(INLINE_MESSAGES.throttleRetry);
+      setThrottleMessage(ERROR_MESSAGES.RETRY.desc);
       return;
     }
     setThrottleMessage(null);

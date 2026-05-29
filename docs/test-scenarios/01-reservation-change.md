@@ -1,17 +1,17 @@
 # 01. 예약 변경 흐름 (메인)
 
-userflow 시나리오 2: 알림톡 [예약 변경] → OTP → 새 일정 선택 → 변경 완료.
+userflow 시나리오 2: 알림톡 [예약 변경] → OTP → 예약 정보 확인 → 새 일정 선택 → 변경 완료.
 
 ## 진입 URL
 
 **로컬 (mock — 풀 플로우 동작)**
 ```
-http://localhost:8080/order/reservation/1O2026051812345/202605251400/change
+http://localhost:8080/order/change/1O2026051812345
 ```
 
 **Vercel (prod — API 의존이라 OTP 단계에서 실패할 수 있음)**
 ```
-https://oss-customer-kakao-web.vercel.app/order/reservation/1O2026051812345/202605251400/change
+https://oss-customer-kakao-web.vercel.app/order/change/1O2026051812345
 ```
 
 > 카카오 알림톡 [예약 변경] 버튼 시뮬레이션. AuthGuard 가 가로채서 `/login`으로 이동시킴.
@@ -34,22 +34,27 @@ https://oss-customer-kakao-web.vercel.app/order/reservation/1O2026051812345/2026
 - [ ] 타이머 03:00부터 카운트다운 시작
 - [ ] 30초 이하 남으면 타이머 색 빨강 → 주황(`kt-warn-urgent`)으로 변경
 
-### 3단계 — 인증 통과 → 변경 흐름 진입
+### 3단계 — 인증 통과 → 예약 정보(view) 화면
 
 - [ ] OTP 4자리 이상 입력 시 하단 `[확인]` 버튼 활성
-- [ ] `[확인]` 클릭 → 스피너 → 자동으로 `/order/reservation/.../change` 복귀
-- [ ] **곧장 캘린더(date step)부터 시작** (view step 안 거침)
-- [ ] 상단 헤더 "예약 변경" + 좌측 ← 백버튼
-- [ ] StepBar 1/2 표시
+- [ ] `[확인]` 클릭 → 스피너 → 자동으로 `/order/change/{wrkRcpNo}` 복귀
+- [ ] **예약 정보(view) 화면 먼저 표시** (곧장 캘린더 X)
+- [ ] 상단 헤더 "방문 예약 안내"
+- [ ] 빨간 박스 "예정된 방문 작업을 확인해 주세요."
+- [ ] ReservationInfoCard(상세)로 예약 일정·작업 내역 표시
+- [ ] 하단 `[예약 변경]` 버튼
 
 ### 4단계 — 캘린더 (date step)
 
+- [ ] `[예약 변경]` 클릭 → date step 진입
+- [ ] 상단 헤더 "예약 변경" + 좌측 ← 백버튼
+- [ ] StepBar 1/2 표시
 - [ ] "변경하실 날짜를 선택해 주세요" 안내
 - [ ] 현재 월 표시 (`2026년 X월`) + 좌우 ← → 월 이동
 - [ ] 요일 헤더 (일~토), 일요일 빨강 / 토요일 파랑
 - [ ] **오늘 이전 날짜 disabled** (회색)
 - [ ] **오늘부터 14일 이후 disabled**
-- [ ] mock의 availability에서 가용 슬롯 없는 날짜 disabled
+- [ ] mock의 availability에서 가용 슬롯 없는 날짜 disabled (오늘 기준 동적 생성)
 - [ ] 가용 날짜 클릭 → 빨간 동그라미 선택 표시
 - [ ] 하단에 "선택: YYYY년 M월 D일 (요일)" 빨강으로 표시
 - [ ] 하단 `[다음]` 버튼 활성
@@ -71,15 +76,13 @@ https://oss-customer-kakao-web.vercel.app/order/reservation/1O2026051812345/2026
 - [ ] 상단 헤더 "예약 변경 완료" (백버튼 없음)
 - [ ] CheckIcon 빨강 variant 표시
 - [ ] "예약이 변경되었습니다" 큰 글씨
-- [ ] 카드 안에 "변경 전 / 변경 후" 비교
-  - [ ] 변경 전: 회색 + 취소선 (`prevDateLabel prevTimeLabel`)
-  - [ ] 변경 후: 빨강 강조 + 굵게 (`M월 D일 (요일) HH:00 ~ HH:00`)
+- [ ] 카드 안에 "방문 일정" 라벨(빨강) + `M월 D일 (요일)  HH:00 ~ HH:00` (선택한 새 일정)
 - [ ] "변경된 예약 내용은 카카오톡으로 다시 안내드립니다" 안내
 - [ ] CSNote 보임
 
 ## 회귀 체크
 
-- [ ] 백버튼으로 캘린더 → view step 복귀 시 동작 (view step은 placeholder)
+- [ ] 백버튼: time → date → view 단계 역순 복귀 동작
 - [ ] 데스크탑(>480px): 가운데 480px 컬럼 + 회색 외곽 + 가벼운 그림자
 - [ ] 모바일(≤480px): 화면 꽉 차게
 - [ ] 스크롤: 본문 영역만 스크롤, 헤더·하단 버튼 고정

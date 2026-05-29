@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router";
 import {
   useReservation,
   useValidatedOrderParams,
@@ -9,23 +7,14 @@ import { ReservationInfoCard, WorkerCard } from "@components/order";
 import ScreenContainer from "@shared/ui/ScreenContainer";
 import PageHeader from "@shared/ui/PageHeader";
 import CSNote from "@shared/ui/CSNote";
-import Spinner from "@shared/ui/Spinner";
+import LoadingView from "@shared/ui/LoadingView";
 
 function OrderDetailPage() {
-  const navigate = useNavigate();
   const { wrkRcpNo, isValid } = useValidatedOrderParams();
 
+  // 조회 실패는 throwOnError → ErrorBoundary가 처리
   const reservationQuery = useReservation(isValid ? wrkRcpNo : null);
   const workerQuery = useWorker(isValid ? wrkRcpNo : null);
-
-  useEffect(() => {
-    if (reservationQuery.isError || workerQuery.isError) {
-      navigate("/error", {
-        replace: true,
-        state: { code: "ORDER_INVALID" },
-      });
-    }
-  }, [reservationQuery.isError, workerQuery.isError, navigate]);
 
   const reservation = reservationQuery.data;
   const worker = workerQuery.data;
@@ -33,9 +22,7 @@ function OrderDetailPage() {
   if (!reservation || !worker) {
     return (
       <ScreenContainer>
-        <div className="flex-1 flex items-center justify-center">
-          <Spinner color="red" size="lg" />
-        </div>
+        <LoadingView />
       </ScreenContainer>
     );
   }

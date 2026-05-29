@@ -55,16 +55,14 @@ function LoginOtpPage() {
   // 조회 실패는 throwOnError → ErrorBoundary. 여기선 데이터 검증(허용 외 상태)만 차단.
   useEffect(() => {
     if (!from || !statusQuery.data) return;
-    const kind: OrderEntryKind = from.pathname.includes("/order/change")
-      ? "change"
-      : "detail";
+    const kind: OrderEntryKind = from.pathname.includes("/order/change") ? "change" : "detail";
     if (!isEntryAllowed(kind, statusQuery.data.wrkFlowSttusCd)) {
       navigate("/error", {
         replace: true,
         state: { code: "ORDER_INVALID" },
       });
     }
-  }, [from, statusQuery.isError, statusQuery.data, navigate]);
+  }, [from, statusQuery.data, navigate]);
 
   // 가드 — 정상 카카오 진입이 아니면 차단
   if (!from || !entryWrkRcpNo) {
@@ -108,8 +106,7 @@ function LoginOtpPage() {
           navigate(from!.pathname + from!.search, { replace: true });
         },
         onError: () => {
-          // 검증 실패 시 입력 클리어해서 재입력 유도. 메시지는 verifyMutation.error로 표시
-          setOtp("");
+          setOtp(""); // 검증 실패 시 입력 클리어
         },
       },
     );

@@ -5,7 +5,6 @@ interface PhoneRequestRowProps {
   maskedPhone: string;
   sent: boolean;
   loading: boolean;
-  // > 0이면 재발송 쿨다운 — 버튼 disabled + 라벨에 mm:ss 표시
   cooldownSeconds?: number;
   onSend: () => void;
 }

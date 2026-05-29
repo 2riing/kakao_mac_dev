@@ -13,5 +13,14 @@ export {
   type OrderEntryKind,
 } from "./constants";
 export type {
-*
+  AvailabilityDay,
+  AvailabilityResponse,
+  AvailabilityTimeSlot,
+  OrderStatus,
+  Reservation,
+  ReservationConfirmResult,
+  ReservationOrder,
+  ReservationPatchPayload,
+  ReservationPatchResult,
+  Technician,
 } from "./types";

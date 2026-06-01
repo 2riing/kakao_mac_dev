@@ -35,7 +35,7 @@ function toReservation(api: ReservationDetailResponse): Reservation {
     smtCnt: api.sameTimeOrderCount,
     orders: api.orders.map((o) => ({
       wrkRcpNo: o.workReceiptNo,
-      spotWrkTypeCd: api.spotWorkTypeCode,
+      serviceLctgNm: o.serviceLctgNm,
       prodDescNm: o.serviceName,
     })),
   };

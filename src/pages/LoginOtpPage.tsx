@@ -16,13 +16,13 @@ import {
 import { getErrorMessage } from "@shared/lib/getErrorMessage";
 import { WRK_RCP_NO_PATTERN } from "@shared/lib/formatters";
 import { ERROR_MESSAGES } from "@shared/constants/messages";
-import KTLogo from "@shared/ui/KTLogo";
 import Spinner from "@shared/ui/Spinner";
 import CSNote from "@shared/ui/CSNote";
 import ScreenContainer from "@shared/ui/ScreenContainer";
 import BottomFixedBar from "@shared/ui/BottomFixedBar";
 import PrimaryButton from "@shared/ui/PrimaryButton";
-import { PhoneRequestRow, OtpField } from "@components/auth";
+import FieldError from "@shared/ui/FieldError";
+import { AuthHeader, AuthIntro, PhoneRequestRow, OtpField } from "@components/auth";
 
 // AuthGuard가 박은 state.from URL에서 wrkRcpNo 추출.
 // 경로 segment가 아닌 wrkRcpNo 형식으로 찾아 라우트 구조 변경에 안 깨짐.
@@ -114,17 +114,10 @@ function LoginOtpPage() {
 
   return (
     <ScreenContainer>
-      <div className="h-[72px] bg-white flex flex-col items-center justify-center gap-0.5 px-3.5 border-b border-kt-border shrink-0">
-        <KTLogo />
-      </div>
+      <AuthHeader />
 
       <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 pt-[18px] pb-4">
-        <div className="mb-6">
-          <div className="text-[21px] font-bold text-kt-ink mb-1.5">본인인증</div>
-          <div className="text-[14px] text-kt-gray-500 leading-[1.65]">
-            예약 확인을 위해 본인인증이 필요합니다.
-          </div>
-        </div>
+        <AuthIntro />
 
         <PhoneRequestRow
           maskedPhone={maskedPhone}
@@ -135,9 +128,7 @@ function LoginOtpPage() {
         />
 
         {sendErrorMessage && (
-          <div className="text-xs text-kt-warn-urgent mb-2 -mt-1.5 font-medium">
-            {sendErrorMessage}
-          </div>
+          <FieldError message={sendErrorMessage} className="mb-2 -mt-1.5" />
         )}
 
         {sent && (

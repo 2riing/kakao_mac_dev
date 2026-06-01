@@ -23,7 +23,7 @@ export interface Technician {
 /* 예약에 포함된 오더 정보 (도메인 — 컴포넌트에서 사용) */
 export interface ReservationOrder {
   wrkRcpNo: string;
-  spotWrkTypeCd: string; // 현장작업 종류 코드 (개통 수리)
+  serviceLctgNm: string; // 서비스 대분류명 (카테고리) — 아이콘/라벨 분기
   prodDescNm: string;    // 서비스명
 }
 

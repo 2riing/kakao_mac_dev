@@ -2,8 +2,9 @@ import type { Reservation } from "@entities/order";
 import PageHeader from "@shared/ui/PageHeader";
 import BottomFixedBar from "@shared/ui/BottomFixedBar";
 import PrimaryButton from "@shared/ui/PrimaryButton";
+import NoticeBanner from "@shared/ui/NoticeBanner";
 import CSNote from "@shared/ui/CSNote";
-import ReservationInfoCard from "./ReservationInfoCard";
+import OrderInfoCard from "./OrderInfoCard";
 
 interface ReservationOverviewProps {
   reservation: Reservation;
@@ -22,13 +23,13 @@ function ReservationOverview({
       <PageHeader title="방문 예약 안내" />
 
       <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 pt-4 pb-4">
-        <div className="bg-kt-red-light border border-kt-red-border rounded-[12px] px-4 py-3.5 mb-4">
+        <NoticeBanner className="mb-4">
           <div className="text-[13px] text-kt-gray-700 leading-[1.65]">
             예정된 방문 작업을 확인해 주세요.
           </div>
-        </div>
+        </NoticeBanner>
 
-        <ReservationInfoCard reservation={reservation} variant="detailed" />
+        <OrderInfoCard reservation={reservation} variant="detailed" />
 
         <CSNote />
       </div>

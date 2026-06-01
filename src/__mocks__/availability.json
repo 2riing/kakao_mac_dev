@@ -1,0 +1,216 @@
+{
+  "from": "2026-05-20",
+  "to": "2026-06-03",
+  "availability": [
+    {
+      "rsrvDate": "2026-05-20",
+      "slots": [
+        { "rsrvTod": "09:00", "available": false },
+        { "rsrvTod": "10:00", "available": false },
+        { "rsrvTod": "11:00", "available": false },
+        { "rsrvTod": "12:00", "available": false },
+        { "rsrvTod": "13:00", "available": false },
+        { "rsrvTod": "14:00", "available": true },
+        { "rsrvTod": "15:00", "available": true },
+        { "rsrvTod": "16:00", "available": false },
+        { "rsrvTod": "17:00", "available": true }
+      ]
+    },
+    {
+      "rsrvDate": "2026-05-21",
+      "slots": [
+        { "rsrvTod": "09:00", "available": true },
+        { "rsrvTod": "10:00", "available": true },
+        { "rsrvTod": "11:00", "available": false },
+        { "rsrvTod": "12:00", "available": false },
+        { "rsrvTod": "13:00", "available": true },
+        { "rsrvTod": "14:00", "available": true },
+        { "rsrvTod": "15:00", "available": false },
+        { "rsrvTod": "16:00", "available": true },
+        { "rsrvTod": "17:00", "available": true }
+      ]
+    },
+    {
+      "rsrvDate": "2026-05-22",
+      "slots": [
+        { "rsrvTod": "09:00", "available": true },
+        { "rsrvTod": "10:00", "available": true },
+        { "rsrvTod": "11:00", "available": true },
+        { "rsrvTod": "12:00", "available": false },
+        { "rsrvTod": "13:00", "available": true },
+        { "rsrvTod": "14:00", "available": true },
+        { "rsrvTod": "15:00", "available": true },
+        { "rsrvTod": "16:00", "available": true },
+        { "rsrvTod": "17:00", "available": true }
+      ]
+    },
+    {
+      "rsrvDate": "2026-05-23",
+      "slots": [
+        { "rsrvTod": "09:00", "available": false },
+        { "rsrvTod": "10:00", "available": false },
+        { "rsrvTod": "11:00", "available": false },
+        { "rsrvTod": "12:00", "available": false },
+        { "rsrvTod": "13:00", "available": false },
+        { "rsrvTod": "14:00", "available": false },
+        { "rsrvTod": "15:00", "available": false },
+        { "rsrvTod": "16:00", "available": false },
+        { "rsrvTod": "17:00", "available": false }
+      ]
+    },
+    {
+      "rsrvDate": "2026-05-24",
+      "slots": [
+        { "rsrvTod": "09:00", "available": false },
+        { "rsrvTod": "10:00", "available": false },
+        { "rsrvTod": "11:00", "available": false },
+        { "rsrvTod": "12:00", "available": false },
+        { "rsrvTod": "13:00", "available": false },
+        { "rsrvTod": "14:00", "available": false },
+        { "rsrvTod": "15:00", "available": false },
+        { "rsrvTod": "16:00", "available": false },
+        { "rsrvTod": "17:00", "available": false }
+      ]
+    },
+    {
+      "rsrvDate": "2026-05-25",
+      "slots": [
+        { "rsrvTod": "09:00", "available": true },
+        { "rsrvTod": "10:00", "available": true },
+        { "rsrvTod": "11:00", "available": true },
+        { "rsrvTod": "12:00", "available": false },
+        { "rsrvTod": "13:00", "available": true },
+        { "rsrvTod": "14:00", "available": true },
+        { "rsrvTod": "15:00", "available": true },
+        { "rsrvTod": "16:00", "available": true },
+        { "rsrvTod": "17:00", "available": true }
+      ]
+    },
+    {
+      "rsrvDate": "2026-05-26",
+      "slots": [
+        { "rsrvTod": "09:00", "available": true },
+        { "rsrvTod": "10:00", "available": false },
+        { "rsrvTod": "11:00", "available": true },
+        { "rsrvTod": "12:00", "available": false },
+        { "rsrvTod": "13:00", "available": true },
+        { "rsrvTod": "14:00", "available": false },
+        { "rsrvTod": "15:00", "available": true },
+        { "rsrvTod": "16:00", "available": false },
+        { "rsrvTod": "17:00", "available": true }
+      ]
+    },
+    {
+      "rsrvDate": "2026-05-27",
+      "slots": [
+        { "rsrvTod": "09:00", "available": true },
+        { "rsrvTod": "10:00", "available": true },
+        { "rsrvTod": "11:00", "available": true },
+        { "rsrvTod": "12:00", "available": true },
+        { "rsrvTod": "13:00", "available": true },
+        { "rsrvTod": "14:00", "available": true },
+        { "rsrvTod": "15:00", "available": true },
+        { "rsrvTod": "16:00", "available": true },
+        { "rsrvTod": "17:00", "available": true }
+      ]
+    },
+    {
+      "rsrvDate": "2026-05-28",
+      "slots": [
+        { "rsrvTod": "09:00", "available": false },
+        { "rsrvTod": "10:00", "available": true },
+        { "rsrvTod": "11:00", "available": true },
+        { "rsrvTod": "12:00", "available": false },
+        { "rsrvTod": "13:00", "available": true },
+        { "rsrvTod": "14:00", "available": true },
+        { "rsrvTod": "15:00", "available": false },
+        { "rsrvTod": "16:00", "available": true },
+        { "rsrvTod": "17:00", "available": false }
+      ]
+    },
+    {
+      "rsrvDate": "2026-05-29",
+      "slots": [
+        { "rsrvTod": "09:00", "available": true },
+        { "rsrvTod": "10:00", "available": true },
+        { "rsrvTod": "11:00", "available": false },
+        { "rsrvTod": "12:00", "available": false },
+        { "rsrvTod": "13:00", "available": true },
+        { "rsrvTod": "14:00", "available": true },
+        { "rsrvTod": "15:00", "available": true },
+        { "rsrvTod": "16:00", "available": false },
+        { "rsrvTod": "17:00", "available": true }
+      ]
+    },
+    {
+      "rsrvDate": "2026-05-30",
+      "slots": [
+        { "rsrvTod": "09:00", "available": false },
+        { "rsrvTod": "10:00", "available": false },
+        { "rsrvTod": "11:00", "available": false },
+        { "rsrvTod": "12:00", "available": false },
+        { "rsrvTod": "13:00", "available": false },
+        { "rsrvTod": "14:00", "available": false },
+        { "rsrvTod": "15:00", "available": false },
+        { "rsrvTod": "16:00", "available": false },
+        { "rsrvTod": "17:00", "available": false }
+      ]
+    },
+    {
+      "rsrvDate": "2026-05-31",
+      "slots": [
+        { "rsrvTod": "09:00", "available": false },
+        { "rsrvTod": "10:00", "available": false },
+        { "rsrvTod": "11:00", "available": false },
+        { "rsrvTod": "12:00", "available": false },
+        { "rsrvTod": "13:00", "available": false },
+        { "rsrvTod": "14:00", "available": false },
+        { "rsrvTod": "15:00", "available": false },
+        { "rsrvTod": "16:00", "available": false },
+        { "rsrvTod": "17:00", "available": false }
+      ]
+    },
+    {
+      "rsrvDate": "2026-06-01",
+      "slots": [
+        { "rsrvTod": "09:00", "available": true },
+        { "rsrvTod": "10:00", "available": true },
+        { "rsrvTod": "11:00", "available": true },
+        { "rsrvTod": "12:00", "available": false },
+        { "rsrvTod": "13:00", "available": true },
+        { "rsrvTod": "14:00", "available": true },
+        { "rsrvTod": "15:00", "available": true },
+        { "rsrvTod": "16:00", "available": true },
+        { "rsrvTod": "17:00", "available": false }
+      ]
+    },
+    {
+      "rsrvDate": "2026-06-02",
+      "slots": [
+        { "rsrvTod": "09:00", "available": true },
+        { "rsrvTod": "10:00", "available": false },
+        { "rsrvTod": "11:00", "available": true },
+        { "rsrvTod": "12:00", "available": false },
+        { "rsrvTod": "13:00", "available": true },
+        { "rsrvTod": "14:00", "available": true },
+        { "rsrvTod": "15:00", "available": true },
+        { "rsrvTod": "16:00", "available": false },
+        { "rsrvTod": "17:00", "available": true }
+      ]
+    },
+    {
+      "rsrvDate": "2026-06-03",
+      "slots": [
+        { "rsrvTod": "09:00", "available": true },
+        { "rsrvTod": "10:00", "available": true },
+        { "rsrvTod": "11:00", "available": true },
+        { "rsrvTod": "12:00", "available": true },
+        { "rsrvTod": "13:00", "available": true },
+        { "rsrvTod": "14:00", "available": true },
+        { "rsrvTod": "15:00", "available": true },
+        { "rsrvTod": "16:00", "available": true },
+        { "rsrvTod": "17:00", "available": true }
+      ]
+    }
+  ]
+}

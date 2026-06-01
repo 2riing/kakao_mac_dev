@@ -12,6 +12,7 @@ import {
 } from "@shared/lib/formatters";
 import BottomFixedBar from "@shared/ui/BottomFixedBar";
 import CSNote from "@shared/ui/CSNote";
+import NoticeBanner from "@shared/ui/NoticeBanner";
 import PageHeader from "@shared/ui/PageHeader";
 import PrimaryButton from "@shared/ui/PrimaryButton";
 import Spinner from "@shared/ui/Spinner";
@@ -81,10 +82,10 @@ function ReservationTimeStep({
       <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 pt-[18px] pb-4">
         <StepBar current={2} total={2} />
 
-        <div className="bg-kt-red-light border border-kt-red-border rounded-[10px] px-3.5 py-2.5 mb-3.5 text-sm font-semibold text-kt-ink">
+        <NoticeBanner compact className="mb-3.5 text-sm font-semibold text-kt-ink">
           {y}년 {m}월 {d}일 ({dow})
           {selTime && ` · ${formatTimeRange(selTime)}`}
-        </div>
+        </NoticeBanner>
 
         <div className="text-[15px] font-semibold text-kt-ink mb-3.5">
           원하시는 시간대를 선택해 주세요.

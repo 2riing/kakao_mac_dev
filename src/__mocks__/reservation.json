@@ -9,6 +9,7 @@
       "orders": [
         {
           "workReceiptNo": "1O2026051812345",
+          "serviceLctgNm": "인터넷",
           "serviceName": "기가 인터넷 500M"
         }
       ]
@@ -22,10 +23,12 @@
       "orders": [
         {
           "workReceiptNo": "1O20260520ABCDE",
+          "serviceLctgNm": "인터넷",
           "serviceName": "인터넷 베이직"
         },
         {
           "workReceiptNo": "1O20260520ABCDF",
+          "serviceLctgNm": "TV",
           "serviceName": "지니 TV 베이직"
         }
       ]
@@ -39,6 +42,7 @@
       "orders": [
         {
           "workReceiptNo": "1O2026053000F01",
+          "serviceLctgNm": "인터넷전화",
           "serviceName": "에센스 베이직"
         }
       ]
@@ -52,14 +56,17 @@
       "orders": [
         {
           "workReceiptNo": "1O2026060100A05",
+          "serviceLctgNm": "인터넷",
           "serviceName": "기가 인터넷 1G"
         },
         {
           "workReceiptNo": "1O2026060100A06",
+          "serviceLctgNm": "TV",
           "serviceName": "지니 TV 프리미엄"
         },
         {
           "workReceiptNo": "1O2026060100A07",
+          "serviceLctgNm": "일반전화",
           "serviceName": "집전화 베이직"
         }
       ]
@@ -73,6 +80,7 @@
       "orders": [
         {
           "workReceiptNo": "1O20260605DEAD0",
+          "serviceLctgNm": "인터넷",
           "serviceName": "이전설치 - 기가 인터넷"
         }
       ]

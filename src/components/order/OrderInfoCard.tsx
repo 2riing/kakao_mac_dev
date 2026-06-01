@@ -2,25 +2,20 @@ import { type Reservation } from "@entities/order";
 import { formatVisitDate, formatTimeRange } from "@shared/lib/formatters";
 import InfoRow from "@shared/ui/InfoRow";
 
-interface ReservationInfoCardProps {
+interface OrderInfoCardProps {
   reservation: Reservation;
   variant?: "detailed" | "summary";
 }
 
 type Category = "INTERNET" | "TV" | "PHONE";
 
-// spotWrkTypeCd → 표시용 카테고리. 모호한 코드(AS/MOVE 등)는 INTERNET fallback.
-function getCategory(cd: string): Category {
-  if (cd.startsWith("TV")) return "TV";
-  if (cd.startsWith("PHONE")) return "PHONE";
+// serviceLctgNm(카테고리명) → 아이콘 카테고리. 인터넷전화/일반전화는 PHONE 아이콘 공용.
+// 라벨은 serviceLctgNm 원문을 그대로 표시(5종 구분 유지). 아이콘만 현재 3종 매핑.
+function getCategory(lctgNm: string): Category {
+  if (lctgNm === "TV") return "TV";
+  if (lctgNm.includes("전화")) return "PHONE";
   return "INTERNET";
 }
-
-const CATEGORY_LABEL: Record<Category, string> = {
-  INTERNET: "인터넷",
-  TV: "TV",
-  PHONE: "전화",
-};
 
 function CategoryIcon({ category }: { category: Category }) {
   if (category === "TV") {
@@ -67,13 +62,13 @@ function VisitDateTimeRow({
 }
 
 function OrderItem({
-  spotWrkTypeCd,
+  serviceLctgNm,
   prodDescNm,
 }: {
-  spotWrkTypeCd: string;
+  serviceLctgNm: string;
   prodDescNm: string;
 }) {
-  const category = getCategory(spotWrkTypeCd);
+  const category = getCategory(serviceLctgNm);
   return (
     <div className="flex items-center gap-3 py-2.5">
       <div className="w-10 h-10 rounded-lg bg-kt-gray-100 flex items-center justify-center text-kt-gray-700 shrink-0">
@@ -81,20 +76,20 @@ function OrderItem({
       </div>
       <div className="min-w-0 flex-1">
         <div className="text-[15px] font-bold text-kt-ink truncate">
-          {prodDescNm || CATEGORY_LABEL[category]}
+          {prodDescNm || serviceLctgNm}
         </div>
         <div className="text-[12px] text-kt-gray-500 mt-px">
-          {CATEGORY_LABEL[category]}
+          {serviceLctgNm}
         </div>
       </div>
     </div>
   );
 }
 
-function ReservationInfoCard({
+function OrderInfoCard({
   reservation,
   variant = "detailed",
-}: ReservationInfoCardProps) {
+}: OrderInfoCardProps) {
   const dateLabel = formatVisitDate(reservation.rsrvDate);
   const timeLabel = formatTimeRange(reservation.rsrvTod);
 
@@ -146,7 +141,7 @@ function ReservationInfoCard({
           {reservation.orders.map((o) => (
             <OrderItem
               key={o.wrkRcpNo}
-              spotWrkTypeCd={o.spotWrkTypeCd}
+              serviceLctgNm={o.serviceLctgNm}
               prodDescNm={o.prodDescNm}
             />
           ))}
@@ -156,4 +151,4 @@ function ReservationInfoCard({
   );
 }
 
-export default ReservationInfoCard;
+export default OrderInfoCard;

@@ -21,7 +21,7 @@
 
 | Method | Path | 설명 |
 |--------|------|------|
-| GET | `/api/order/status/{wrkRcpNo}?reservationDate=YYYYMMDDHHMM` | 오더 상태 조회 |
+| GET | `/api/order/status/{wrkRcpNo}` | 오더 상태 조회 |
 | GET | `/api/order/worker/{wrkRcpNo}` | 작업자 정보 조회 (당일방문 시만) |
 
 ### reservation — 예약
@@ -43,7 +43,7 @@ GET   https://api-dev.example.com/api/auth/phonenum/{wrkRcpNo}
 
 ### order
 ```
-GET   https://api-dev.example.com/api/order/status/{wrkRcpNo}?reservationDate=YYYYMMDDHHMM
+GET   https://api-dev.example.com/api/order/status/{wrkRcpNo}
 GET   https://api-dev.example.com/api/order/worker/{wrkRcpNo}
 ```
 - 작업자 사진은 위 worker 응답에 URL 필드로 포함됨 (정적 경로 예: `/order/images/workers/{wrkRcpNo}`)

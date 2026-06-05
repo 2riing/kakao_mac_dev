@@ -16,7 +16,7 @@ function AppRouter() {
       {/* public — 가드 없이 접근 */}
       <Route path="/login" element={<LoginOtpPage />} />
       <Route path="/help" element={<HelpPage />} />
-      {/* <Route path="/order/confirm/:wrkRcpNo/:reservationDate" element={<ReservationConfirmPage />} /> */}
+      {/* <Route path="/order/confirm/:wrkRcpNo" element={<ReservationConfirmPage />} /> */}
 
       {/* protected — AuthGuard 통과해야 진입 */}
       <Route element={<AuthGuard />}>

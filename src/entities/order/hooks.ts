@@ -16,14 +16,10 @@ import type { ReservationPatchPayload } from "./types";
 // 모든 order 도메인 페이지가 동일 가드를 갖도록 통일.
 export function useValidatedOrderParams(): {
   wrkRcpNo: string;
-  reservationDate: string;
   isValid: boolean;
 } {
   const navigate = useNavigate();
-  const { wrkRcpNo = "", reservationDate = "" } = useParams<{
-    wrkRcpNo: string;
-    reservationDate: string;
-  }>();
+  const { wrkRcpNo = "" } = useParams<{ wrkRcpNo: string }>();
   const isValid = WRK_RCP_NO_REGEX.test(wrkRcpNo);
 
   useEffect(() => {
@@ -35,7 +31,7 @@ export function useValidatedOrderParams(): {
     }
   }, [isValid, navigate]);
 
-  return { wrkRcpNo, reservationDate, isValid };
+  return { wrkRcpNo, isValid };
 }
 
 export function useOrderStatus(wrkRcpNo: string | null) {

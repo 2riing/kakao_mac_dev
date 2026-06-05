@@ -101,14 +101,6 @@ paths:
       description: 카톡 진입 직후 호출. 동시 오더 묶음 정보 반환.
       parameters:
         - $ref: '#/components/parameters/WrkRcpNoPath'
-        - name: reservationDate
-          in: query
-          required: true
-          description: 예약일시 (YYYYMMDDHHMM 형식)
-          schema:
-            type: string
-            pattern: '^\d{12}$'
-          example: '202605130900'
       responses:
         '200':
           description: 정상

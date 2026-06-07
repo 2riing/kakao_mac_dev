@@ -22,3 +22,8 @@ playwright/.cache/
 .vercel
 
 claude.md
+
+# 캡처 산출물·디자인 원본 (레포 비대 방지 — 로컬 보관)
+captures/
+captures*.zip
+docs/KT_CI/

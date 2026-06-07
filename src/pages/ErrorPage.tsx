@@ -1,4 +1,4 @@
-import { useLocation } from "react-router";
+import { useLocation } from "react-router-dom";
 import ScreenContainer from "@shared/ui/ScreenContainer";
 import PageHeader from "@shared/ui/PageHeader";
 import AlertIcon from "@shared/ui/AlertIcon";

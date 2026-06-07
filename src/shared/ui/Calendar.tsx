@@ -8,6 +8,7 @@ interface CalendarProps {
   onSelect: (ymd: string) => void;
   minDate: string; // 선택 가능 시작 "YYYY-MM-DD"
   maxDate: string; // 선택 가능 끝 "YYYY-MM-DD"
+  today?: string; // 오늘 "YYYY-MM-DD" — 굵게 강조
   // 추가 비활성 조건 (예: availability 슬롯 없음). min/max 범위와 별개로 AND 적용.
   isDayDisabled?: (ymd: string) => boolean;
   loading?: boolean;
@@ -25,6 +26,7 @@ function Calendar({
   onSelect,
   minDate,
   maxDate,
+  today,
   isDayDisabled,
   loading = false,
   error = false,
@@ -89,7 +91,7 @@ function Calendar({
               i === 0
                 ? "text-kt-red"
                 : i === 6
-                  ? "text-[#2060CC]"
+                  ? "text-kt-blue"
                   : "text-kt-gray-500"
             }`}
           >
@@ -120,13 +122,14 @@ function Calendar({
       ) : (
         <div className="grid grid-cols-7 min-h-[228px]">
           {Array.from({ length: firstDay }).map((_, i) => (
-            <div key={`empty-${i}`} className="h-[38px]" />
+            <div key={`empty-${i}`} className="w-full aspect-square" />
           ))}
           {Array.from({ length: daysInMonth }).map((_, i) => {
             const d = i + 1;
             const ymd = toYmd(cm.y, cm.m, d);
             const dis = isDisabled(d);
             const isSel = selected === ymd;
+            const isToday = today === ymd;
             const col = (firstDay + i) % 7;
             const textColorClass = isSel
               ? "text-white font-bold"
@@ -135,7 +138,7 @@ function Calendar({
                 : col === 0
                   ? "text-kt-red"
                   : col === 6
-                    ? "text-[#2060CC]"
+                    ? "text-kt-blue"
                     : "text-kt-ink";
             return (
               <button
@@ -143,11 +146,15 @@ function Calendar({
                 onClick={() => !dis && onSelect(ymd)}
                 disabled={dis}
                 type="button"
-                className={`h-[38px] flex items-center justify-center rounded-full text-sm ${
-                  isSel ? "bg-kt-red" : ""
-                } ${dis ? "cursor-not-allowed" : "cursor-pointer"} ${textColorClass}`}
+                className={`w-full aspect-square flex items-center justify-center ${dis ? "cursor-not-allowed" : "cursor-pointer"}`}
               >
-                {d}
+                <span
+                  className={`w-[70%] aspect-square flex items-center justify-center rounded-full text-sm ${
+                    isSel ? "bg-kt-red" : ""
+                  } ${isToday ? "font-bold" : ""} ${textColorClass}`}
+                >
+                  {d}
+                </span>
               </button>
             );
           })}

@@ -22,7 +22,8 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: unknown) {
-    console.error("[ErrorBoundary]", error);
+    // dev 전용 로깅 — prod 콘솔에 에러 내부정보 노출 방지 (CWE-532)
+    if (import.meta.env.DEV) console.error("[ErrorBoundary]", error);
   }
 
   render() {

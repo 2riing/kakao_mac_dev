@@ -47,6 +47,7 @@ function ReservationDateStep({ wrkRcpNo, onNext, onBack }: ReservationDateStepPr
           onSelect={setSel}
           minDate={fromYmd}
           maxDate={toYmdStr}
+          today={fromYmd}
           isDayDisabled={isDayDisabled}
           loading={availabilityQuery.isLoading}
           error={availabilityQuery.isError}
@@ -55,7 +56,7 @@ function ReservationDateStep({ wrkRcpNo, onNext, onBack }: ReservationDateStepPr
 
         {sel && (
           <div className="text-[13px] text-kt-gray-700 text-center mt-1 font-medium">
-            선택:{" "}
+            {" "}
             <span className="text-kt-red font-bold">{formatVisitDate(sel)}</span>
           </div>
         )}

@@ -1,3 +1,8 @@
 {
-  "wrkFlowSttusCd": "2"
+  "candidates": [
+    { "wrkFlowSttusCd": "1" },
+    { "wrkFlowSttusCd": "2" },
+    { "wrkFlowSttusCd": "3" },
+    { "wrkFlowSttusCd": "4" }
+  ]
 }

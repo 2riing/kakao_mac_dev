@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { WRK_RCP_NO_REGEX } from "@shared/lib/formatters";
 import {
@@ -10,7 +10,7 @@ import {
   getWorker,
   patchReservation,
 } from "./api";
-import type { ReservationPatchPayload } from "./types";
+import type { OrderViewType, ReservationPatchPayload } from "./types";
 
 // 라우트 파라미터 검증 + invalid 시 /error(ORDER_INVALID) 자동 리다이렉트.
 // 모든 order 도메인 페이지가 동일 가드를 갖도록 통일.
@@ -34,10 +34,11 @@ export function useValidatedOrderParams(): {
   return { wrkRcpNo, isValid };
 }
 
-export function useOrderStatus(wrkRcpNo: string | null) {
+// 진입 게이트 조회 — viewType(1=청약상세, 2=예약변경). 차단 시 ApiError → throwOnError → ErrorBoundary.
+export function useOrderStatus(wrkRcpNo: string | null, viewType: OrderViewType) {
   return useQuery({
-    queryKey: ["order", "status", wrkRcpNo],
-    queryFn: () => getOrderStatus(wrkRcpNo!),
+    queryKey: ["order", "status", wrkRcpNo, viewType],
+    queryFn: () => getOrderStatus(wrkRcpNo!, viewType),
     enabled: !!wrkRcpNo,
   });
 }
@@ -47,6 +48,9 @@ export function useWorker(wrkRcpNo: string | null) {
     queryKey: ["order", "worker", wrkRcpNo],
     queryFn: () => getWorker(wrkRcpNo!),
     enabled: !!wrkRcpNo,
+    // worker는 당일방문일 때만 존재 → 없거나 실패해도 ErrorBoundary로 안 보냄.
+    // OrderDetailPage가 worker 데이터 유무로 조건부 렌더 (없으면 작업자 카드 숨김).
+    throwOnError: false,
   });
 }
 

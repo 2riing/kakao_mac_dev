@@ -1,7 +1,6 @@
 import type { InternalAxiosRequestConfig, AxiosResponse } from "axios";
 import reservationMock from "../../__mocks__/reservation.json";
 import workerMock from "../../__mocks__/worker.json";
-import orderMock from "../../__mocks__/order.json";
 import custphoneMock from "../../__mocks__/custphone.json";
 import { todayYmd, addDaysYmd } from "@shared/lib/formatters";
 import { RESULT_CODE_OK } from "./envelope";
@@ -51,7 +50,8 @@ const mockRules: MockRule[] = [
   { method: "POST", pattern: /\/auth\/otp\/verify$/,                  data: null },
   { method: "GET",  pattern: /\/auth\/phonenum\/[^/]+$/,              data: () => pickRandom(custphoneMock.candidates) },
   // order
-  { method: "GET",  pattern: /\/order\/status\/[^/]+/,                data: orderMock },
+  // status 게이트 — /order/status/{wrkRcpNo}/{viewType}(1=청약상세, 2=예약변경). 정상은 body 없음.
+  { method: "GET",  pattern: /\/order\/status\/[^/]+\/[12]$/,         data: null },
   { method: "GET",  pattern: /\/order\/worker\/[^/]+$/,               data: () => pickRandom(workerMock.candidates) },
   { method: "GET",  pattern: /\/reservation\/[^/]+$/,                 data: () => pickRandom(reservationMock.candidates) },
   { method: "GET",  pattern: /\/reservations\/[^/]+\/availability/,   data: () => buildAvailability() },
@@ -65,6 +65,9 @@ const ERROR_TRIGGER = {
   query: "1O20260518EEEEE", // 모든 GET 조회 실패
   mutation: "1O20260518AAAAA", // POST/PATCH 실패
   availability: "1O20260518BBBBB", // availability GET만 실패 (throwOnError 예외 검증용)
+  statusBlock: "1O20260518D0000", // status 진입 게이트 차단 (viewType 무관 → ORDER_INVALID)
+  noWorker: "1O20260518F0000", // worker 조회만 실패 — 당일 방문 아님 (작업자 카드 숨김 검증)
+  otpVerify: "1O20260518C0000", // OTP 검증(verify)만 실패 — 발송은 성공 (OTP 틀림 시뮬레이션)
 } as const;
 
 function envelope(
@@ -85,6 +88,12 @@ export function getMockResponse(
 ): AxiosResponse | null {
   const method = (config.method ?? "GET").toUpperCase();
   const url = config.url ?? "";
+  // OTP request/verify는 wrkRcpNo를 body로 보내 URL에 없음 → url+body 합쳐 magic 번호 매칭
+  const body =
+    typeof config.data === "string"
+      ? config.data
+      : JSON.stringify(config.data ?? {});
+  const haystack = `${url} ${body}`;
 
   const matched = mockRules.find(
     (r) => r.method === method && r.pattern.test(url),
@@ -93,10 +102,16 @@ export function getMockResponse(
 
   // 에러 트리거 (e2e용) — matched 요청에 한해 분류별 에러 envelope 반환
   const isAvailability = /\/availability/.test(url);
+  const isStatus = /\/order\/status\//.test(url);
+  const isWorker = /\/order\/worker\//.test(url);
+  const isOtpVerify = /\/auth\/otp\/verify$/.test(url);
   const triggered =
-    (url.includes(ERROR_TRIGGER.availability) && isAvailability) ||
-    (url.includes(ERROR_TRIGGER.query) && method === "GET") ||
-    (url.includes(ERROR_TRIGGER.mutation) &&
+    (haystack.includes(ERROR_TRIGGER.availability) && isAvailability) ||
+    (haystack.includes(ERROR_TRIGGER.statusBlock) && isStatus) ||
+    (haystack.includes(ERROR_TRIGGER.noWorker) && isWorker) ||
+    (haystack.includes(ERROR_TRIGGER.otpVerify) && isOtpVerify) ||
+    (haystack.includes(ERROR_TRIGGER.query) && method === "GET") ||
+    (haystack.includes(ERROR_TRIGGER.mutation) &&
       (method === "POST" || method === "PATCH"));
   if (triggered) {
     return envelope(

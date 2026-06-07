@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { Navigate, useNavigate, useLocation } from "react-router";
-import type { Location } from "react-router";
+import { useState } from "react";
+import { Navigate, useNavigate, useLocation } from "react-router-dom";
+import type { Location } from "react-router-dom";
 import {
   useAuthStore,
   useOtpTimer,
@@ -8,11 +8,6 @@ import {
   useRequestOtp,
   useVerifyOtp,
 } from "@entities/auth";
-import {
-  useOrderStatus,
-  isEntryAllowed,
-  type OrderEntryKind,
-} from "@entities/order";
 import { getErrorMessage } from "@shared/lib/getErrorMessage";
 import { WRK_RCP_NO_PATTERN } from "@shared/lib/formatters";
 import { ERROR_MESSAGES } from "@shared/constants/messages";
@@ -41,7 +36,6 @@ function LoginOtpPage() {
 
   // hooks (early return 전 일관 호출)
   const maskedQuery = useMaskedCustPhone(entryWrkRcpNo);
-  const statusQuery = useOrderStatus(entryWrkRcpNo);
   const [sent, setSent] = useState(false);
   const [otp, setOtp] = useState("");
   const [throttleMessage, setThrottleMessage] = useState<string | null>(null);
@@ -51,20 +45,8 @@ function LoginOtpPage() {
   const { mutate: verifyOtp, isPending: verifyLoading } = verifyMutation;
   const { timer, start: startTimer } = useOtpTimer(180);
 
-  // 오더 진입 가능 상태 검증 — 목적지(예약변경 2,3 / 청약상세 2,3,4)별 wrkFlowSttusCd 체크.
-  // 조회 실패는 throwOnError → ErrorBoundary. 여기선 데이터 검증(허용 외 상태)만 차단.
-  useEffect(() => {
-    if (!from || !statusQuery.data) return;
-    const kind: OrderEntryKind = from.pathname.includes("/order/change") ? "change" : "detail";
-    if (!isEntryAllowed(kind, statusQuery.data.wrkFlowSttusCd)) {
-      navigate("/error", {
-        replace: true,
-        state: { code: "ORDER_INVALID" },
-      });
-    }
-  }, [from, statusQuery.data, navigate]);
-
-  // 가드 — 정상 카카오 진입이 아니면 차단
+  // 진입 가능 여부(viewType별 status 게이트)는 StatusGate가 이미 통과시킨 상태.
+  // 여기선 정상 진입 컨텍스트(from)만 확인.
   if (!from || !entryWrkRcpNo) {
     return <Navigate to="/error" state={{ code: "INVALID_ENTRY" }} replace />;
   }

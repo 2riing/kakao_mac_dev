@@ -7,16 +7,12 @@ export {
   useValidatedOrderParams,
   useWorker,
 } from "./hooks";
-export {
-  RESERVATION_CHANGE_WINDOW_DAYS,
-  isEntryAllowed,
-  type OrderEntryKind,
-} from "./constants";
+export { RESERVATION_CHANGE_WINDOW_DAYS } from "./constants";
 export type {
   AvailabilityDay,
   AvailabilityResponse,
   AvailabilityTimeSlot,
-  OrderStatus,
+  OrderViewType,
   Reservation,
   ReservationConfirmResult,
   ReservationOrder,

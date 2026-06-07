@@ -3,7 +3,7 @@ import { unwrap } from "@shared/api/unwrap";
 import type { Envelope } from "@shared/api/envelope";
 import type {
   AvailabilityResponse,
-  OrderStatus,
+  OrderViewType,
   Reservation,
   ReservationConfirmResult,
   ReservationDetailResponse,
@@ -12,11 +12,16 @@ import type {
   Technician,
 } from "./types";
 
-// 오더 진입 가능 여부 판단용 — wrkFlowSttusCd 반환. OTP 인증 전 호출 가능.
-export async function getOrderStatus(wrkRcpNo: string): Promise<OrderStatus> {
-  const { data } = await apiClient.get<Envelope<OrderStatus>>(
-    `/order/status/${wrkRcpNo}`,
+// 진입 게이트 — viewType(1=청약상세, 2=예약변경)별 진입 가능 여부를 백엔드가 판단.
+// 정상(2000)이면 body 없음, 진입 불가면 에러코드 → ApiError. OTP 인증 전 호출 가능.
+export async function getOrderStatus(
+  wrkRcpNo: string,
+  viewType: OrderViewType,
+): Promise<null> {
+  const { data } = await apiClient.get<Envelope<null>>(
+    `/order/status/${wrkRcpNo}/${viewType}`,
   );
+  // unwrap 결과(null) 반환 — TanStack Query는 queryFn의 undefined 반환을 금지하므로 void 불가.
   return unwrap(data);
 }
 

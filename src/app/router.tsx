@@ -1,4 +1,5 @@
-import { Routes, Route, Navigate } from "react-router";
+import { Routes, Route, Navigate } from "react-router-dom";
+import StatusGate from "./StatusGate";
 import AuthGuard from "./AuthGuard";
 import LoginOtpPage from "@pages/LoginOtpPage";
 // import ReservationConfirmPage from "@pages/ReservationConfirmPage";
@@ -18,12 +19,14 @@ function AppRouter() {
       <Route path="/help" element={<HelpPage />} />
       {/* <Route path="/order/confirm/:wrkRcpNo" element={<ReservationConfirmPage />} /> */}
 
-      {/* protected — AuthGuard 통과해야 진입 */}
-      <Route element={<AuthGuard />}>
-        {/* 예약 변경 */}
-        <Route path="/order/change/:wrkRcpNo" element={<ReservationChangePage />} />
-        {/* 청약 상세 조회 */}
-        <Route path="/order/detail/:wrkRcpNo" element={<OrderDetailPage />} />
+      {/* protected — StatusGate(진입 게이트) → AuthGuard(인증) 순서 통과해야 진입 */}
+      <Route element={<StatusGate />}>
+        <Route element={<AuthGuard />}>
+          {/* 예약 변경 */}
+          <Route path="/order/change/:wrkRcpNo" element={<ReservationChangePage />} />
+          {/* 청약 상세 조회 */}
+          <Route path="/order/detail/:wrkRcpNo" element={<OrderDetailPage />} />
+        </Route>
       </Route>
 
       {/* fallback */}

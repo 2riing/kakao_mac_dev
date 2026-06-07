@@ -3,15 +3,13 @@
  * reservation 관련 타입도 order 도메인으로 통합됨.
  */
 
-/* 오더 상태 조회 — GET /api/order/status/{wrkRcpNo}
- * 진입 가능 여부 판단용. wrkFlowSttusCd(작업 흐름 상태):
- * 2,3 = 예약 변경 가능 / 2,3,4 = 청약 상세 진입 가능 (4=당일 방문). */
-export interface OrderStatus {
-  wrkFlowSttusCd: string;
-}
+/* 진입 게이트 화면 구분 — GET /api/order/status/{wrkRcpNo}/{viewType}
+ * 1 = 청약 상세, 2 = 예약 변경. 백엔드가 진입 가능 여부를 판단해 resultCode로 응답
+ * (2000=진입 가능·body 없음 / 그 외=차단). */
+export type OrderViewType = "1" | "2";
 
 /* 작업자 정보 — GET /api/order/worker/{wrkRcpNo} */
-// wrkFlowSttusCd='4'(당일 방문) 일 때만 조회 가능.
+// 당일 방문일 때만 조회 성공 (그 외 에러) → OrderDetailPage가 조회 성공 여부로 작업자 카드 노출.
 // workerPhotoUrl은 정적 이미지 경로 (예: /images/workers/{wrkRcpNo}). 빈 문자열 가능.
 // 백엔드 응답 풀이름 평탄형 — naming-conventions.md "백엔드 응답 정본" 참조.
 export interface Technician {

@@ -1,2 +1,7 @@
-export { HELP_DATA, PRODUCT_TABS } from "./constants";
-export type { HelpProduct, HelpStep, ProductKey } from "./types";
+export { HELP_FAQ, PRODUCT_TABS } from "./constants";
+export type {
+  HelpFaqProduct,
+  HelpSection,
+  HelpStep,
+  ProductKey,
+} from "./types";

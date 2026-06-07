@@ -9,9 +9,16 @@ export interface HelpStep {
   link?: { label: string; href: string };
 }
 
-export interface HelpProduct {
+/* FAQ 정본(help-faq.json) — 전화 탭처럼 소제목(section) 구분이 필요한 구조.
+ * title 없는 section은 단일 그룹(인터넷·TV). */
+export interface HelpSection {
+  title?: string;
+  items: HelpStep[];
+}
+
+export interface HelpFaqProduct {
   key: ProductKey;
   label: string;
   intro: string;
-  steps: HelpStep[];
+  sections: HelpSection[];
 }

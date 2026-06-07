@@ -33,4 +33,33 @@ test.describe("login (OTP) flow", () => {
 
     await expect(page).toHaveURL(new RegExp(`${TARGET_PATH}$`));
   });
+
+  test("OTP 검증 실패(틀린 번호) → 에러 메시지 + 입력 초기화", async ({
+    page,
+  }) => {
+    // C0000 = verify(검증)만 실패, 발송은 성공 (mock ERROR_TRIGGER.otpVerify)
+    await page.goto(`/order/change/1O20260518C0000`);
+    await expect(page).toHaveURL(/\/login$/);
+
+    await page.getByRole("button", { name: "인증번호 받기" }).click();
+    const otpInput = page.getByPlaceholder("인증번호 입력 (6자리)");
+    await expect(otpInput).toBeVisible();
+    await otpInput.fill("123456");
+    await page.getByRole("button", { name: "확인" }).click();
+
+    // 검증 실패 → 비즈니스 에러 메시지 + OTP 입력 초기화
+    await expect(page.getByText("처리에 실패했습니다 (mock)")).toBeVisible();
+    await expect(otpInput).toHaveValue("");
+  });
+
+  test("OTP 발송 실패 → 발송 에러 메시지 (OTP 입력 단계 미진입)", async ({
+    page,
+  }) => {
+    // AAAAA = 모든 POST/PATCH 실패 → 발송(request) 단계에서 실패
+    await page.goto(`/order/change/1O20260518AAAAA`);
+    await expect(page).toHaveURL(/\/login$/);
+
+    await page.getByRole("button", { name: "인증번호 받기" }).click();
+    await expect(page.getByText("처리에 실패했습니다 (mock)")).toBeVisible();
+  });
 });

@@ -25,8 +25,6 @@ https://oss-customer-kakao-web.vercel.app   (main 자동 배포, stable URL)
 - `https://oss-customer-kakao-web-git-main-2riing2-2546s-projects.vercel.app` — git main alias
 - `vercel ls` 또는 대시보드에서 deployment-specific URL 확인 가능
 
-⚠️ **주의**: `.env.production`에 `VITE_USE_MOCK`가 명시 안 되어 있어 prod 빌드는 mock 비활성 상태. 실 백엔드(`VITE_BASE_URL=https://api.example.com/api`) 호출하므로 API 의존 화면(예약 정보 로딩, OTP 검증 등)은 동작 안 함. 정적 화면(루트 → /error 리다이렉트, /help, /login 직접 진입 차단 등)만 검증 가능. mock으로 Vercel에서도 풀 플로우 보려면 Vercel 환경변수에 `VITE_USE_MOCK=true` 등록 + 재배포 필요.
-
 ## 공통 사항
 
 - TanStack Query `staleTime: 30s` — 같은 URL 30초 내 새로고침 시 같은 mock 응답
@@ -113,7 +111,6 @@ https://oss-customer-kakao-web.vercel.app   (main 자동 배포, stable URL)
 - 로컬: http://localhost:8080/order/detail/1O2026060100A05
 - Vercel: https://oss-customer-kakao-web.vercel.app/order/detail/1O2026060100A05
 
-> Vercel에서 mock 의존 화면(예약 변경/상세) 보려면 위 ⚠️ 주의 참고.
 > 잘못된 wrkRcpNo 포맷 에러 검증은 `/order/change/INVALID_FORMAT` 또는 `/order/detail/INVALID_FORMAT`로 진입(→ /error).
 
 ## 데이터 케이스

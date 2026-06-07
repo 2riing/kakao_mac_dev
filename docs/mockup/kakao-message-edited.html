@@ -421,7 +421,7 @@ function Screen4({ onNext, onBack }) {
 
         {sel &&
         <div style={{ fontSize: 13, color: C.g700, textAlign: 'center', marginTop: 4, fontWeight: 500 }}>
-            선택: <span style={{ color: C.red, fontWeight: 700 }}>{sel.y}년 {sel.m}월 {sel.d}일 ({DAY_NAMES[new Date(sel.y, sel.m - 1, sel.d).getDay()]})</span>
+            <span style={{ color: C.red, fontWeight: 700 }}>{sel.y}년 {sel.m}월 {sel.d}일 ({DAY_NAMES[new Date(sel.y, sel.m - 1, sel.d).getDay()]})</span>
           </div>
         }
       </div>

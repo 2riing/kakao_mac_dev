@@ -9,13 +9,12 @@ userflow 시나리오 2: 알림톡 [예약 변경] → OTP → 예약 정보 확
 http://localhost:8080/order/change/1O2026051812345
 ```
 
-**Vercel (prod — API 의존이라 OTP 단계에서 실패할 수 있음)**
+**Vercel**
 ```
 https://oss-customer-kakao-web.vercel.app/order/change/1O2026051812345
 ```
 
 > 카카오 알림톡 [예약 변경] 버튼 시뮬레이션. AuthGuard 가 가로채서 `/login`으로 이동시킴.
-> Vercel 환경에서 mock 동작시키려면 README의 환경 섹션 참고.
 
 ## 단계별 체크
 
@@ -56,7 +55,7 @@ https://oss-customer-kakao-web.vercel.app/order/change/1O2026051812345
 - [ ] **오늘부터 14일 이후 disabled**
 - [ ] mock의 availability에서 가용 슬롯 없는 날짜 disabled (오늘 기준 동적 생성)
 - [ ] 가용 날짜 클릭 → 빨간 동그라미 선택 표시
-- [ ] 하단에 "선택: YYYY년 M월 D일 (요일)" 빨강으로 표시
+- [ ] 하단에 "YYYY년 M월 D일 (요일)" 빨강으로 표시
 - [ ] 하단 `[다음]` 버튼 활성
 
 ### 5단계 — 시간대 (time step)

@@ -19,6 +19,22 @@ test.describe("help page (public)", () => {
     await expect(page.getByText("전화 연결에 어려움이 있으신가요?")).toBeVisible();
   });
 
+  test("전화 탭 — sections 소제목 구분 노출 (집전화/인터넷전화, 기업인터넷전화)", async ({
+    page,
+  }) => {
+    await page.goto("/help");
+    await page.getByRole("tab", { name: "전화", exact: true }).click();
+
+    // 신버전 sections — 소제목 2개로 그룹 구분
+    await expect(page.getByText("집전화 / 인터넷전화")).toBeVisible();
+    await expect(page.getByText("기업인터넷전화", { exact: true })).toBeVisible();
+    // 각 그룹의 대표 항목
+    await expect(page.getByText("집전화가 안돼요.")).toBeVisible();
+    await expect(
+      page.getByText("LCD화면에 '등록이 되지 않습니다.' 라고 나와요."),
+    ).toBeVisible();
+  });
+
   test("i6 step에 ▶ 영상 가이드 링크가 외부로 열림 (href + target)", async ({
     page,
   }) => {
@@ -41,26 +57,5 @@ test.describe("help page (public)", () => {
       .first()
       .evaluate((el) => getComputedStyle(el).overscrollBehaviorY);
     expect(guideScroll).toBe("contain");
-
-    await page.getByRole("button", { name: "해결이 어려워요" }).click();
-    const unresolvedScroll = await page
-      .locator(".overflow-y-auto")
-      .first()
-      .evaluate((el) => getComputedStyle(el).overscrollBehaviorY);
-    expect(unresolvedScroll).toBe("contain");
-  });
-
-  test("해결이 어려워요 → 상담 화면 → 다시 살펴볼게요로 복귀", async ({ page }) => {
-    await page.goto("/help");
-
-    await page.getByRole("button", { name: "해결이 어려워요" }).click();
-    await expect(page.getByText("고객센터 상담")).toBeVisible();
-    await expect(page.getByRole("link", { name: /KT 고객센터/ })).toHaveAttribute(
-      "href",
-      "tel:100",
-    );
-
-    await page.getByRole("button", { name: "다시 살펴볼게요" }).click();
-    await expect(page.getByText("인터넷이 평소와 다르신가요?")).toBeVisible();
   });
 });

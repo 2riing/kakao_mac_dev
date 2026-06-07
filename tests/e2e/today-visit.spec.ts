@@ -13,7 +13,7 @@ test.describe("order detail flow (protected /order/detail)", () => {
     await seedAuth(page, { wrkRcpNo: WRK_RCP_NO });
     await page.goto(`/order/detail/${WRK_RCP_NO}`);
 
-    await expect(page.getByText("오늘의 방문 안내")).toBeVisible();
+    await expect(page.getByText("청약상세")).toBeVisible();
     await expect(page.getByText("엔지니어가 오늘 방문 예정입니다.")).toBeVisible();
 
     await expect(page.getByText("방문 작업자 정보")).toBeVisible();

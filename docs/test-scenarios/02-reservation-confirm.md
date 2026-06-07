@@ -14,7 +14,7 @@ userflow 시나리오 1: 사전방문안내 알림톡 [예약 확정] → 정보
 http://localhost:8080/order/confirm/1O2026051812345/202605251400
 ```
 
-**Vercel (prod — API 의존이라 로딩 실패 가능)**
+**Vercel**
 ```
 https://oss-customer-kakao-web.vercel.app/order/confirm/1O2026051812345/202605251400
 ```

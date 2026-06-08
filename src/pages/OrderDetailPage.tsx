@@ -39,7 +39,7 @@ function OrderDetailPage() {
         {worker && (
           <>
             <NoticeBanner className="mb-4">
-              <div className="text-[15px] font-bold text-kt-ink leading-[1.55]">
+              <div className="text-[15px] text-kt-ink leading-[1.55]">
                 엔지니어가 오늘 방문 예정입니다.
               </div>
             </NoticeBanner>

@@ -42,7 +42,7 @@
       "orders": [
         {
           "workReceiptNo": "1O2026053000F01",
-          "serviceLctgNm": "인터넷전화",
+          "serviceLctgNm": "인터넷",
           "serviceName": "에센스 베이직"
         }
       ]
@@ -81,7 +81,7 @@
         {
           "workReceiptNo": "1O20260605DEAD0",
           "serviceLctgNm": "인터넷",
-          "serviceName": "이전설치 - 기가 인터넷"
+          "serviceName": "인터넷 베이직"
         }
       ]
     }

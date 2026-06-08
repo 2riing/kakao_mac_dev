@@ -2,18 +2,18 @@
   "candidates": [
     {
       "workerName": "박한별",
-      "workerPhoneNumber": "010-0000-0000",
-      "workerPhotoUrl": "https://picsum.photos/seed/worker1/300/400"
+      "workerPhoneNumber": "010-6666-1234",
+      "workerPhotoUrl": ""
     },
     {
-      "workerName": "김기사",
+      "workerName": "김개통",
       "workerPhoneNumber": "010-1234-5678",
-      "workerPhotoUrl": "https://picsum.photos/seed/worker2/500/300"
+      "workerPhotoUrl": ""
     },
     {
-      "workerName": "이엔지니어",
+      "workerName": "이수리",
       "workerPhoneNumber": "010-9999-9999",
-      "workerPhotoUrl": "https://picsum.photos/seed/worker3/360/360"
+      "workerPhotoUrl": ""
     },
     {
       "workerName": "최작업",
